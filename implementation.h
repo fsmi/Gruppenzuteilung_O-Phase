@@ -355,7 +355,7 @@ std::vector<int32_t> calculateAssignment(const State &s) {
     } else {
       const std::string &name =
           s.isTeam(part) ? s.teamData(part).name : s.studentData(part).name;
-      std::cout << "WARNING: Participant <" << name << "> not assigned!"
+      std::cerr << "WARNING: Participant \"" << name << "\" not assigned!"
                 << std::endl;
     }
     ++part_idx;
@@ -370,8 +370,13 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
   for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
     if (((teams && s.isTeam(part)) || (students && !s.isTeam(part))) &&
         assignment[part] >= 0) {
-      // TODO: warning
-      success &= s.assignParticipant(part, assignment[part]);
+      bool assign_success = s.assignParticipant(part, assignment[part]);
+      if (!assign_success) {
+        std::cerr << "WARNING: Capacity of group \""
+                  << s.groupData(assignment[part]).name << "\" exceeded."
+                  << std::endl;
+        success = false;
+      }
     }
   }
   return success;
