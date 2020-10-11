@@ -36,7 +36,7 @@ int main() {
 
   s.disableGroup(0);
   s.resetWithCapacity(4);
-  s.assignParticipant(0, 3);
+  s.assignParticipant(1, 3);
   assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
   printCurrentAssignment(s);
@@ -53,5 +53,13 @@ int main() {
 
   s = State(input);
   assignTeamsAndStudents(s, 4);
+  printCurrentAssignment(s);
+
+  s = State(input);
+  assignWithMinimumNumberPerGroup(s, 2, 5);
+  printCurrentAssignment(s);
+
+  s = State(input);
+  assignWithMinimumNumberPerGroup(s, 3, 6);
   printCurrentAssignment(s);
 }

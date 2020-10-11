@@ -421,11 +421,42 @@ void assignTeamsAndStudents(State &s,
   assert(success);
 }
 
+void assignWithMinimumNumberPerGroup(
+    State &s, StudentID min_capacity,
+    StudentID initial_capacity = INITIAL_GROUP_CAPACITY,
+    bool fair_capacity = true) {
+  assert(min_capacity < initial_capacity);
+  StudentID allowed_min = 1;
+  while (true) {
+    assignTeamsAndStudents(s, initial_capacity, fair_capacity);
+    StudentID current_min = std::numeric_limits<StudentID>::max();
+    for (GroupID group = 0; group < s.numGroups(); ++group) {
+      if (s.groupIsEnabled(group)) {
+        current_min = std::min(current_min, s.groupSize(group));
+      }
+    }
+
+    if (current_min < min_capacity) {
+      allowed_min = std::max(allowed_min, current_min) + 1;
+      std::cout << "Disabling groups with size smaller then " << allowed_min
+                << "." << std::endl;
+      for (GroupID group = 0; group < s.numGroups(); ++group) {
+        if (s.groupSize(group) < allowed_min) {
+          s.disableGroup(group);
+        }
+      }
+    } else {
+      break;
+    }
+  }
+}
+
 // ##########################################
 // ########     Helper Functions     ########
 // ##########################################
 
 void printCurrentAssignment(const State &s) {
+  std::cout << std::endl;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const GroupData &gd = s.groupData(group);
     std::cout << gd.name << " (" << gd.main_group << "):" << std::endl;
