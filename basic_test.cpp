@@ -30,4 +30,14 @@ int main() {
   auto assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
   printCurrentAssignment(s);
+
+  std::cout << "Disable group \"First Contact\" and assign \"Ersti 1\" to \"Master\"."
+            << std::endl << std::endl;
+
+  s.disableGroup(0);
+  s.resetWithCapacity(4);
+  s.assignParticipant(0, 3);
+  assignment = calculateAssignment(s);
+  applyAssignment(s, assignment);
+  printCurrentAssignment(s);
 }

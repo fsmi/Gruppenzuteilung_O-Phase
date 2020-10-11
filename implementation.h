@@ -175,6 +175,11 @@ public:
     return _group_assignments[id];
   }
 
+  StudentID groupSize(GroupID id) const {
+    assert(id < data().groups.size());
+    return _group_assignments[id].size();
+  }
+
   ParticipantID numParticipants() const { return _participants.size(); }
 
   bool isTeam(ParticipantID id) const {
@@ -245,12 +250,10 @@ public:
     return true;
   }
 
+  // groups are still disabled
   void resetWithCapacity(uint32_t capacity) {
     for (uint32_t &cap : _group_capacities) {
       cap = capacity;
-    }
-    for (size_t i = 0; i < _group_enabled.size(); ++i) {
-      _group_enabled[i] = true;
     }
     for (std::vector<StudentID> &assigned : _group_assignments) {
       assigned.clear();
@@ -365,8 +368,8 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
   assert(s.numParticipants() == assignment.size());
   bool success = true;
   for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
-    if ((teams && s.isTeam(part)) ||
-        (students && !s.isTeam(part)) && assignment[part] >= 0) {
+    if (((teams && s.isTeam(part)) || (students && !s.isTeam(part))) &&
+        assignment[part] >= 0) {
       // TODO: warning
       success &= s.assignParticipant(part, assignment[part]);
     }
