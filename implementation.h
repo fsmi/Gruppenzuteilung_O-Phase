@@ -382,6 +382,45 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
   return success;
 }
 
+void assignTeamsAndStudents(State &s,
+                            StudentID initial_capacity = INITIAL_GROUP_CAPACITY,
+                            bool fair_capacity = true) {
+  s.resetWithCapacity(initial_capacity);
+  State s_temp(s);
+  StudentID capacity;
+  if (fair_capacity) {
+    StudentID num_students = s.data().students.size();
+    StudentID additional_students_in_teams = 0;
+    for (const TeamData &team : s.data().teams) {
+      additional_students_in_teams += team.size() - 1;
+    }
+    capacity =
+        round(static_cast<double>(num_students - additional_students_in_teams) /
+              static_cast<double>(num_students) * initial_capacity);
+    std::cout << "Capacity for team assignment set to " << capacity << "."
+              << std::endl;
+  } else {
+    capacity = initial_capacity;
+  }
+
+  bool success;
+  do {
+    s_temp.resetWithCapacity(capacity);
+    std::vector<int32_t> assignment = calculateAssignment(s_temp);
+    success = applyAssignment(s, assignment, true, false);
+    --capacity;
+    if (!success) {
+      std::cerr << "WARNING: Team assignment not successful due to exceeded "
+                   "capacity. Retry with capacity="
+                << capacity << "." << std::endl;
+    }
+  } while (!success);
+
+  std::vector<int32_t> assignment = calculateAssignment(s);
+  success = applyAssignment(s, assignment);
+  assert(success);
+}
+
 // ##########################################
 // ########     Helper Functions     ########
 // ##########################################

@@ -22,7 +22,7 @@ int main() {
   input.ratings.emplace_back(std::vector<Rating> { Rating(4), Rating(3), Rating(2), Rating(3) });
   input.students.emplace_back("Master", CourseType::Info, DegreeType::Master, false);
   input.ratings.emplace_back(std::vector<Rating> { Rating(1), Rating(2), Rating(3), Rating(4) });
-  input.students.emplace_back("Lerngruppenteilnehmer", CourseType::Any, DegreeType::Any, false);
+  input.students.emplace_back("Lerngruppenteilnehmer 1", CourseType::Any, DegreeType::Any, false);
   input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID> { 8 });
 
@@ -39,5 +39,19 @@ int main() {
   s.assignParticipant(0, 3);
   assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
+  printCurrentAssignment(s);
+
+  input.students.emplace_back("Lerngruppenteilnehmer 2", CourseType::Any, DegreeType::Any, false);
+  input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
+  input.students.emplace_back("Lerngruppenteilnehmer 3", CourseType::Any, DegreeType::Any, false);
+  input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
+  input.students.emplace_back("Lerngruppenteilnehmer 4", CourseType::Any, DegreeType::Any, false);
+  input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
+  input.teams[0].members.push_back(9);
+  input.teams[0].members.push_back(10);
+  input.teams[0].members.push_back(11);
+
+  s = State(input);
+  assignTeamsAndStudents(s, 4);
   printCurrentAssignment(s);
 }
