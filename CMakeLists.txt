@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 project(OPhaseGroupAssignment)
 
 add_executable(Main main.cpp)
+add_executable(BasicTest basic_test)
 
 execute_process(COMMAND cmake -P ${CMAKE_CURRENT_SOURCE_DIR}/download_boost.cmake)
 
