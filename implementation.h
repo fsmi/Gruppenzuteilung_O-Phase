@@ -10,6 +10,7 @@
 using EdgeProperty = boost::property<boost::edge_weight_t, uint32_t>;
 using Graph = boost::adjacency_matrix<boost::undirectedS, boost::no_property,
                                       EdgeProperty>;
+using GraphTraits = boost::graph_traits<Graph>;
 
 static const uint32_t INITIAL_GROUP_CAPACITY = 18;
 static const size_t NUM_RATINGS = 5;
@@ -113,8 +114,6 @@ class State {
   std::vector<std::vector<StudentID>> _group_assignments;
   std::vector<Participant> _participants;
 
-  const Input &data() const { return _data.get(); }
-
 public:
   State(const Input &data, uint32_t group_capacity = INITIAL_GROUP_CAPACITY)
       : _data(data), _group_capacities(data.groups.size(), group_capacity),
@@ -139,6 +138,8 @@ public:
       }
     }
   }
+
+  const Input &data() const { return _data.get(); }
 
   GroupID numGroups() const { return data().groups.size(); }
 
@@ -249,3 +250,114 @@ public:
 
   void reset() { resetWithCapacity(INITIAL_GROUP_CAPACITY); }
 };
+
+// ####################################
+// ########     Algorithms     ########
+// ####################################
+
+bool combinationIsValid(const StudentData &student, const GroupData &group) {
+  return !(student.course_type != CourseType::Mathe &&
+           group.course_type == CourseType::Mathe) &&
+         !(student.degree_type != DegreeType::Master &&
+           group.degree_type == DegreeType::Master);
+}
+
+bool combinationIsValid(const TeamData &team, const GroupData &group,
+                        const std::vector<StudentData> &students) {
+  return true;
+}
+
+double getFactor(const State &s, ParticipantID part) { return 1.0; }
+
+std::vector<int32_t> calculateAssignment(const State &s) {
+  // initialize vertices
+  std::vector<GraphTraits::vertex_descriptor> first_group_vertex;
+  std::vector<GroupID> vertex_to_group;
+  first_group_vertex.push_back(0);
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    if (s.groupIsEnabled(group)) {
+      for (StudentID i = 0; i < s.groupCapacity(group); ++i) {
+        vertex_to_group.push_back(group);
+      }
+    }
+    first_group_vertex.push_back(vertex_to_group.size());
+  }
+  std::vector<ParticipantID> participants;
+  const GraphTraits::vertex_descriptor first_participant =
+      vertex_to_group.size();
+  GraphTraits::vertex_descriptor num_vertices = first_participant;
+  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+    if (!s.isAssigned(part)) {
+      num_vertices++;
+      participants.push_back(part);
+    }
+  }
+  assert(first_participant >= num_vertices - first_participant);
+
+  Graph g(num_vertices);
+  std::vector<GraphTraits::vertex_descriptor> mates(num_vertices);
+
+  // add edges
+  for (ParticipantID i = 0; i < participants.size(); ++i) {
+    const ParticipantID &part = participants[i];
+    assert(!s.isAssigned(part));
+    double factor = getFactor(s, part);
+    for (GroupID group = 0; group < s.numGroups(); ++group) {
+      bool validTeam = s.isTeam(part) &&
+                       combinationIsValid(s.teamData(part), s.groupData(group),
+                                          s.data().students);
+      bool validStudent =
+          !s.isTeam(part) &&
+          combinationIsValid(s.studentData(part), s.groupData(group));
+      if (validTeam || validStudent) {
+        uint32_t rating = ceil(factor * s.rating(part).at(group).getValue());
+        for (GraphTraits::vertex_descriptor vertex = first_group_vertex[group];
+             vertex < first_group_vertex[group + 1]; ++vertex) {
+          add_edge(vertex, first_participant + i, EdgeProperty(rating), g);
+        }
+      }
+    }
+  }
+
+  // calculate the matching
+  maximum_weighted_matching(g, &mates[0]);
+  std::cout << "Matching with size " << matching_size(g, &mates[0])
+            << " and total weight " << matching_weight_sum(g, &mates[0])
+            << " calculated." << std::endl;
+
+  // translate the matching to an assignment
+  std::vector<int32_t> assignment(s.numParticipants(), -1);
+  GraphTraits::vertex_iterator vi, vi_end;
+  boost::tie(vi, vi_end) = vertices(g);
+
+  ParticipantID part_idx = 0;
+  for (vi += first_participant; vi != vi_end; ++vi) {
+    ParticipantID part = participants.at(part_idx);
+    GraphTraits::vertex_descriptor group_vertex = mates[*vi];
+    if (group_vertex != GraphTraits::null_vertex()) {
+      GroupID group = vertex_to_group[group_vertex];
+      assignment[part] = group;
+    } else {
+      const std::string &name =
+          s.isTeam(part) ? s.teamData(part).name : s.studentData(part).name;
+      std::cout << "WARNING: Participant <" << name << "> not assigned!"
+                << std::endl;
+    }
+    ++part_idx;
+  }
+  return std::move(assignment);
+}
+
+bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
+                     bool teams = true, bool students = true) {
+  assert(s.numParticipants() == assignment.size());
+  bool success = true;
+  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+    if ((teams && s.isTeam(part)) ||
+        (students && !s.isTeam(part)) && assignment[part] >= 0) {
+      // TODO: warning
+      success &= s.assignParticipant(part, assignment[part]);
+    }
+  }
+  return success;
+}
