@@ -27,6 +27,10 @@ public:
   uint32_t getValue() const { return RATING_VAL_TABLE[_index]; }
 
   const char *getName() const { return RATING_NAME_TABLE[_index]; }
+
+  bool operator==(const Rating &other) const { return _index == other._index; }
+
+  bool operator!=(const Rating &other) const { return _index != other._index; }
 };
 
 using GroupID = uint32_t;
@@ -77,6 +81,20 @@ struct Input {
 // ########     Assignment Data     ########
 // #########################################
 
+bool ratingsEqual(const std::vector<Rating> &r1,
+                  const std::vector<Rating> &r2) {
+  if (r1.size() != r2.size()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < r1.size(); ++i) {
+    if (r1[i] != r2[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
 struct Participant {
   uint32_t index;
   bool is_team;
@@ -108,6 +126,8 @@ public:
       assert(!team.members.empty());
       for (const StudentID &student : team.members) {
         assert(student < is_in_team.size() && !is_in_team[student]);
+        assert(
+            ratingsEqual(data.ratings[student], data.ratings[team.members[0]]));
         is_in_team[student] = true;
       }
     }
@@ -166,9 +186,19 @@ public:
     return data().teams[team_id];
   }
 
-  GroupID getAssignment(ParticipantID id) const {
+  GroupID assignment(ParticipantID id) const {
     assert(isAssigned(id));
     return static_cast<GroupID>(_participants[id].assignment);
+  }
+
+  const std::vector<Rating> &rating(ParticipantID id) const {
+    StudentID student_id;
+    if (isTeam(id)) {
+      student_id = teamData(id).members[0];
+    } else {
+      student_id = _participants[id].index;
+    }
+    return data().ratings[student_id];
   }
 
   void disableGroup(GroupID id) {
