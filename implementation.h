@@ -57,6 +57,10 @@ struct GroupData {
   std::string main_group;
   CourseType course_type;
   DegreeType degree_type;
+
+  GroupData(std::string name, std::string main_group, CourseType ct,
+            DegreeType dt)
+      : name(name), main_group(main_group), course_type(ct), degree_type(dt) {}
 };
 
 struct StudentData {
@@ -64,11 +68,18 @@ struct StudentData {
   CourseType course_type;
   DegreeType degree_type;
   bool is_commuter;
+
+  StudentData(std::string name, CourseType ct, DegreeType dt, bool is_commuter)
+      : name(name), course_type(ct), degree_type(dt), is_commuter(is_commuter) {
+  }
 };
 
 struct TeamData {
   std::string name;
   std::vector<StudentID> members;
+
+  TeamData(std::string name, std::vector<StudentID> members)
+      : name(name), members(std::move(members)) {}
 
   size_t size() const { return members.size(); }
 };
@@ -122,8 +133,8 @@ public:
         _participants() {
     assert(data.students.size() == data.ratings.size());
     std::vector<bool> is_in_team(data.students.size(), false);
-    for (size_t i = 0; i < data.teams.size(); ++i) {
-      const TeamData &team = data.teams[i];
+    for (uint32_t team_id = 0; team_id < data.teams.size(); ++team_id) {
+      const TeamData &team = data.teams[team_id];
       assert(!team.members.empty());
       for (const StudentID &student : team.members) {
         assert(student < is_in_team.size() && !is_in_team[student]);
@@ -131,6 +142,7 @@ public:
             ratingsEqual(data.ratings[student], data.ratings[team.members[0]]));
         is_in_team[student] = true;
       }
+      _participants.emplace_back(team_id, true);
     }
     for (size_t i = 0; i < data.students.size(); ++i) {
       if (!is_in_team[i]) {
@@ -360,4 +372,21 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
     }
   }
   return success;
+}
+
+// ##########################################
+// ########     Helper Functions     ########
+// ##########################################
+
+void printCurrentAssignment(const State &s) {
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    const GroupData &gd = s.groupData(group);
+    std::cout << gd.name << " (" << gd.main_group << "):" << std::endl;
+    for (const StudentID &student : s.groupAssignmentList(group)) {
+      const std::string &rating = s.data().ratings[student][group].getName();
+      std::cout << "  - " << s.data().students[student].name << " [" << rating
+                << "]" << std::endl;
+    }
+    std::cout << std::endl;
+  }
 }
