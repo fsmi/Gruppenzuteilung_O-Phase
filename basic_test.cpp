@@ -1,4 +1,5 @@
 #include <iostream>
+#include <assert.h>
 
 #include "algorithms.h"
 
@@ -32,6 +33,16 @@ int main() {
   auto assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
   printCurrentAssignment(s);
+  // Erstis
+  for (ParticipantID part = 1; part < 5; ++part) {
+    assert(s.assignment(part) < 2);
+  }
+  // Mathes
+  for (ParticipantID part = 6; part < 7; ++part) {
+    assert(s.assignment(part) == 2);
+  }
+  // Master
+  assert(s.assignment(8) == 3);
 
   std::cout << "Disable group \"First Contact\" and assign \"Ersti 1\" to \"Master\"."
             << std::endl << std::endl;
@@ -42,6 +53,17 @@ int main() {
   assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
   printCurrentAssignment(s);
+  // Erstis
+  assert(s.assignment(1) == 3);
+  for (ParticipantID part = 2; part < 5; ++part) {
+    assert(s.assignment(part) < 2);
+  }
+  // Mathes
+  for (ParticipantID part = 6; part < 7; ++part) {
+    assert(s.assignment(part) == 2);
+  }
+  // Master
+  assert(s.assignment(8) == 3);
 
   input.students.emplace_back("Lerngruppenteilnehmer 2", CourseType::Any, DegreeType::Any, false);
   input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
@@ -56,12 +78,46 @@ int main() {
   s = State(input);
   assignTeamsAndStudents(s, 4);
   printCurrentAssignment(s);
+  // Erstis
+  for (ParticipantID part = 1; part < 5; ++part) {
+    assert(s.assignment(part) < 2);
+  }
+  // Mathes
+  for (ParticipantID part = 6; part < 7; ++part) {
+    assert(s.assignment(part) == 2);
+  }
+  // Master
+  assert(s.assignment(8) == 3);
+  // Lerngruppe
+  assert(s.groupSize(s.assignment(1)) >= 4);
 
   s = State(input);
   assignWithMinimumNumberPerGroup(s, 2, 5);
   printCurrentAssignment(s);
+  // Erstis
+  for (ParticipantID part = 1; part < 5; ++part) {
+    assert(s.assignment(part) < 2);
+  }
+  // Mathes
+  for (ParticipantID part = 6; part < 8; ++part) {
+    assert(s.assignment(part) < 3);
+  }
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    assert(s.groupSize(group) == 0 || s.groupSize(group) >= 2);
+  }
 
   s = State(input);
   assignWithMinimumNumberPerGroup(s, 3, 6);
   printCurrentAssignment(s);
+  // Erstis
+  for (ParticipantID part = 1; part < 5; ++part) {
+    assert(s.assignment(part) < 2);
+  }
+  // Mathes
+  for (ParticipantID part = 6; part < 8; ++part) {
+    assert(s.assignment(part) < 3);
+  }
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    assert(s.groupSize(group) == 0 || s.groupSize(group) >= 3);
+  }
 }
