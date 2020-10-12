@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
@@ -134,9 +135,46 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
   return success;
 }
 
+std::vector<GroupID>
+preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
+  std::vector<std::vector<ParticipantID>> teams_per_group(s.numGroups());
+  std::vector<StudentID> max_size(s.numGroups(), 0);
+  std::vector<StudentID> total_size(s.numGroups(), 0);
+  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+    if (s.isTeam(part) && assignment[part] >= 0) {
+      assert(!s.isAssigned(part));
+      GroupID group = assignment[part];
+      teams_per_group[group].push_back(part);
+      StudentID team_size = s.teamData(part).size();
+      max_size[group] = std::max(max_size[group], team_size);
+      total_size[group] += team_size;
+    }
+  }
+  std::vector<GroupID> modified_groups;
+  std::mt19937 generator;
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    if (total_size[group] > s.groupCapacity(group)) {
+      modified_groups.push_back(group);
+      std::vector<ParticipantID> &teams = teams_per_group[group];
+      std::remove_if(teams.begin(), teams.end(), [&](ParticipantID team_id) {
+        return s.teamData(team_id).size() < max_size[group];
+      });
+      assert(teams.size() > 0);
+      ParticipantID chosen_team = teams[std::uniform_int_distribution<uint32_t>(
+          0, teams.size() - 1)(generator)];
+      std::cout << "> Preassign team \"" << s.teamData(chosen_team).name
+                << "\" to group \"" << s.groupData(group).name << "\"."
+                << std::endl;
+      bool success = s.assignParticipant(chosen_team, group);
+      assert(success);
+    }
+  }
+  return std::move(modified_groups);
+}
+
 void assignTeamsAndStudents(State &s, StudentID initial_capacity,
                             bool fair_capacity) {
-  State s_temp(s);
+  s.resetWithCapacity(initial_capacity);
   StudentID capacity;
   if (fair_capacity) {
     StudentID num_students = s.data().students.size();
@@ -145,28 +183,36 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
       additional_students_in_teams += team.size() - 1;
     }
     capacity =
-        round(static_cast<double>(num_students - additional_students_in_teams) /
+        ceil(static_cast<double>(num_students - additional_students_in_teams) /
               static_cast<double>(num_students) * initial_capacity);
     std::cout << "Capacity for team assignment set to " << capacity << "."
               << std::endl;
   } else {
     capacity = initial_capacity;
   }
+  StudentID diff = initial_capacity - capacity;
+  std::vector<StudentID> reduced_capacities(s.numGroups(), 0);
 
   bool success;
   do {
-    s.resetWithCapacity(initial_capacity);
-    s_temp.resetWithCapacity(capacity);
+    State s_temp(s);
+    for (GroupID group = 0; group < s.numGroups(); ++group) {
+      s_temp.decreaseCapacity(group, diff + reduced_capacities[group]);
+    }
     std::vector<int32_t> assignment = calculateAssignment(s_temp);
     success = applyAssignment(s, assignment, true, false);
-    --capacity;
     if (!success) {
       std::cerr << "WARNING: Team assignment not successful due to exceeded "
-                   "capacity. Retry with capacity="
-                << capacity << "." << std::endl;
+                   "capacity. Assign single teams and retry."
+                << std::endl;
+      std::vector<GroupID> modified_groups = preassignLargeTeams(s, assignment);
+      for (const GroupID& modified : modified_groups) {
+        reduced_capacities.at(modified)++;
+      }
     }
   } while (!success);
 
+  std::cout << "Team assignment successful." << std::endl;
   std::vector<int32_t> assignment = calculateAssignment(s);
   success = applyAssignment(s, assignment);
   assert(success);
