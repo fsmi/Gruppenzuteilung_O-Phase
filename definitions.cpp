@@ -24,9 +24,10 @@ bool Rating::operator!=(const Rating &other) const {
   return _index != other._index;
 }
 
-GroupData::GroupData(std::string name, std::string main_group, CourseType ct,
-                     DegreeType dt)
-    : name(name), main_group(main_group), course_type(ct), degree_type(dt) {}
+GroupData::GroupData(std::string name, std::string main_group,
+                     StudentID capacity, CourseType ct, DegreeType dt)
+    : name(name), main_group(main_group), capacity(capacity), course_type(ct),
+      degree_type(dt) {}
 
 StudentData::StudentData(std::string name, CourseType ct, DegreeType dt,
                          bool is_commuter)
@@ -58,8 +59,8 @@ bool ratingsEqual(const std::vector<Rating> &r1,
 Participant::Participant(uint32_t index, bool is_team)
     : index(index), is_team(is_team), assignment(-1) {}
 
-State::State(const Input &data, StudentID group_capacity)
-    : _data(data), _group_capacities(data.groups.size(), group_capacity),
+State::State(const Input &data)
+    : _data(data), _group_capacities(),
       _group_enabled(data.groups.size(), true),
       _group_assignments(data.groups.size(), std::vector<StudentID>()),
       _group_weights(data.groups.size(), 0), _participants() {
@@ -80,6 +81,9 @@ State::State(const Input &data, StudentID group_capacity)
     if (!is_in_team[i]) {
       _participants.emplace_back(i, false);
     }
+  }
+  for (const GroupData &group : data.groups) {
+    _group_capacities.push_back(group.capacity);
   }
 }
 
@@ -211,9 +215,9 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
 }
 
 // groups are still disabled
-void State::resetWithCapacity(uint32_t capacity) {
-  for (uint32_t &cap : _group_capacities) {
-    cap = capacity;
+void State::reset() {
+  for (GroupID group = 0; group < numGroups(); ++group) {
+    _group_capacities[group] = groupData(group).capacity;
   }
   for (std::vector<StudentID> &assigned : _group_assignments) {
     assigned.clear();
@@ -225,8 +229,6 @@ void State::resetWithCapacity(uint32_t capacity) {
     part.assignment = -1;
   }
 }
-
-void State::reset() { resetWithCapacity(INITIAL_GROUP_CAPACITY); }
 
 void State::decreaseCapacity(GroupID id, StudentID val) {
   assert(id < data().groups.size());

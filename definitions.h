@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-static const uint32_t INITIAL_GROUP_CAPACITY = 18;
+static const double CAPACITY_BUFFER = 1.05;
 
 // ####################################
 // ########     Input Data     ########
@@ -44,11 +44,12 @@ enum class DegreeType {
 struct GroupData {
   std::string name;
   std::string main_group;
+  StudentID capacity;
   CourseType course_type;
   DegreeType degree_type;
 
-  GroupData(std::string name, std::string main_group, CourseType ct,
-            DegreeType dt);
+  GroupData(std::string name, std::string main_group, StudentID capacity,
+            CourseType ct, DegreeType dt);
 };
 
 struct StudentData {
@@ -99,7 +100,7 @@ class State {
   std::vector<Participant> _participants;
 
 public:
-  State(const Input &data, uint32_t group_capacity = INITIAL_GROUP_CAPACITY);
+  State(const Input &data);
 
   const Input &data() const;
 

@@ -7,13 +7,9 @@ std::vector<int32_t> calculateAssignment(const State &s);
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams = true, bool students = true);
 
-void assignTeamsAndStudents(State &s,
-                            StudentID initial_capacity = INITIAL_GROUP_CAPACITY,
-                            bool fair_capacity = true);
+void assignTeamsAndStudents(State &s);
 
 void assignWithMinimumNumberPerGroup(
-    State &s, StudentID min_capacity,
-    StudentID initial_capacity = INITIAL_GROUP_CAPACITY,
-    bool fair_capacity = true);
+    State &s, StudentID min_capacity);
 
 void printCurrentAssignment(const State &s);

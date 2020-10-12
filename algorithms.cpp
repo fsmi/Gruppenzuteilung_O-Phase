@@ -171,29 +171,37 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
   return std::move(modified_groups);
 }
 
-void assignTeamsAndStudents(State &s, StudentID initial_capacity,
-                            bool fair_capacity) {
-  s.resetWithCapacity(initial_capacity);
-  StudentID capacity;
-  if (fair_capacity) {
-    StudentID num_students = s.data().students.size();
-    StudentID additional_students_in_teams = 0;
-    for (const TeamData &team : s.data().teams) {
-      additional_students_in_teams += team.size() - 1;
-    }
-    capacity =
-        ceil(static_cast<double>(num_students - additional_students_in_teams) /
-             static_cast<double>(num_students) * initial_capacity);
-    std::cout << "Capacity for team assignment set to " << capacity << "."
-              << std::endl;
-  } else {
-    capacity = initial_capacity;
+void assignTeamsAndStudents(State &s) {
+  s.reset();
+  StudentID num_students = s.data().students.size();
+  StudentID activeCapacity = s.totalActiveGroupCapacity();
+  StudentID initial_capacity = 0;
+  assert(activeCapacity > num_students);
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    initial_capacity = std::max(initial_capacity, s.groupCapacity(group));
   }
-  StudentID diff = initial_capacity - capacity;
   std::vector<StudentID> reduced_capacities(s.numGroups(), 0);
+  StudentID total_reduced = 0;
 
   bool success;
   do {
+    StudentID additional_students_in_teams = 0;
+    for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+      if (s.isTeam(part) && !s.isAssigned(part)) {
+        additional_students_in_teams += s.teamData(part).size() - 1;
+      }
+    }
+    double team_factor =
+        static_cast<double>(num_students - additional_students_in_teams) /
+        static_cast<double>(num_students);
+    double reduction_factor =
+        static_cast<double>(activeCapacity + total_reduced) /
+        static_cast<double>(s.numActiveGroups());
+    StudentID capacity = ceil(team_factor * reduction_factor);
+    std::cout << "Capacity for team assignment set to " << capacity << "."
+              << std::endl;
+    StudentID diff = initial_capacity - capacity;
+
     State s_temp(s);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       s_temp.decreaseCapacity(group, diff + reduced_capacities[group]);
@@ -208,6 +216,7 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
       for (const GroupID &modified : modified_groups) {
         reduced_capacities.at(modified)++;
       }
+      total_reduced += modified_groups.size();
     }
   } while (!success);
 
@@ -217,13 +226,11 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
   assert(success);
 }
 
-void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity,
-                                     StudentID initial_capacity,
-                                     bool fair_capacity) {
-  assert(min_capacity < initial_capacity);
+void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   StudentID allowed_min = 1;
+  StudentID active_capacity = s.totalActiveGroupCapacity();
   while (true) {
-    assignTeamsAndStudents(s, initial_capacity, fair_capacity);
+    assignTeamsAndStudents(s);
     StudentID current_min = std::numeric_limits<StudentID>::max();
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       if (s.groupIsEnabled(group)) {
@@ -233,7 +240,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity,
 
     if (current_min < min_capacity) {
       allowed_min = std::max(allowed_min, current_min);
-      if (min_capacity - allowed_min > 7) {
+      if (min_capacity - allowed_min > 8) {
         allowed_min += 3;
       } else if (min_capacity - allowed_min > 4) {
         allowed_min += 2;
@@ -242,12 +249,32 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity,
       }
       std::cout << "Disabling groups with size smaller then " << allowed_min
                 << "." << std::endl;
+      std::vector<GroupID> groups_to_remove;
       for (GroupID group = 0; group < s.numGroups(); ++group) {
-        if (s.groupSize(group) < allowed_min) {
-          s.disableGroup(group);
+        if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min) {
+          groups_to_remove.push_back(group);
+        }
+      }
+      std::sort(groups_to_remove.begin(), groups_to_remove.end(),
+                [&](GroupID g1, GroupID g2) {
+                  return s.groupWeight(g1) < s.groupWeight(g2);
+                });
+      bool removed = false;
+      for (GroupID group : groups_to_remove) {
+        StudentID capacity = s.groupData(group).capacity;
+        if (active_capacity - capacity >=
+            ceil(CAPACITY_BUFFER * s.data().students.size())) {
           std::cout << "> Disable group \"" << s.groupData(group).name << "\"."
                     << std::endl;
+          s.disableGroup(group);
+          active_capacity -= capacity;
+          removed = true;
         }
+      }
+      if (!removed) {
+        std::cout << "No further group could be removed. Stopping."
+                  << std::endl;
+        break;
       }
     } else {
       break;

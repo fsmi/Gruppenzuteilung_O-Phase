@@ -5,10 +5,10 @@
 
 int main() {
   Input input;
-  input.groups.emplace_back("First Contact", "FC Team Gecko", CourseType::Any, DegreeType::Any);
-  input.groups.emplace_back("Team Gecko", "FC Team Gecko", CourseType::Any, DegreeType::Any);
-  input.groups.emplace_back("Mathe", "Project Pi", CourseType::Mathe, DegreeType::Any);
-  input.groups.emplace_back("Master", "Second Contact", CourseType::Any, DegreeType::Master);
+  input.groups.emplace_back("First Contact", "FC Team Gecko", 3, CourseType::Any, DegreeType::Any);
+  input.groups.emplace_back("Team Gecko", "FC Team Gecko", 3, CourseType::Any, DegreeType::Any);
+  input.groups.emplace_back("Mathe", "Project Pi", 3, CourseType::Mathe, DegreeType::Any);
+  input.groups.emplace_back("Master", "Second Contact", 3, CourseType::Any, DegreeType::Master);
   input.students.emplace_back("Ersti 1", CourseType::Info, DegreeType::Bachelor, false);
   input.ratings.emplace_back(std::vector<Rating> { Rating(4), Rating(3), Rating(2), Rating(1) });
   input.students.emplace_back("Ersti 2", CourseType::Info, DegreeType::Bachelor, false);
@@ -29,7 +29,7 @@ int main() {
   input.ratings.emplace_back(std::vector<Rating> { Rating(3), Rating(2), Rating(1), Rating(1) });
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID> { 8 });
 
-  State s(input, 3);
+  State s(input);
   auto assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
   printCurrentAssignment(s);
@@ -47,8 +47,12 @@ int main() {
   std::cout << "Disable group \"First Contact\" and assign \"Ersti 1\" to \"Master\"."
             << std::endl << std::endl;
 
+  for (GroupData& group : input.groups) {
+    group.capacity = 4;
+  }
+
   s.disableGroup(0);
-  s.resetWithCapacity(4);
+  s.reset();
   s.assignParticipant(1, 3);
   assignment = calculateAssignment(s);
   applyAssignment(s, assignment);
@@ -75,8 +79,12 @@ int main() {
   input.teams[0].members.push_back(10);
   input.teams[0].members.push_back(11);
 
+  for (GroupData& group : input.groups) {
+    group.capacity = 4;
+  }
+
   s = State(input);
-  assignTeamsAndStudents(s, 4);
+  assignTeamsAndStudents(s);
   printCurrentAssignment(s);
   // Erstis
   for (ParticipantID part = 1; part < 5; ++part) {
@@ -91,8 +99,12 @@ int main() {
   // Lerngruppe
   assert(s.groupSize(s.assignment(1)) >= 4);
 
+  for (GroupData& group : input.groups) {
+    group.capacity = 5;
+  }
+
   s = State(input);
-  assignWithMinimumNumberPerGroup(s, 2, 5);
+  assignWithMinimumNumberPerGroup(s, 2);
   printCurrentAssignment(s);
   // Erstis
   for (ParticipantID part = 1; part < 5; ++part) {
@@ -106,8 +118,14 @@ int main() {
     assert(s.groupSize(group) == 0 || s.groupSize(group) >= 2);
   }
 
+  for (GroupData& group : input.groups) {
+    group.capacity = 6;
+  }
+
+  input.groups[1].capacity = 7;
+
   s = State(input);
-  assignWithMinimumNumberPerGroup(s, 3, 6);
+  assignWithMinimumNumberPerGroup(s, 3);
   printCurrentAssignment(s);
   // Erstis
   for (ParticipantID part = 1; part < 5; ++part) {

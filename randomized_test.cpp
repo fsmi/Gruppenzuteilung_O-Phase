@@ -11,7 +11,7 @@ GroupData createGroup(int &counter) {
   bool is_master = random(GENERATOR) == 0;
   std::string name("Group ");
   name += std::to_string(++counter);
-  return GroupData(name, "Gruppe X", is_math ? CourseType::Mathe : CourseType::Info,
+  return GroupData(name, "Gruppe X", 18, is_math ? CourseType::Mathe : CourseType::Info,
                      is_master ? DegreeType::Master : DegreeType::Bachelor);
 }
 
@@ -36,7 +36,7 @@ int main() {
   std::uniform_int_distribution<int> random(2, 5);
   int num_groups = 70;
   int num_students = 1000;
-  int num_teams = 40;
+  int num_teams = 120;
 
   int group_counter = 0;
   while (group_counter < num_groups) {
@@ -66,6 +66,6 @@ int main() {
   }
 
   State s(input);
-  assignWithMinimumNumberPerGroup(s, 5);
-  printCurrentAssignment(s);
+  assignWithMinimumNumberPerGroup(s, 13);
+  // printCurrentAssignment(s);
 }
