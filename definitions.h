@@ -92,9 +92,10 @@ struct Participant {
 
 class State {
   std::reference_wrapper<const Input> _data;
-  std::vector<uint32_t> _group_capacities;
+  std::vector<StudentID> _group_capacities;
   std::vector<bool> _group_enabled;
   std::vector<std::vector<StudentID>> _group_assignments;
+  std::vector<uint32_t> _group_weights;
   std::vector<Participant> _participants;
 
 public:
@@ -103,6 +104,10 @@ public:
   const Input &data() const;
 
   GroupID numGroups() const;
+
+  GroupID numActiveGroups() const;
+
+  StudentID totalActiveGroupCapacity() const;
 
   const GroupData &groupData(GroupID id) const;
 
@@ -113,6 +118,8 @@ public:
   const std::vector<StudentID> &groupAssignmentList(GroupID id) const;
 
   StudentID groupSize(GroupID id) const;
+
+  uint32_t groupWeight(GroupID id) const;
 
   ParticipantID numParticipants() const;
 
