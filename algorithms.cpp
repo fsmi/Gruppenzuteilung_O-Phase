@@ -114,18 +114,22 @@ std::vector<int32_t> calculateAssignment(const State &s) {
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams, bool students) {
   assert(s.numParticipants() == assignment.size());
+  State s_temp(s);
   bool success = true;
-  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
-    if (((teams && s.isTeam(part)) || (students && !s.isTeam(part))) &&
+  for (ParticipantID part = 0; part < s_temp.numParticipants(); ++part) {
+    if (((teams && s_temp.isTeam(part)) || (students && !s_temp.isTeam(part))) &&
         assignment[part] >= 0) {
-      bool assign_success = s.assignParticipant(part, assignment[part]);
+      bool assign_success = s_temp.assignParticipant(part, assignment[part]);
       if (!assign_success) {
         std::cerr << "WARNING: Capacity of group \""
-                  << s.groupData(assignment[part]).name << "\" exceeded."
+                  << s_temp.groupData(assignment[part]).name << "\" exceeded."
                   << std::endl;
         success = false;
       }
     }
+  }
+  if (success) {
+    s = s_temp;
   }
   return success;
 }

@@ -106,7 +106,7 @@ public:
 
   const GroupData &groupData(GroupID id) const;
 
-  uint32_t groupCapacity(GroupID id) const;
+  StudentID groupCapacity(GroupID id) const;
 
   bool groupIsEnabled(GroupID id) const;
 
@@ -133,7 +133,9 @@ public:
   bool assignParticipant(ParticipantID participant, GroupID target);
 
   // groups are still disabled
-  void resetWithCapacity(uint32_t capacity);
+  void resetWithCapacity(StudentID capacity);
 
   void reset();
+
+  void decreaseCapacity(GroupID id, StudentID val);
 };
