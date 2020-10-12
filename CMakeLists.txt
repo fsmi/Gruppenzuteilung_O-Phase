@@ -3,6 +3,7 @@ project(OPhaseGroupAssignment)
 
 add_executable(Main main.cpp definitions.cpp algorithms.cpp)
 add_executable(BasicTest basic_test definitions.cpp algorithms.cpp)
+add_executable(RandomizedTest randomized_test definitions.cpp algorithms.cpp)
 
 execute_process(COMMAND cmake -P ${CMAKE_CURRENT_SOURCE_DIR}/download_boost.cmake)
 
@@ -32,4 +33,4 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DPARANOID ")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function")
 endif()
-# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3")

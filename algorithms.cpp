@@ -23,10 +23,14 @@ bool combinationIsValid(const StudentData &student, const GroupData &group) {
 
 bool combinationIsValid(const TeamData &team, const GroupData &group,
                         const std::vector<StudentData> &students) {
+  // TODO
   return true;
 }
 
-double getFactor(const State &s, ParticipantID part) { return 1.0; }
+double getFactor(const State &s, ParticipantID part) {
+  // TODO
+  return 1.0;
+}
 
 std::vector<int32_t> calculateAssignment(const State &s) {
   // initialize vertices
@@ -128,7 +132,6 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
 
 void assignTeamsAndStudents(State &s, StudentID initial_capacity,
                             bool fair_capacity) {
-  s.resetWithCapacity(initial_capacity);
   State s_temp(s);
   StudentID capacity;
   if (fair_capacity) {
@@ -148,6 +151,7 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
 
   bool success;
   do {
+    s.resetWithCapacity(initial_capacity);
     s_temp.resetWithCapacity(capacity);
     std::vector<int32_t> assignment = calculateAssignment(s_temp);
     success = applyAssignment(s, assignment, true, false);
