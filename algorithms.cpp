@@ -118,7 +118,8 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
   State s_temp(s);
   bool success = true;
   for (ParticipantID part = 0; part < s_temp.numParticipants(); ++part) {
-    if (((teams && s_temp.isTeam(part)) || (students && !s_temp.isTeam(part))) &&
+    if (((teams && s_temp.isTeam(part)) ||
+         (students && !s_temp.isTeam(part))) &&
         assignment[part] >= 0) {
       bool assign_success = s_temp.assignParticipant(part, assignment[part]);
       if (!assign_success) {
@@ -151,22 +152,20 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
     }
   }
   std::vector<GroupID> modified_groups;
-  std::mt19937 generator;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     if (total_size[group] > s.groupCapacity(group)) {
-      modified_groups.push_back(group);
-      std::vector<ParticipantID> &teams = teams_per_group[group];
-      std::remove_if(teams.begin(), teams.end(), [&](ParticipantID team_id) {
-        return s.teamData(team_id).size() < max_size[group];
-      });
-      assert(teams.size() > 0);
-      ParticipantID chosen_team = teams[std::uniform_int_distribution<uint32_t>(
-          0, teams.size() - 1)(generator)];
-      std::cout << "> Preassign team \"" << s.teamData(chosen_team).name
-                << "\" to group \"" << s.groupData(group).name << "\"."
-                << std::endl;
-      bool success = s.assignParticipant(chosen_team, group);
-      assert(success);
+      assert(teams_per_group[group].size() > 0);
+      for (const ParticipantID &team : teams_per_group[group]) {
+        if (s.teamData(team).size() == max_size[group]) {
+          modified_groups.push_back(group);
+          bool success = s.assignParticipant(team, group);
+          if (success) {
+            std::cout << "> Preassign team \"" << s.teamData(team).name
+                      << "\" to group \"" << s.groupData(group).name << "\"."
+                      << std::endl;
+          }
+        }
+      }
     }
   }
   return std::move(modified_groups);
@@ -184,7 +183,7 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
     }
     capacity =
         ceil(static_cast<double>(num_students - additional_students_in_teams) /
-              static_cast<double>(num_students) * initial_capacity);
+             static_cast<double>(num_students) * initial_capacity);
     std::cout << "Capacity for team assignment set to " << capacity << "."
               << std::endl;
   } else {
@@ -206,7 +205,7 @@ void assignTeamsAndStudents(State &s, StudentID initial_capacity,
                    "capacity. Assign single teams and retry."
                 << std::endl;
       std::vector<GroupID> modified_groups = preassignLargeTeams(s, assignment);
-      for (const GroupID& modified : modified_groups) {
+      for (const GroupID &modified : modified_groups) {
         reduced_capacities.at(modified)++;
       }
     }
