@@ -5,6 +5,7 @@
 #include <vector>
 
 static const double CAPACITY_BUFFER = 1.05;
+static const bool VERBOSE = false;
 
 // ####################################
 // ########     Input Data     ########

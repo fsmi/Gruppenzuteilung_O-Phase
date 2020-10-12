@@ -1,6 +1,4 @@
 #include <iostream>
-#include <random>
-
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
 
@@ -123,9 +121,11 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
         assignment[part] >= 0) {
       bool assign_success = s_temp.assignParticipant(part, assignment[part]);
       if (!assign_success) {
-        std::cerr << "WARNING: Capacity of group \""
-                  << s_temp.groupData(assignment[part]).name << "\" exceeded."
-                  << std::endl;
+        if (VERBOSE) {
+          std::cerr << "WARNING: Capacity of group \""
+                    << s_temp.groupData(assignment[part]).name << "\" exceeded."
+                    << std::endl;
+        }
         success = false;
       }
     }
@@ -159,7 +159,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
         if (s.teamData(team).size() == max_size[group]) {
           modified_groups.push_back(group);
           bool success = s.assignParticipant(team, group);
-          if (success) {
+          if (success && VERBOSE) {
             std::cout << "> Preassign team \"" << s.teamData(team).name
                       << "\" to group \"" << s.groupData(group).name << "\"."
                       << std::endl;
