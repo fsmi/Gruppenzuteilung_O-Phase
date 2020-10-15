@@ -1,0 +1,52 @@
+{
+	"groups" : [
+		{
+			"name" : "Group 1",
+			"main_group" : "Hauptgruppe",
+			"capacity" : 4,
+			"course_type" : 0,
+			"degree_type" : 0
+		}, {
+			"name" : "Mathe Master",
+			"main_group" : "Hauptgruppe",
+			"capacity" : 4,
+			"course_type" : 1,
+			"degree_type" : 1
+		}
+	],
+	"students" : [
+		{
+			"name" : "Student (Info Master)",
+			"course_type" : 0,
+			"degree_type" : 1,
+			"is_commuter" : false
+		}, {
+			"name" : "Student (Info Bachelor, Pendler)",
+			"course_type" : 0,
+			"degree_type" : 0,
+			"is_commuter" : true
+		}, {
+			"name" : "Student (Mathe Master)",
+			"course_type" : 1,
+			"degree_type" : 1,
+			"is_commuter" : false
+		}, {
+			"name" : "Student (Studiengang nicht angegeben)",
+			"course_type" : 2,
+			"degree_type" : 2,
+			"is_commuter" : false
+		}
+	],
+	"teams" : [
+		{
+			"name" : "Lerngruppe 1",
+			"members" : [0, 3]
+		}
+	],
+	"ratings" : [
+		[3, 3],
+		[4, 0],
+		[1, 4],
+		[3, 3]
+	]
+}
