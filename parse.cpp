@@ -70,6 +70,7 @@ PTree writeStudent(const Input &input, GroupID group, StudentID student) {
 
 PTree writeOutput(const State &s) {
   PTree root;
+  PTree groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     PTree group_tree;
     const GroupData &gd = s.groupData(group);
@@ -78,11 +79,14 @@ PTree writeOutput(const State &s) {
     group_tree.put<int>("course_type", static_cast<int>(gd.course_type));
     group_tree.put<int>("degree_type", static_cast<int>(gd.degree_type));
     group_tree.put<uint32_t>("size", s.groupSize(group));
+    PTree student_array;
     for (const StudentID &student : s.groupAssignmentList(group)) {
-      group_tree.push_back(
+      student_array.push_back(
           std::make_pair("", writeStudent(s.data(), group, student)));
     }
-    root.push_back(std::make_pair("", std::move(group_tree)));
+    group_tree.add_child("students", std::move(student_array));
+    groups.push_back(std::make_pair("", group_tree));
   }
+  root.add_child("groups", std::move(groups));
   return std::move(root);
 }
