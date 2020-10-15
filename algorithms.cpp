@@ -1,6 +1,6 @@
-#include <iostream>
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
+#include <iostream>
 
 #include "algorithms.h"
 
@@ -14,20 +14,34 @@ using GraphTraits = boost::graph_traits<Graph>;
 // ####################################
 
 bool combinationIsValid(const StudentData &student, const GroupData &group) {
-  return !(student.course_type != CourseType::Mathe &&
-           group.course_type == CourseType::Mathe) &&
-         !(student.degree_type != DegreeType::Master &&
-           group.degree_type == DegreeType::Master);
+  bool course_is_valid = (group.course_type == CourseType::Any) ||
+                         (student.course_type == group.course_type);
+  bool degree_is_valid = (group.degree_type == DegreeType::Any) ||
+                         (student.degree_type == group.degree_type);
+  return course_is_valid && degree_is_valid;
 }
 
 bool combinationIsValid(const TeamData &team, const GroupData &group,
                         const std::vector<StudentData> &students) {
-  // TODO
-  return true;
+  bool valid = true;
+  for (StudentID student : team.members) {
+    valid &= combinationIsValid(students[student], group);
+  }
+  return valid;
 }
 
 double getFactor(const State &s, ParticipantID part) {
-  // TODO
+  if (s.isTeam(part)) {
+    for (StudentID member : s.teamData(part).members) {
+      if (s.data().students[member].is_commuter) {
+        return 2.0;
+      }
+    }
+  } else {
+    if (s.studentData(part).is_commuter) {
+      return 2.0;
+    }
+  }
   return 1.0;
 }
 
