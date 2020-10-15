@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(OPhaseGroupAssignment)
 
-add_executable(Main main.cpp definitions.cpp algorithms.cpp)
+add_executable(Main main.cpp definitions.cpp algorithms.cpp parse.cpp)
 add_executable(BasicTest basic_test definitions.cpp algorithms.cpp)
 add_executable(RandomizedTest randomized_test definitions.cpp algorithms.cpp)
 

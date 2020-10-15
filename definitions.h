@@ -31,15 +31,15 @@ using StudentID = uint32_t;
 using ParticipantID = uint32_t;
 
 enum class CourseType {
-  Info,
-  Mathe,
-  Any,
+  Info = 0,
+  Mathe = 1,
+  Any = 2,
 };
 
 enum class DegreeType {
-  Bachelor,
-  Master,
-  Any,
+  Bachelor = 0,
+  Master = 1,
+  Any = 2,
 };
 
 struct GroupData {
