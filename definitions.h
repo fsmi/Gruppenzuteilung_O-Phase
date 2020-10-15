@@ -12,10 +12,9 @@ static const bool VERBOSE = false;
 // ########     Input Data     ########
 // ####################################
 
-class Rating {
-  uint32_t _index;
+struct Rating {
+  uint32_t index;
 
-public:
   Rating(uint32_t index);
 
   uint32_t getValue() const;

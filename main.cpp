@@ -7,20 +7,26 @@
 #include "parse.h"
 
 int main(int argc, const char *argv[]) {
-  if (argc != 2) {
-    std::cout << "Usage: ./Main <input>" << std::endl;
+  if (argc != 3) {
+    std::cout << "Usage: ./Main <input> <output>" << std::endl;
     std::exit(-1);
   }
-  std::ifstream file(argv[1]);
-  if (!file) {
-    std::cerr << "Error opening file" << std::endl;
+  std::ifstream in_file(argv[1]);
+  if (!in_file) {
+    std::cerr << "Error opening input file" << std::endl;
+    std::exit(-1);
+  }
+  std::ofstream out_file(argv[2]);
+  if (!out_file) {
+    std::cerr << "Error opening output file" << std::endl;
     std::exit(-1);
   }
   PTree pt;
-  boost::property_tree::json_parser::read_json(file, pt);
+  boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
   std::cout << "Input file successfully parsed." << std::endl;
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
-  printCurrentAssignment(state);
+  PTree result = writeOutput(state);
+  boost::property_tree::json_parser::write_json(out_file, result);
 }

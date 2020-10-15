@@ -15,3 +15,5 @@ TeamData parseTeam(const PTree &tree);
 Rating parseRating(const PTree &tree);
 
 Input parseInput(const PTree &tree);
+
+PTree writeOutput(const State &s);

@@ -10,18 +10,18 @@ static const char *RATING_NAME_TABLE[NUM_RATINGS] = {"--", "-", "O", "+", "++"};
 // ########     Input Data     ########
 // ####################################
 
-Rating::Rating(uint32_t index) : _index(index) { assert(index < NUM_RATINGS); }
+Rating::Rating(uint32_t index) : index(index) { assert(index < NUM_RATINGS); }
 
-uint32_t Rating::getValue() const { return RATING_VAL_TABLE[_index]; }
+uint32_t Rating::getValue() const { return RATING_VAL_TABLE[index]; }
 
-const char *Rating::getName() const { return RATING_NAME_TABLE[_index]; }
+const char *Rating::getName() const { return RATING_NAME_TABLE[index]; }
 
 bool Rating::operator==(const Rating &other) const {
-  return _index == other._index;
+  return index == other.index;
 }
 
 bool Rating::operator!=(const Rating &other) const {
-  return _index != other._index;
+  return index != other.index;
 }
 
 GroupData::GroupData(std::string name, std::string main_group,
