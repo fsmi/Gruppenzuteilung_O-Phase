@@ -11,8 +11,8 @@ GroupData createGroup(int &counter) {
   bool is_master = random(GENERATOR) == 0;
   std::string name("Group ");
   name += std::to_string(++counter);
-  return GroupData(name, "Gruppe X", 18, is_math ? CourseType::Mathe : CourseType::Info,
-                     is_master ? DegreeType::Master : DegreeType::Bachelor);
+  return GroupData(name, "Gruppe X", 18, is_math ? CourseType::Mathe : CourseType::Any,
+                     is_master ? DegreeType::Master : DegreeType::Any);
 }
 
 StudentData createErsti(int &counter) {
