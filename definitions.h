@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+static const uint32_t MIN_GROUP_SIZE = 13;
 static const double CAPACITY_BUFFER = 1.05;
 static const bool VERBOSE = false;
 
