@@ -1,13 +1,13 @@
 {
 	"groups" : [
 		{
-			"name" : "Group 1",
+			"name" : "Gruppe (beliebige Teilnehmer)",
 			"main_group" : "Hauptgruppe",
 			"capacity" : 4,
-			"course_type" : 0,
-			"degree_type" : 0
+			"course_type" : 2,
+			"degree_type" : 2
 		}, {
-			"name" : "Mathe Master",
+			"name" : "Gruppe (Mathe Master)",
 			"main_group" : "Hauptgruppe",
 			"capacity" : 4,
 			"course_type" : 1,
