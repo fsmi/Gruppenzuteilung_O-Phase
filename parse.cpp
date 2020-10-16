@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 
 #include "parse.h"
@@ -68,7 +69,7 @@ PTree writeStudent(const Input &input, GroupID group, StudentID student) {
   return std::move(tree);
 }
 
-PTree writeOutput(const State &s) {
+PTree writeOutputToTree(const State &s) {
   PTree root;
   PTree groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
@@ -89,4 +90,41 @@ PTree writeOutput(const State &s) {
   }
   root.add_child("groups", std::move(groups));
   return std::move(root);
+}
+
+void writeOutputToFiles(const State &s, std::string path) {
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    assert(group < s.numGroups());
+    std::string group_path = path + "/" + s.groupData(group).name;
+    std::ofstream file(group_path);
+    for (const StudentID &student : s.groupAssignmentList(group)) {
+      StudentData data = s.data().students[student];
+      std::string course;
+      switch (data.course_type) {
+      case CourseType::Info:
+        course = "Info";
+        break;
+      case CourseType::Mathe:
+        course = "Mathe";
+        break;
+      case CourseType::Any:
+        course = "None";
+        break;
+      }
+      std::string degree;
+      switch (data.degree_type) {
+      case DegreeType::Bachelor:
+        degree = "Bachelor";
+        break;
+      case DegreeType::Master:
+        degree = "Master";
+        break;
+      case DegreeType::Any:
+        degree = "None";
+        break;
+      }
+      file << data.name << "," << course << "," << degree << ","
+           << data.is_commuter << std::endl;
+    }
+  }
 }

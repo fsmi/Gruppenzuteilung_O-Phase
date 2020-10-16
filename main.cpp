@@ -7,8 +7,8 @@
 #include "parse.h"
 
 int main(int argc, const char *argv[]) {
-  if (argc != 3) {
-    std::cout << "Usage: ./Main <input> <output>" << std::endl;
+  if (argc != 3 && argc != 4) {
+    std::cout << "Usage: ./Main <input> <output> [<out_path>]" << std::endl;
     std::exit(-1);
   }
   std::ifstream in_file(argv[1]);
@@ -27,6 +27,9 @@ int main(int argc, const char *argv[]) {
   std::cout << "Input file successfully parsed." << std::endl;
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
-  PTree result = writeOutput(state);
+  PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
+  if (argc == 4) {
+    writeOutputToFiles(state, argv[3]);
+  }
 }

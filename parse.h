@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "boost/property_tree/ptree.hpp"
 
 #include "definitions.h"
@@ -16,4 +18,6 @@ Rating parseRating(const PTree &tree);
 
 Input parseInput(const PTree &tree);
 
-PTree writeOutput(const State &s);
+PTree writeOutputToTree(const State &s);
+
+void writeOutputToFiles(const State &s, std::string path);
