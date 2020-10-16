@@ -44,13 +44,11 @@ enum class DegreeType {
 
 struct GroupData {
   std::string name;
-  std::string main_group;
   StudentID capacity;
   CourseType course_type;
   DegreeType degree_type;
 
-  GroupData(std::string name, std::string main_group, StudentID capacity,
-            CourseType ct, DegreeType dt);
+  GroupData(std::string name, StudentID capacity, CourseType ct, DegreeType dt);
 };
 
 struct StudentData {

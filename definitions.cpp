@@ -24,10 +24,9 @@ bool Rating::operator!=(const Rating &other) const {
   return index != other.index;
 }
 
-GroupData::GroupData(std::string name, std::string main_group,
-                     StudentID capacity, CourseType ct, DegreeType dt)
-    : name(name), main_group(main_group), capacity(capacity), course_type(ct),
-      degree_type(dt) {}
+GroupData::GroupData(std::string name, StudentID capacity, CourseType ct,
+                     DegreeType dt)
+    : name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
 
 StudentData::StudentData(std::string name, CourseType ct, DegreeType dt,
                          bool is_commuter)

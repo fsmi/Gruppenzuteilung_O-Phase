@@ -304,7 +304,7 @@ void printCurrentAssignment(const State &s) {
   std::cout << std::endl;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const GroupData &gd = s.groupData(group);
-    std::cout << gd.name << " (" << gd.main_group << "):" << std::endl;
+    std::cout << gd.name << std::endl;
     for (const StudentID &student : s.groupAssignmentList(group)) {
       const std::string &rating = s.data().ratings[student][group].getName();
       std::cout << "  - " << s.data().students[student].name << " [" << rating

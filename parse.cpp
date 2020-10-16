@@ -14,13 +14,12 @@ std::vector<T> parseList(const PTree &tree, F fn) {
 
 GroupData parseGroup(const PTree &tree) {
   std::string name = tree.get<std::string>("name");
-  std::string main_group = tree.get<std::string>("main_group");
   StudentID capacity = tree.get<StudentID>("capacity");
   CourseType course_type =
       static_cast<CourseType>(tree.get<int>("course_type"));
   DegreeType degree_type =
       static_cast<DegreeType>(tree.get<int>("degree_type"));
-  return GroupData(name, main_group, capacity, course_type, degree_type);
+  return GroupData(name, capacity, course_type, degree_type);
 }
 
 StudentData parseStudent(const PTree &tree) {
@@ -75,8 +74,6 @@ PTree writeOutputToTree(const State &s) {
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     PTree group_tree;
     const GroupData &gd = s.groupData(group);
-    group_tree.put<std::string>("name", gd.name);
-    group_tree.put<std::string>("main_group", gd.main_group);
     group_tree.put<int>("course_type", static_cast<int>(gd.course_type));
     group_tree.put<int>("degree_type", static_cast<int>(gd.degree_type));
     group_tree.put<uint32_t>("size", s.groupSize(group));
