@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
+set(CMAKE_CXX_STANDARD 17)
 project(OPhaseGroupAssignment)
 
-add_executable(Main main.cpp definitions.cpp algorithms.cpp parse.cpp)
 add_executable(BasicTest basic_test definitions.cpp algorithms.cpp)
+add_executable(Main main.cpp definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp)
 add_executable(RandomizedTest randomized_test definitions.cpp algorithms.cpp)
 
 execute_process(COMMAND cmake -P ${CMAKE_CURRENT_SOURCE_DIR}/download_boost.cmake)

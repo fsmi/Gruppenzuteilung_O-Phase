@@ -96,7 +96,8 @@ class State {
   std::reference_wrapper<const Input> _data;
   std::vector<StudentID> _group_capacities;
   std::vector<bool> _group_enabled;
-  std::vector<std::vector<StudentID>> _group_assignments;
+  std::vector<std::vector<std::pair<StudentID, ParticipantID>>>
+      _group_assignments;
   std::vector<uint32_t> _group_weights;
   std::vector<Participant> _participants;
 
@@ -117,7 +118,8 @@ public:
 
   bool groupIsEnabled(GroupID id) const;
 
-  const std::vector<StudentID> &groupAssignmentList(GroupID id) const;
+  const std::vector<std::pair<StudentID, ParticipantID>> &
+  groupAssignmentList(GroupID id) const;
 
   StudentID groupSize(GroupID id) const;
 
@@ -140,6 +142,8 @@ public:
   void disableGroup(GroupID id);
 
   bool assignParticipant(ParticipantID participant, GroupID target);
+
+  void unassignParticipant(ParticipantID participant, GroupID group);
 
   // groups are still disabled
   void resetWithCapacity(StudentID capacity);

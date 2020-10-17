@@ -299,10 +299,10 @@ void printCurrentAssignment(const State &s) {
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const GroupData &gd = s.groupData(group);
     std::cout << gd.name << std::endl;
-    for (const StudentID &student : s.groupAssignmentList(group)) {
-      const std::string &rating = s.data().ratings[student][group].getName();
-      std::cout << "  - " << s.data().students[student].name << " [" << rating
-                << "]" << std::endl;
+    for (const auto &pair : s.groupAssignmentList(group)) {
+      const std::string &rating = s.data().ratings[pair.first][group].getName();
+      std::cout << "  - " << s.data().students[pair.first].name << " ["
+                << rating << "]" << std::endl;
     }
     std::cout << std::endl;
   }
