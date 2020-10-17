@@ -90,38 +90,45 @@ PTree writeOutputToTree(const State &s) {
 }
 
 void writeOutputToFiles(const State &s, std::string path) {
+  std::string removed_path = path + "/RemovedGroups";
+  std::ofstream removed(removed_path);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     assert(group < s.numGroups());
     std::string group_path = path + "/" + s.groupData(group).name;
-    std::ofstream file(group_path);
-    for (const StudentID &student : s.groupAssignmentList(group)) {
-      StudentData data = s.data().students[student];
-      std::string course;
-      switch (data.course_type) {
-      case CourseType::Info:
-        course = "Info";
-        break;
-      case CourseType::Mathe:
-        course = "Mathe";
-        break;
-      case CourseType::Any:
-        course = "None";
-        break;
+    if (s.groupAssignmentList(group).empty()) {
+      removed << s.groupData(group).name << std::endl;
+    } else {
+      std::ofstream file(group_path);
+      for (const StudentID &student : s.groupAssignmentList(group)) {
+        StudentData data = s.data().students[student];
+        const std::string &rating = s.data().ratings[student][group].getName();
+        std::string course;
+        switch (data.course_type) {
+        case CourseType::Info:
+          course = "Info";
+          break;
+        case CourseType::Mathe:
+          course = "Mathe";
+          break;
+        case CourseType::Any:
+          course = "None";
+          break;
+        }
+        std::string degree;
+        switch (data.degree_type) {
+        case DegreeType::Bachelor:
+          degree = "Bachelor";
+          break;
+        case DegreeType::Master:
+          degree = "Master";
+          break;
+        case DegreeType::Any:
+          degree = "None";
+          break;
+        }
+        file << data.name << "," << course << "," << degree << ","
+             << data.is_commuter << " [" << rating << "]" << std::endl;
       }
-      std::string degree;
-      switch (data.degree_type) {
-      case DegreeType::Bachelor:
-        degree = "Bachelor";
-        break;
-      case DegreeType::Master:
-        degree = "Master";
-        break;
-      case DegreeType::Any:
-        degree = "None";
-        break;
-      }
-      file << data.name << "," << course << "," << degree << ","
-           << data.is_commuter << std::endl;
     }
   }
 }
