@@ -253,19 +253,13 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
     }
 
     if (current_min < min_capacity) {
-      allowed_min = std::max(allowed_min, current_min);
-      if (min_capacity - allowed_min > 8) {
-        allowed_min += 3;
-      } else if (min_capacity - allowed_min > 4) {
-        allowed_min += 2;
-      } else {
-        allowed_min += 1;
-      }
+      allowed_min = std::max(allowed_min, current_min) + 1;
       std::cout << "Disabling groups with size smaller then " << allowed_min
                 << "." << std::endl;
       std::vector<GroupID> groups_to_remove;
       for (GroupID group = 0; group < s.numGroups(); ++group) {
-        if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min) {
+        if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min &&
+            s.groupData(group).degree_type != DegreeType::Master) {
           groups_to_remove.push_back(group);
         }
       }

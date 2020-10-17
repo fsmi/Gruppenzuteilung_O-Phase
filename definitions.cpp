@@ -2,8 +2,7 @@
 
 #include <assert.h>
 
-static const size_t NUM_RATINGS = 5;
-static uint32_t RATING_VAL_TABLE[NUM_RATINGS] = {100, 120, 150, 180, 200};
+static uint32_t RATING_VAL_TABLE[NUM_RATINGS] = {100, 130, 180, 195, 200};
 static const char *RATING_NAME_TABLE[NUM_RATINGS] = {"--", "-", "O", "+", "++"};
 
 // ####################################
@@ -229,7 +228,7 @@ void State::reset() {
   }
 }
 
-void State::decreaseCapacity(GroupID id, StudentID val) {
+void State::decreaseCapacity(GroupID id, int32_t val) {
   assert(id < data().groups.size());
   if (_group_capacities[id] <= val) {
     _group_capacities[id] = 0;

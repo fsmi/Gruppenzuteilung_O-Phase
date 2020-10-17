@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-static const uint32_t MIN_GROUP_SIZE = 13;
+static const size_t NUM_RATINGS = 5;
+static const uint32_t MIN_GROUP_SIZE = 12;
+static const uint32_t MAX_GROUP_SIZE = 16;
 static const double CAPACITY_BUFFER = 1.05;
 static const bool VERBOSE = false;
 
@@ -144,5 +146,5 @@ public:
 
   void reset();
 
-  void decreaseCapacity(GroupID id, StudentID val);
+  void decreaseCapacity(GroupID id, int32_t val);
 };

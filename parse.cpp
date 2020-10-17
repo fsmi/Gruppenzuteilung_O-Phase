@@ -14,7 +14,8 @@ std::vector<T> parseList(const PTree &tree, F fn) {
 
 GroupData parseGroup(const PTree &tree) {
   std::string name = tree.get<std::string>("name");
-  StudentID capacity = tree.get<StudentID>("capacity");
+  StudentID capacity =
+      std::min(tree.get<StudentID>("capacity"), StudentID(MAX_GROUP_SIZE));
   CourseType course_type =
       static_cast<CourseType>(tree.get<int>("course_type"));
   DegreeType degree_type =
