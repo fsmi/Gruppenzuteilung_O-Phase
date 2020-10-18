@@ -52,17 +52,16 @@ std::vector<GroupID> groupsByNumCourse(const State &s, CourseType course,
 }
 
 bool moveFromGroup(State &s, CourseType course, GroupID group, StudentID min,
-                   const std::vector<StudentID> &num_per_group) {
+                   const std::vector<StudentID> &num_per_group,
+                   const std::vector<bool> &has_team) {
   const auto &assignment = s.groupAssignmentList(group);
-  auto result = std::find_if(assignment.cbegin(), assignment.cend(),
+  ParticipantID part =
+      std::find_if(assignment.cbegin(), assignment.cend(),
                    [&](const auto &pair) {
                      return s.data().students[pair.first].course_type == course;
-                   });
-  assert(result != assignment.cend());
-  ParticipantID part = result->second;
-  if (s.isTeam(part)) {
-    return false;
-  }
+                   })
+          ->second;
+  assert(!s.isTeam(part));
   s.unassignParticipant(part, group);
 
   // perform a BFS for the best possible move
@@ -83,7 +82,6 @@ bool moveFromGroup(State &s, CourseType course, GroupID group, StudentID min,
       if (s.groupCapacity(step.target) > 0) {
         if (step.path_rating > best.path_rating) {
           best = step;
-          // std::cout << "best=" << best.path_rating << std::endl;
         }
       } else {
         size_t index = search_tree.size();
@@ -110,8 +108,12 @@ bool moveFromGroup(State &s, CourseType course, GroupID group, StudentID min,
       for (const ParticipantID &part : lvl.participants) {
         const std::vector<Rating> &rating = s.rating(part);
         for (GroupID i = 0; i < s.numGroups(); ++i) {
-          if (s.groupIsEnabled(i) && (num_per_group[i] >= min - 1) &&
-              group_allowed[i] && (rating[i].index == lvl.level)) {
+          bool valid_target =
+              s.groupIsEnabled(i) &&
+              ((num_per_group[i] >= min - 1) || has_team[i] ||
+               num_per_group[i] > num_per_group[parent_node.target]);
+          if (valid_target && group_allowed[i] &&
+              (rating[i].index == lvl.level)) {
             MoveStep step(
                 lvl.parent,
                 parent_node.path_rating +
@@ -151,17 +153,15 @@ bool moveFromGroup(State &s, CourseType course, GroupID group, StudentID min,
             << s.groupData(current.target).name
             << "\" (diff=" << best.path_rating << ")." << std::endl;
   s.assignParticipant(current.participant, current.target);
-  std::cout << "final target=" << current.target << std::endl;
   return true;
 }
 
 void assertMinNumCourse(State &s, CourseType course, StudentID min) {
   std::vector<GroupID> groups = groupsByNumCourse(s, course, min);
   for (GroupID group : groups) {
-    std::vector<StudentID> num_per_group;
-    do {
-      num_per_group.clear();
-      num_per_group.resize(s.numGroups(), 0);
+    while (true) {
+      std::vector<StudentID> num_per_group(s.numGroups(), 0);
+      std::vector<bool> has_team(s.numGroups(), false);
       for (GroupID group = 0; group < s.numGroups(); ++group) {
         const auto &list = s.groupAssignmentList(group);
         for (const auto &pair : list) {
@@ -169,15 +169,29 @@ void assertMinNumCourse(State &s, CourseType course, StudentID min) {
           if (data.course_type == course) {
             num_per_group[group]++;
           }
+          if (s.isTeam(pair.second)) {
+            has_team[group] = true;
+          }
         }
       }
-      if (num_per_group[group] == 0) {
+      if (num_per_group[group] == 0 || num_per_group[group] >= min ||
+          has_team[group]) {
         break;
       }
-      if (!moveFromGroup(s, course, group, min, num_per_group)) {
-        std::cout << "WARNING: Unable to move team." << std::endl;
-        break;
+      moveFromGroup(s, course, group, min, num_per_group, has_team);
+    }
+  }
+  std::vector<StudentID> num_per_group(s.numGroups(), 0);
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    const auto &list = s.groupAssignmentList(group);
+    for (const auto &pair : list) {
+      StudentData data = s.data().students[pair.first];
+      if (data.course_type == course) {
+        num_per_group[group]++;
       }
-    } while (num_per_group[group] > 0);
+    }
+  }
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    std::cout << s.groupData(group).name << ": " << num_per_group[group] << std::endl;
   }
 }

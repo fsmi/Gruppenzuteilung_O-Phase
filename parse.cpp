@@ -79,9 +79,9 @@ PTree writeOutputToTree(const State &s) {
     group_tree.put<int>("degree_type", static_cast<int>(gd.degree_type));
     group_tree.put<uint32_t>("size", s.groupSize(group));
     PTree student_array;
-    for (const StudentID &student : s.groupAssignmentList(group)) {
+    for (const auto &pair : s.groupAssignmentList(group)) {
       student_array.push_back(
-          std::make_pair("", writeStudent(s.data(), group, student)));
+          std::make_pair("", writeStudent(s.data(), group, pair.first)));
     }
     group_tree.add_child("students", std::move(student_array));
     groups.push_back(std::make_pair("", group_tree));
@@ -100,9 +100,9 @@ void writeOutputToFiles(const State &s, std::string path) {
       removed << s.groupData(group).name << std::endl;
     } else {
       std::ofstream file(group_path);
-      for (const StudentID &student : s.groupAssignmentList(group)) {
-        StudentData data = s.data().students[student];
-        const std::string &rating = s.data().ratings[student][group].getName();
+      for (const auto &pair : s.groupAssignmentList(group)) {
+        StudentData data = s.data().students[pair.first];
+        const std::string &rating = s.rating(pair.second)[group].getName();
         std::string course;
         switch (data.course_type) {
         case CourseType::Info:
