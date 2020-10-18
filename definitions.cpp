@@ -227,7 +227,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
         assign_list.begin(), assign_list.end(),
         [&](const auto &pair) { return pair.second == participant; });
     if (to_remove != assign_list.end()) {
-      _group_capacities[group]--;
+      _group_capacities[group]++;
       _group_weights[group] += rating(participant)[group].getValue();
       assign_list.erase(to_remove);
     } else {

@@ -127,14 +127,15 @@ std::optional<MoveSequence> moveFromGroup(const State &s, CourseType course,
       }
     } else {
       SearchLevel lvl = std::get<SearchLevel>(next);
+      MoveStep parent_node = search_tree[lvl.parent];
       std::vector<bool> group_allowed(s.numGroups(), true);
-      size_t parent = lvl.parent;
-      MoveStep parent_node = search_tree[parent];
+      size_t current = lvl.parent;
+      group_allowed[search_tree[current].target] = false;
       do {
-        MoveStep node = search_tree[parent];
-        parent = node.parent;
-        group_allowed[node.target] = false;
-      } while (search_tree[parent].parent != parent);
+        current = search_tree[current].parent;
+        group_allowed[search_tree[current].target] = false;
+      } while (search_tree[current].parent != current);
+      assert(!group_allowed[group]);
       std::vector<ParticipantID> participants;
       for (const auto &pair : s.groupAssignmentList(parent_node.target)) {
         if (!s.isTeam(pair.second) &&
