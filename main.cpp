@@ -28,7 +28,14 @@ int main(int argc, const char *argv[]) {
   std::cout << "Input file successfully parsed." << std::endl;
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
-  assertMinNumCourse(state, CourseType::Mathe, 5);
+  for (GroupID group = 0; group < state.numGroups(); ++group) {
+    state.decreaseCapacity(group, -1);
+  }
+  auto is_math_and_no_ma = [](const StudentData &data) {
+    return data.course_type == CourseType::Mathe &&
+           data.degree_type != DegreeType::Master;
+  };
+  assertMininumNumber(state, 5, is_math_and_no_ma);
 
   std::vector<int> num_ratings(NUM_RATINGS, 0);
   for (ParticipantID part = 0; part < state.numParticipants(); ++part) {

@@ -54,8 +54,9 @@ void MoveSequence::apply(State &s, bool print_moves) const {
   }
 }
 
-std::vector<GroupID> groupsByNumCourse(const State &s, CourseType course,
-                                       StudentID min_members) {
+std::vector<GroupID>
+groupsByNumber(const State &s, StudentID min_members,
+               std::function<bool(const StudentData &)> predicate) {
   std::vector<std::pair<GroupID, StudentID>> groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const auto &list = s.groupAssignmentList(group);
@@ -63,7 +64,7 @@ std::vector<GroupID> groupsByNumCourse(const State &s, CourseType course,
     if (!list.empty() && s.groupIsEnabled(group)) {
       for (const auto &pair : list) {
         StudentData data = s.data().students[pair.first];
-        if (data.course_type == course) {
+        if (predicate(data)) {
           num++;
         }
       }
@@ -82,13 +83,15 @@ std::vector<GroupID> groupsByNumCourse(const State &s, CourseType course,
   return std::move(result);
 }
 
-std::vector<StudentID> numPerGroup(const State &s, CourseType course) {
+std::vector<StudentID>
+numPerGroup(const State &s,
+            std::function<bool(const StudentData &)> predicate) {
   std::vector<StudentID> num_per_group(s.numGroups(), 0);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const auto &list = s.groupAssignmentList(group);
     for (const auto &pair : list) {
       StudentData data = s.data().students[pair.first];
-      if (data.course_type == course) {
+      if (predicate(data)) {
         num_per_group[group]++;
       }
     }
@@ -97,8 +100,10 @@ std::vector<StudentID> numPerGroup(const State &s, CourseType course) {
 }
 
 // perform a BFS for the best possible move
-std::optional<MoveSequence> moveFromGroup(const State &s, CourseType course,
-                                          GroupID group) {
+std::optional<MoveSequence>
+moveFromGroup(const State &s, GroupID group,
+              std::function<bool(const StudentData &)> predicate,
+              int32_t best_expected) {
   std::vector<MoveStep> search_tree;
   search_tree.emplace_back(0, 0, 0, group);
   std::deque<std::variant<MoveStep, SearchLevel>> queue;
@@ -106,11 +111,12 @@ std::optional<MoveSequence> moveFromGroup(const State &s, CourseType course,
 
   int64_t counter = 0;
   size_t max_idx = 0;
-  while (!queue.empty() &&
-         (max_idx == 0 ||
-          (-static_cast<int64_t>(search_tree[max_idx].path_rating) *
-               STEPS_PER_VALUE >
-           counter))) {
+  while (
+      !queue.empty() &&
+      (max_idx == 0 || (-static_cast<int64_t>(search_tree[max_idx].path_rating -
+                                              best_expected) *
+                            STEPS_PER_VALUE >
+                        counter))) {
     std::variant<MoveStep, SearchLevel> next = queue.front();
     queue.pop_front();
     if (std::holds_alternative<MoveStep>(next)) {
@@ -139,7 +145,7 @@ std::optional<MoveSequence> moveFromGroup(const State &s, CourseType course,
       std::vector<ParticipantID> participants;
       for (const auto &pair : s.groupAssignmentList(parent_node.target)) {
         if (!s.isTeam(pair.second) &&
-            (s.studentData(pair.second).course_type != course)) {
+            (!predicate(s.studentData(pair.second)))) {
           const std::vector<Rating> &rating = s.rating(pair.second);
           for (GroupID i = 0; i < s.numGroups(); ++i) {
             if (s.groupIsEnabled(i) && group_allowed[i] &&
@@ -176,15 +182,15 @@ std::optional<MoveSequence> moveFromGroup(const State &s, CourseType course,
 }
 
 std::optional<std::pair<std::vector<MoveSequence>, int32_t>>
-moveAllFromGroup(const State &s, CourseType course, GroupID group,
-                 StudentID number) {
+moveAllFromGroup(const State &s, GroupID group, StudentID number,
+                 std::function<bool(const StudentData &)> predicate) {
   assert(s.groupSize(group) >= number);
   int32_t total_rating = 0;
   std::vector<MoveSequence> result;
   State current_state(s);
   for (StudentID i = 0; i < number; ++i) {
     std::optional<MoveSequence> seq =
-        moveFromGroup(current_state, course, group);
+        moveFromGroup(current_state, group, predicate);
     if (!seq.has_value()) {
       return std::optional<std::pair<std::vector<MoveSequence>, int32_t>>();
     }
@@ -195,10 +201,10 @@ moveAllFromGroup(const State &s, CourseType course, GroupID group,
   return std::make_optional(std::make_pair(std::move(result), total_rating));
 }
 
-void moveCourseFromGroup(State &s, CourseType course, GroupID group,
-                         StudentID min, bool print_moves) {
+void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
+                      std::function<bool(const StudentData &)> predicate) {
   while (true) {
-    const std::vector<StudentID> num_per_group = numPerGroup(s, course);
+    const std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
     if (num_per_group[group] == 0 || num_per_group[group] >= min) {
       break;
     }
@@ -206,8 +212,7 @@ void moveCourseFromGroup(State &s, CourseType course, GroupID group,
     ParticipantID part =
         std::find_if(assignment.cbegin(), assignment.cend(),
                      [&](const auto &pair) {
-                       return s.data().students[pair.first].course_type ==
-                              course;
+                       return predicate(s.data().students[pair.first]);
                      })
             ->second;
     s.unassignParticipant(part, group);
@@ -232,7 +237,8 @@ void moveCourseFromGroup(State &s, CourseType course, GroupID group,
         } else {
           g_num_remove = num_to_remove - s.groupCapacity(g_id);
         }
-        auto result = moveAllFromGroup(s, course, g_id, g_num_remove);
+        // std::cout << "g_num_remove=" << g_num_remove << std::endl;
+        auto result = moveAllFromGroup(s, g_id, g_num_remove, predicate);
         if (result.has_value()) {
           int32_t curr_rating =
               result->second +
@@ -265,13 +271,14 @@ void moveCourseFromGroup(State &s, CourseType course, GroupID group,
   }
 }
 
-void assertMinNumCourse(State &s, CourseType course, StudentID min) {
-  std::vector<GroupID> groups = groupsByNumCourse(s, course, min);
+void assertMininumNumber(State &s, StudentID min,
+                         std::function<bool(const StudentData &)> predicate) {
+  std::vector<GroupID> groups = groupsByNumber(s, min, predicate);
   while (!groups.empty()) {
-    moveCourseFromGroup(s, course, groups[0], min, true);
-    groups = groupsByNumCourse(s, course, min);
+    moveAllFromGroup(s, groups[0], min, true, predicate);
+    groups = groupsByNumber(s, min, predicate);
   }
-  std::vector<StudentID> num_per_group = numPerGroup(s, course);
+  std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     std::cout << s.groupData(group).name << ": " << num_per_group[group]
               << std::endl;

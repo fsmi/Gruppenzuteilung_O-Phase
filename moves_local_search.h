@@ -1,6 +1,7 @@
 #pragma once
 
 #include <assert.h>
+#include <functional>
 
 #include "definitions.h"
 
@@ -43,6 +44,16 @@ public:
 };
 
 std::vector<GroupID>
-groupsByNumCourse(const State &s, CourseType course, StudentID min_members);
+groupsByNumber(const State &s, StudentID min_members,
+               std::function<bool(const StudentData &)> predicate);
 
-void assertMinNumCourse(State &s, CourseType course, StudentID min);
+std::optional<MoveSequence>
+moveFromGroup(const State &s, GroupID group,
+              std::function<bool(const StudentData &)> predicate,
+              int32_t best_expected = 0);
+
+void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
+                      std::function<bool(const StudentData &)> predicate);
+
+void assertMininumNumber(State &s, StudentID min,
+                         std::function<bool(const StudentData &)> predicate);
