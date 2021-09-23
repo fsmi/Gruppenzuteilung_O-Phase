@@ -6,11 +6,12 @@
 #include <optional>
 #include <variant>
 
+#include <boost/algorithm/string.hpp>
+
 const static int64_t STEPS_PER_VALUE = 1000;
 
 void printMove(const State &s, ParticipantID part, GroupID from, GroupID to) {
-  std::string p_name =
-      s.isTeam(part) ? s.teamData(part).name : s.studentData(part).name;
+  const std::string p_name = std::string("****");
   std::cout << "move \"" << p_name << "\" from group \""
             << s.groupData(from).name << "\" to group \""
             << s.groupData(to).name << "\", ";

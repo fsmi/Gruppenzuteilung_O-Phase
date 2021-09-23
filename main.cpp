@@ -28,6 +28,24 @@ int main(int argc, const char *argv[]) {
   std::cout << "Input file successfully parsed." << std::endl;
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
+
+  std::vector<int> num_ratings(NUM_RATINGS, 0);
+  for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
+    Rating r = state.rating(part).at(state.assignment(part));
+    int num = 1;
+    if (state.isTeam(part)) {
+      num = state.teamData(part).size();
+    }
+    num_ratings.at(r.index) += num;
+  }
+  for (uint32_t i = 0; i < NUM_RATINGS; ++i) {
+    std::cout << "Number of " << Rating(i).getName() << ": "
+              << num_ratings.at(i) << std::endl;
+  }
+
+  std::string _in;
+  std::cin >> _in;
+
   for (GroupID group = 0; group < state.numGroups(); ++group) {
     state.decreaseCapacity(group, -1);
   }
@@ -37,7 +55,7 @@ int main(int argc, const char *argv[]) {
   };
   assertMininumNumber(state, 5, is_math_and_no_ma);
 
-  std::vector<int> num_ratings(NUM_RATINGS, 0);
+  num_ratings = std::vector<int>(NUM_RATINGS, 0);
   for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
     Rating r = state.rating(part).at(state.assignment(part));
     int num = 1;

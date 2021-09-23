@@ -47,6 +47,9 @@ std::vector<GroupID>
 groupsByNumber(const State &s, StudentID min_members,
                std::function<bool(const StudentData &)> predicate);
 
+std::vector<StudentID>
+numPerGroup(const State &s, std::function<bool(const StudentData &)> predicate);
+
 std::optional<MoveSequence>
 moveFromGroup(const State &s, GroupID group,
               std::function<bool(const StudentData &)> predicate,
