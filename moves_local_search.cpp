@@ -202,6 +202,7 @@ moveAllFromGroup(const State &s, GroupID group, StudentID number,
   return std::make_optional(std::make_pair(std::move(result), total_rating));
 }
 
+// Reassign all students of a specified group that match a certain predicate
 void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
                       std::function<bool(const StudentData &)> predicate) {
   while (true) {
@@ -272,6 +273,9 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
   }
 }
 
+// Assert that for a specific kind of students (defined by the predicate),
+// each group contains at least the specified minimum number of such students.
+// This is done by a local search algorithm that reassigns the students
 void assertMininumNumber(State &s, StudentID min,
                          std::function<bool(const StudentData &)> predicate) {
   std::vector<GroupID> groups = groupsByNumber(s, min, predicate);

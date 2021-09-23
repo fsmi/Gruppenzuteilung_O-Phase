@@ -172,6 +172,7 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
 
 std::vector<GroupID>
 preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
+  // calculate statistics of the team
   std::vector<std::vector<ParticipantID>> teams_per_group(s.numGroups());
   std::vector<StudentID> max_size(s.numGroups(), 0);
   std::vector<StudentID> total_size(s.numGroups(), 0);
@@ -185,6 +186,9 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
       total_size[group] += team_size;
     }
   }
+
+  // We use the previously calculated team assignment:
+  // In each group, we fix the assignment of teams of maximum size.
   std::vector<GroupID> modified_groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     if (total_size[group] > s.groupCapacity(group)) {
@@ -273,6 +277,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
       }
     }
 
+    // Some groups are below the minimum capacity, therefore we disable these groups and retry.
     if (current_min < min_capacity) {
       allowed_min = std::max(allowed_min, current_min) + 1;
       std::cout << "Disabling groups with size smaller then " << allowed_min

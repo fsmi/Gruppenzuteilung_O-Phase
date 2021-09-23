@@ -92,6 +92,7 @@ struct Participant {
   Participant(uint32_t index, bool is_team);
 };
 
+// the state of the complete calculation
 class State {
   std::reference_wrapper<const Input> _data;
   std::vector<StudentID> _group_capacities;

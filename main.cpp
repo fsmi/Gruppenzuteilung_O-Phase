@@ -51,6 +51,7 @@ int main(int argc, const char *argv[]) {
   std::string _in;
   std::cin >> _in;
 
+  // the local search works much better with a slightly increased capacity
   for (GroupID group = 0; group < state.numGroups(); ++group) {
     state.decreaseCapacity(group, -1);
   }
