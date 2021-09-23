@@ -257,7 +257,7 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
     }
     assert(max_rating > std::numeric_limits<int32_t>::min());
     if (print_moves) {
-      std::cout << "Moves: ";
+      std::cout << "> Moves: ";
     }
     for (const MoveSequence &seq : max_seqs) {
       seq.apply(s, print_moves);
@@ -280,12 +280,16 @@ void assertMininumNumber(State &s, StudentID min,
                          std::function<bool(const StudentData &)> predicate) {
   std::vector<GroupID> groups = groupsByNumber(s, min, predicate);
   while (!groups.empty()) {
-    moveAllFromGroup(s, groups[0], min, true, predicate);
+    moveAllFromGroup(s, groups[0], min, VERBOSE, predicate);
     groups = groupsByNumber(s, min, predicate);
   }
-  std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
-  for (GroupID group = 0; group < s.numGroups(); ++group) {
-    std::cout << s.groupData(group).name << ": " << num_per_group[group]
-              << std::endl;
+
+  if (VERBOSE) {
+    std::cout << "Number of students with minimum per group:" << std::endl;
+    std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
+    for (GroupID group = 0; group < s.numGroups(); ++group) {
+      std::cout << s.groupData(group).name << ": " << num_per_group[group]
+                << std::endl;
+    }
   }
 }
