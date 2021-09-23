@@ -7,6 +7,23 @@
 #include "moves_local_search.h"
 #include "parse.h"
 
+// print number of ratings for different rating levels
+void printNumberPerRating(const State& state) {
+  std::vector<int> num_ratings(NUM_RATINGS, 0);
+  for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
+    Rating r = state.rating(part).at(state.assignment(part));
+    int num = 1;
+    if (state.isTeam(part)) {
+      num = state.teamData(part).size();
+    }
+    num_ratings.at(r.index) += num;
+  }
+  for (uint32_t i = 0; i < NUM_RATINGS; ++i) {
+    std::cout << "Number of " << Rating(i).getName() << ": "
+              << num_ratings.at(i) << std::endl;
+  }
+}
+
 int main(int argc, const char *argv[]) {
   if (argc != 3 && argc != 4) {
     std::cout << "Usage: ./Main <input> <output> [<out_path>]" << std::endl;
@@ -29,19 +46,7 @@ int main(int argc, const char *argv[]) {
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
 
-  std::vector<int> num_ratings(NUM_RATINGS, 0);
-  for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
-    Rating r = state.rating(part).at(state.assignment(part));
-    int num = 1;
-    if (state.isTeam(part)) {
-      num = state.teamData(part).size();
-    }
-    num_ratings.at(r.index) += num;
-  }
-  for (uint32_t i = 0; i < NUM_RATINGS; ++i) {
-    std::cout << "Number of " << Rating(i).getName() << ": "
-              << num_ratings.at(i) << std::endl;
-  }
+  printNumberPerRating(state);
 
   std::string _in;
   std::cin >> _in;
@@ -55,19 +60,8 @@ int main(int argc, const char *argv[]) {
   };
   assertMininumNumber(state, 5, is_math_and_no_ma);
 
-  num_ratings = std::vector<int>(NUM_RATINGS, 0);
-  for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
-    Rating r = state.rating(part).at(state.assignment(part));
-    int num = 1;
-    if (state.isTeam(part)) {
-      num = state.teamData(part).size();
-    }
-    num_ratings.at(r.index) += num;
-  }
-  for (uint32_t i = 0; i < NUM_RATINGS; ++i) {
-    std::cout << "Number of " << Rating(i).getName() << ": "
-              << num_ratings.at(i) << std::endl;
-  }
+  printNumberPerRating(state);
+
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
   if (argc == 4) {

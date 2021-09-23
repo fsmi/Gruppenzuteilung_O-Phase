@@ -9,9 +9,24 @@ using Graph = boost::adjacency_matrix<boost::undirectedS, boost::no_property,
                                       EdgeProperty>;
 using GraphTraits = boost::graph_traits<Graph>;
 
-// ####################################
-// ########     Algorithms     ########
-// ####################################
+
+// ##########################################
+// ########     Helper Functions     ########
+// ##########################################
+
+void printCurrentAssignment(const State &s) {
+  std::cout << std::endl;
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    const GroupData &gd = s.groupData(group);
+    std::cout << gd.name << std::endl;
+    for (const auto &pair : s.groupAssignmentList(group)) {
+      const std::string &rating = s.data().ratings[pair.first][group].getName();
+      std::cout << "  - " << s.data().students[pair.first].name << " ["
+                << rating << "]" << std::endl;
+    }
+    std::cout << std::endl;
+  }
+}
 
 bool combinationIsValid(const StudentData &student, const GroupData &group) {
   bool course_is_valid = (group.course_type == CourseType::Any) ||
@@ -30,6 +45,7 @@ bool combinationIsValid(const TeamData &team, const GroupData &group,
   return valid;
 }
 
+// returns a factor for the weights of a single participant
 double getFactor(const State &s, ParticipantID part) {
   if (s.isTeam(part)) {
     for (StudentID member : s.teamData(part).members) {
@@ -44,6 +60,10 @@ double getFactor(const State &s, ParticipantID part) {
   }
   return 1.0;
 }
+
+// ####################################
+// ########     Algorithms     ########
+// ####################################
 
 std::vector<int32_t> calculateAssignment(const State &s) {
   // initialize vertices
@@ -240,6 +260,7 @@ void assignTeamsAndStudents(State &s) {
   assert(success);
 }
 
+// Top level function that calculates an assignment with a specified minimum capacity for the groups
 void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   StudentID allowed_min = 1;
   StudentID active_capacity = s.totalActiveGroupCapacity();
@@ -287,23 +308,5 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
     } else {
       break;
     }
-  }
-}
-
-// ##########################################
-// ########     Helper Functions     ########
-// ##########################################
-
-void printCurrentAssignment(const State &s) {
-  std::cout << std::endl;
-  for (GroupID group = 0; group < s.numGroups(); ++group) {
-    const GroupData &gd = s.groupData(group);
-    std::cout << gd.name << std::endl;
-    for (const auto &pair : s.groupAssignmentList(group)) {
-      const std::string &rating = s.data().ratings[pair.first][group].getName();
-      std::cout << "  - " << s.data().students[pair.first].name << " ["
-                << rating << "]" << std::endl;
-    }
-    std::cout << std::endl;
   }
 }
