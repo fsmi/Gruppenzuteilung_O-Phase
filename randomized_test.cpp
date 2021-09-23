@@ -1,7 +1,13 @@
+/*
+A test using randomly generated data of similar size to the real data.
+*/
+
+
 #include <iostream>
 #include <random>
 
 #include "algorithms.h"
+#include "moves_local_search.h"
 
 static std::mt19937 GENERATOR;
 
@@ -11,8 +17,8 @@ GroupData createGroup(int &counter) {
   bool is_master = random(GENERATOR) == 0;
   std::string name("Group ");
   name += std::to_string(++counter);
-  return GroupData(name, "Gruppe X", 18, is_math ? CourseType::Mathe : CourseType::Any,
-                     is_master ? DegreeType::Master : DegreeType::Any);
+  return GroupData(name, 18, is_math ? CourseType::Mathe : CourseType::Any,
+                   is_master ? DegreeType::Master : DegreeType::Any);
 }
 
 StudentData createErsti(int &counter) {
@@ -36,7 +42,7 @@ int main() {
   std::uniform_int_distribution<int> random(2, 5);
   int num_groups = 70;
   int num_students = 1000;
-  int num_teams = 120;
+  int num_teams = 80;
 
   int group_counter = 0;
   while (group_counter < num_groups) {
@@ -55,7 +61,7 @@ int main() {
   for (int team_counter = 0; team_counter < num_teams; ++team_counter) {
     int team_size = random(GENERATOR);
     std::vector<StudentID> members;
-    const std::vector<Rating>& rating = input.ratings[student_id];
+    const std::vector<Rating> &rating = input.ratings[student_id];
     for (int i = 0; i < team_size; ++i) {
       input.ratings[student_id] = rating;
       members.push_back(student_id++);
@@ -66,6 +72,10 @@ int main() {
   }
 
   State s(input);
-  assignWithMinimumNumberPerGroup(s, 13);
-  // printCurrentAssignment(s);
+  assignWithMinimumNumberPerGroup(s, 5);
+  auto is_math_and_no_ma = [](const StudentData &data) {
+    return data.course_type == CourseType::Mathe &&
+           data.degree_type != DegreeType::Master;
+  };
+  assertMininumNumber(s, 4, is_math_and_no_ma);
 }
