@@ -10,7 +10,7 @@
 
 const static int64_t STEPS_PER_VALUE = 1000;
 
-void printMove(const State &s, ParticipantID part, GroupID from, GroupID to) {
+void printMove(const State &s, ParticipantID /*part*/, GroupID from, GroupID to) {
   const std::string p_name = std::string("****");
   std::cout << "move \"" << p_name << "\" from group \""
             << s.groupData(from).name << "\" to group \""

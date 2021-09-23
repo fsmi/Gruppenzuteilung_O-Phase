@@ -48,9 +48,7 @@ int main(int argc, const char *argv[]) {
 
   printNumberPerRating(state);
 
-  std::string _in;
-  std::cin >> _in;
-
+  std::cout << "Calculating local search moves." << std::endl;
   // the local search works much better with a slightly increased capacity
   for (GroupID group = 0; group < state.numGroups(); ++group) {
     state.decreaseCapacity(group, -1);

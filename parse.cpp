@@ -90,6 +90,7 @@ PTree writeOutputToTree(const State &s) {
   return std::move(root);
 }
 
+// Writes the output in (more) human-readable form to the specified path
 void writeOutputToFiles(const State &s, std::string path) {
   std::string removed_path = path + "/RemovedGroups";
   std::ofstream removed(removed_path);
