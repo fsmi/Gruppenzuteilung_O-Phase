@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <assert.h>
 
-static uint32_t RATING_VAL_TABLE[NUM_RATINGS] = {100, 130, 180, 195, 200};
-static const char *RATING_NAME_TABLE[NUM_RATINGS] = {"--", "-", "O", "+", "++"};
-
 // ####################################
 // ########     Input Data     ########
 // ####################################

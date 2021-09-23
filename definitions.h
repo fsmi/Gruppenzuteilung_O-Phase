@@ -10,6 +10,9 @@ static const uint32_t MAX_GROUP_SIZE = 16;
 static const double CAPACITY_BUFFER = 1.05;
 static const bool VERBOSE = false;
 
+static const uint32_t RATING_VAL_TABLE[NUM_RATINGS] = {100, 130, 180, 195, 200};
+static const char *const RATING_NAME_TABLE[NUM_RATINGS] = {"--", "-", "O", "+", "++"};
+
 // ####################################
 // ########     Input Data     ########
 // ####################################
