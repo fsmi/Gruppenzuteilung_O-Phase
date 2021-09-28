@@ -56,11 +56,11 @@ Participant::Participant(uint32_t index, bool is_team)
     : index(index), is_team(is_team), assignment(-1) {}
 
 State::State(const Input &data)
-    : _data(data), _group_capacities(),
-      _group_enabled(data.groups.size(), true),
+    : _data(data),
+      _group_states(data.groups.size()),
       _group_assignments(data.groups.size(),
                          std::vector<std::pair<StudentID, ParticipantID>>()),
-      _group_weights(data.groups.size(), 0), _participants() {
+      _participants() {
   assert(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
@@ -79,8 +79,8 @@ State::State(const Input &data)
       _participants.emplace_back(i, false);
     }
   }
-  for (const GroupData &group : data.groups) {
-    _group_capacities.push_back(group.capacity);
+  for (size_t i = 0; i < data.groups.size(); ++i) {
+    _group_states[i].capacity = data.groups[i].capacity;
   }
 }
 
@@ -90,8 +90,8 @@ GroupID State::numGroups() const { return data().groups.size(); }
 
 GroupID State::numActiveGroups() const {
   GroupID num = 0;
-  for (bool is_active : _group_enabled) {
-    if (is_active) {
+  for (GroupState state : _group_states) {
+    if (state.enabled) {
       num++;
     }
   }
@@ -115,12 +115,12 @@ const GroupData &State::groupData(GroupID id) const {
 
 StudentID State::groupCapacity(GroupID id) const {
   assert(id < data().groups.size());
-  return _group_capacities[id];
+  return _group_states[id].capacity;
 }
 
 bool State::groupIsEnabled(GroupID id) const {
   assert(id < data().groups.size());
-  return _group_enabled[id];
+  return _group_states[id].enabled;
 }
 
 const std::vector<std::pair<StudentID, ParticipantID>> &
@@ -136,7 +136,7 @@ StudentID State::groupSize(GroupID id) const {
 
 uint32_t State::groupWeight(GroupID id) const {
   assert(id < data().groups.size());
-  return _group_weights[id];
+  return _group_states[id].weight;
 }
 
 ParticipantID State::numParticipants() const { return _participants.size(); }
@@ -182,7 +182,39 @@ const std::vector<Rating> &State::rating(ParticipantID id) const {
 
 void State::disableGroup(GroupID id) {
   assert(id < data().groups.size());
-  _group_enabled[id] = false;
+  _group_states[id].enabled = false;
+}
+
+void State::addFilterToGroup(GroupID id, std::function<bool(const StudentData&)> filter) {
+  assert(id < data().groups.size());
+  _group_states[id].participant_filters.push_back(filter);
+}
+
+bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
+  assert(group < data().groups.size());
+  const StudentData& s_data = data().students[student];
+  for (auto filter : _group_states[group].participant_filters) {
+    if (filter(s_data)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool State::isExludedFromGroup(ParticipantID participant, GroupID group) const {
+  assert(participant < _participants.size());
+  assert(group < data().groups.size());
+
+  if (isTeam(participant)) {
+    for (StudentID student : teamData(participant).members) {
+      if (studentIsExludedFromGroup(student, group)) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    return studentIsExludedFromGroup(_participants[participant].index, group);
+  }
 }
 
 bool State::assignParticipant(ParticipantID participant, GroupID target) {
@@ -194,20 +226,20 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
     if (data.size() > groupCapacity(target)) {
       return false;
     }
-    _group_capacities[target] -= data.size();
+    _group_states[target].capacity -= data.size();
     for (StudentID id : data.members) {
       _group_assignments[target].push_back(std::make_pair(id, participant));
     }
-    _group_weights[target] +=
+    _group_states[target].weight +=
         data.size() * rating(participant)[target].getValue();
   } else {
     if (groupCapacity(target) == 0) {
       return false;
     }
-    _group_capacities[target]--;
+    _group_states[target].capacity--;
     _group_assignments[target].push_back(
         std::make_pair(_participants[participant].index, participant));
-    _group_weights[target] += rating(participant)[target].getValue();
+    _group_states[target].weight += rating(participant)[target].getValue();
   }
   _participants[participant].assignment = target;
   return true;
@@ -224,8 +256,8 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
         assign_list.begin(), assign_list.end(),
         [&](const auto &pair) { return pair.second == participant; });
     if (to_remove != assign_list.end()) {
-      _group_capacities[group]++;
-      _group_weights[group] += rating(participant)[group].getValue();
+      _group_states[group].capacity++;
+      _group_states[group].weight += rating(participant)[group].getValue();
       assign_list.erase(to_remove);
     } else {
       break;
@@ -237,13 +269,12 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
 // groups are still disabled
 void State::reset() {
   for (GroupID group = 0; group < numGroups(); ++group) {
-    _group_capacities[group] = groupData(group).capacity;
+    GroupState& state = _group_states[group];
+    state.capacity = groupData(group).capacity;
+    state.weight = 0;
   }
   for (auto &assigned : _group_assignments) {
     assigned.clear();
-  }
-  for (uint32_t &weight : _group_weights) {
-    weight = 0;
   }
   for (Participant &part : _participants) {
     part.assignment = -1;
@@ -252,9 +283,10 @@ void State::reset() {
 
 void State::decreaseCapacity(GroupID id, int32_t val) {
   assert(id < data().groups.size());
-  if (static_cast<int32_t>(_group_capacities[id]) <= val) {
-    _group_capacities[id] = 0;
+  StudentID& capacity = _group_states[id].capacity;
+  if (static_cast<int32_t>(capacity) <= val) {
+    capacity = 0;
   } else {
-    _group_capacities[id] -= val;
+    capacity -= val;
   }
 }

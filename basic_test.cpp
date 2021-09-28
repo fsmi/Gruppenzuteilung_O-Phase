@@ -145,4 +145,26 @@ int main() {
   for (StudentID num : num_per_group) {
     assert(num == 0 || num >= 2);
   }
+
+  // test filters
+  input.students.emplace_back("Lerngruppenteilnehmer X", CourseType::Mathe,
+                              DegreeType::Any, false);
+  input.ratings.emplace_back(
+      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+  input.teams.emplace_back("Lerngruppe X", std::vector<StudentID>{12});
+
+  s = State(input);
+  assert(!s.isExludedFromGroup(0, 0));
+  s.addFilterToGroup(0, [](const StudentData& data) {
+    return data.course_type == CourseType::Mathe;
+  });
+  // Lerngruppe A
+  assert(!s.isExludedFromGroup(0, 0));
+  // Lerngruppe X
+  assert(s.isExludedFromGroup(1, 0));
+  // students
+  assert(!s.isExludedFromGroup(2, 0));
+  assert(!s.isExludedFromGroup(3, 0));
+  assert(s.isExludedFromGroup(7, 0));
+  std::cout << "Basic test successful!" << std::endl;
 }

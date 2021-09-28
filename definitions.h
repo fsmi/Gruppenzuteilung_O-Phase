@@ -97,14 +97,20 @@ struct Participant {
   Participant(uint32_t index, bool is_team);
 };
 
+struct GroupState {
+  StudentID capacity = 0;
+  bool enabled = true;
+  uint32_t weight = 0;
+  // TODO
+  std::vector<std::function<bool(const StudentData&)>> participant_filters;
+};
+
 // the state of the complete calculation
 class State {
   std::reference_wrapper<const Input> _data;
-  std::vector<StudentID> _group_capacities;
-  std::vector<bool> _group_enabled;
+  std::vector<GroupState> _group_states;
   std::vector<std::vector<std::pair<StudentID, ParticipantID>>>
       _group_assignments;
-  std::vector<uint32_t> _group_weights;
   std::vector<Participant> _participants;
 
 public:
@@ -147,6 +153,10 @@ public:
 
   void disableGroup(GroupID id);
 
+  void addFilterToGroup(GroupID id, std::function<bool(const StudentData&)> filter);
+
+  bool isExludedFromGroup(ParticipantID participant, GroupID group) const;
+
   bool assignParticipant(ParticipantID participant, GroupID target);
 
   void unassignParticipant(ParticipantID participant, GroupID group);
@@ -157,4 +167,7 @@ public:
   void reset();
 
   void decreaseCapacity(GroupID id, int32_t val);
+
+ private:
+  bool studentIsExludedFromGroup(StudentID participant, GroupID group) const;
 };

@@ -108,7 +108,8 @@ std::vector<int32_t> calculateAssignment(const State &s) {
       bool validStudent =
           !s.isTeam(part) &&
           combinationIsValid(s.studentData(part), s.groupData(group));
-      if (validTeam || validStudent) {
+
+      if (!s.isExludedFromGroup(i, group) && (validTeam || validStudent)) {
         // determine a random subset of vertices of the group
         // not connecting to all vertices speeds up the matching algorithm
         // approx. probability that one vertex can't be matched for a group of size n:
