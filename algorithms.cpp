@@ -1,13 +1,14 @@
-#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
 #include <iostream>
 #include <random>
+#include <chrono>
 
 #include "algorithms.h"
 
 using EdgeProperty = boost::property<boost::edge_weight_t, uint32_t>;
-using Graph = boost::adjacency_matrix<boost::undirectedS, boost::no_property,
-                                      EdgeProperty>;
+using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
+                                    boost::no_property, EdgeProperty>;
 using GraphTraits = boost::graph_traits<Graph>;
 
 
@@ -137,10 +138,13 @@ std::vector<int32_t> calculateAssignment(const State &s) {
   }
 
   // calculate the matching
+  std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
   maximum_weighted_matching(g, &mates[0]);
   std::cout << "Matching with size " << matching_size(g, &mates[0])
             << " and total weight " << matching_weight_sum(g, &mates[0])
-            << " calculated." << std::endl;
+            << " calculated ("
+            << std::chrono::duration<double>(std::chrono::system_clock::now() - start).count()
+            << " s)." << std::endl;
 
   // translate the matching to an assignment
   std::vector<int32_t> assignment(s.numParticipants(), -1);
