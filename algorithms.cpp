@@ -1,6 +1,7 @@
 #include <boost/graph/adjacency_matrix.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
 #include <iostream>
+#include <random>
 
 #include "algorithms.h"
 
@@ -94,6 +95,7 @@ std::vector<int32_t> calculateAssignment(const State &s) {
   std::vector<GraphTraits::vertex_descriptor> mates(num_vertices);
 
   // add edges
+  std::mt19937 rand_generator;
   for (ParticipantID i = 0; i < participants.size(); ++i) {
     const ParticipantID &part = participants[i];
     assert(!s.isAssigned(part));
@@ -106,10 +108,29 @@ std::vector<int32_t> calculateAssignment(const State &s) {
           !s.isTeam(part) &&
           combinationIsValid(s.studentData(part), s.groupData(group));
       if (validTeam || validStudent) {
-        uint32_t rating = ceil(factor * s.rating(part).at(group).getValue());
-        for (GraphTraits::vertex_descriptor vertex = first_group_vertex[group];
-             vertex < first_group_vertex[group + 1]; ++vertex) {
-          add_edge(vertex, first_participant + i, EdgeProperty(rating), g);
+        // determine a random subset of vertices of the group
+        // not connecting to all vertices speeds up the matching algorithm
+        // approx. probability that one vertex can't be matched for a group of size n:
+        // n * exp(-degree)
+        size_t group_capacity = first_group_vertex[group + 1] - first_group_vertex[group];
+        if (group_capacity > 0) {
+          std::uniform_int_distribution<size_t> group_select(0, group_capacity - 1);
+          std::vector<size_t> selected;
+          selected.reserve(DEGREE_PER_GROUP);
+          for (size_t j = 0; j < std::min(DEGREE_PER_GROUP, group_capacity / 2 + 1); ++j) {
+            // check whether its a duplicate
+            size_t random_index;
+            do {
+              random_index = group_select(rand_generator);
+            } while (std::find(selected.begin(), selected.end(), random_index) != selected.end());
+            selected.push_back(random_index);
+          }
+
+          uint32_t rating = ceil(factor * s.rating(part).at(group).getValue());
+          for (size_t index : selected) {
+            assert(first_group_vertex[group] + index < first_group_vertex[group + 1]);
+            add_edge(first_group_vertex[group] + index, first_participant + i, EdgeProperty(rating), g);
+          }
         }
       }
     }
@@ -194,6 +215,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
     if (total_size[group] > s.groupCapacity(group)) {
       assert(teams_per_group[group].size() > 0);
       for (const ParticipantID &team : teams_per_group[group]) {
+        // TODO: could be a problem if with this team the capacity is exceeded?
         if (s.teamData(team).size() == max_size[group]) {
           modified_groups.push_back(group);
           bool success = s.assignParticipant(team, group);
