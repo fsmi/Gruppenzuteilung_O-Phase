@@ -8,6 +8,8 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include "alg_common.h"
+
 const static int64_t STEPS_PER_VALUE = 1000;
 
 void printMove(const State &s, ParticipantID /*part*/, GroupID from, GroupID to) {
@@ -58,28 +60,12 @@ void MoveSequence::apply(State &s, bool print_moves) const {
 std::vector<GroupID>
 groupsByNumber(const State &s, StudentID min_members,
                std::function<bool(const StudentData &)> predicate) {
-  std::vector<std::pair<GroupID, StudentID>> groups;
-  for (GroupID group = 0; group < s.numGroups(); ++group) {
-    const auto &list = s.groupAssignmentList(group);
-    StudentID num = 0;
-    if (!list.empty() && s.groupIsEnabled(group)) {
-      for (const auto &pair : list) {
-        StudentData data = s.data().students[pair.first];
-        if (predicate(data)) {
-          num++;
-        }
-      }
-      if (num > 0 && num < min_members) {
-        groups.emplace_back(group, num);
-      }
-    }
-  }
-  std::sort(groups.begin(), groups.end(), [&](const auto &p1, const auto &p2) {
-    return p1.second < p2.second;
-  });
+  std::vector<std::pair<GroupID, StudentID>> groups = groupsByNumFiltered(s, min_members, predicate);
   std::vector<GroupID> result;
   for (const auto &pair : groups) {
-    result.push_back(pair.first);
+    if (pair.second > 0) {
+      result.push_back(pair.first);
+    }
   }
   return std::move(result);
 }

@@ -266,7 +266,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
   _participants[participant].assignment = -1;
 }
 
-// groups are still disabled
+// groups are still disabled and keep their filters
 void State::reset() {
   for (GroupID group = 0; group < numGroups(); ++group) {
     GroupState& state = _group_states[group];

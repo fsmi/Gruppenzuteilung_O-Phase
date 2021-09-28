@@ -7,6 +7,7 @@
 // TODO: Max team size
 static const size_t NUM_RATINGS = 5;
 static const size_t DEGREE_PER_GROUP = 7;
+static const size_t DISABLED_GROUPS_PER_STEP = 1;
 static const uint32_t MIN_GROUP_SIZE = 12;
 static const uint32_t MAX_GROUP_SIZE = 16;
 static const double CAPACITY_BUFFER = 1.05;

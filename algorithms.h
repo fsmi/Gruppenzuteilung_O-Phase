@@ -7,9 +7,12 @@ std::vector<int32_t> calculateAssignment(const State &s);
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams = true, bool students = true);
 
-void assignTeamsAndStudents(State &s);
+bool assignTeamsAndStudents(State &s);
 
 void assignWithMinimumNumberPerGroup(
     State &s, StudentID min_capacity);
+
+void assertMinimumNumberPerGroupForSpecificType(State &s,
+    std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> filters);
 
 void printCurrentAssignment(const State &s);

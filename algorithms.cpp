@@ -1,10 +1,12 @@
+#include "algorithms.h"
+
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
 #include <iostream>
 #include <random>
 #include <chrono>
 
-#include "algorithms.h"
+#include "alg_common.h"
 
 using EdgeProperty = boost::property<boost::edge_weight_t, uint32_t>;
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
@@ -109,7 +111,7 @@ std::vector<int32_t> calculateAssignment(const State &s) {
           !s.isTeam(part) &&
           combinationIsValid(s.studentData(part), s.groupData(group));
 
-      if (!s.isExludedFromGroup(i, group) && (validTeam || validStudent)) {
+      if (!s.isExludedFromGroup(part, group) && (validTeam || validStudent)) {
         // determine a random subset of vertices of the group
         // not connecting to all vertices speeds up the matching algorithm
         // approx. probability that one vertex can't be matched for a group of size n:
@@ -236,7 +238,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
   return std::move(modified_groups);
 }
 
-void assignTeamsAndStudents(State &s) {
+bool assignTeamsAndStudents(State &s) {
   s.reset();
   StudentID num_students = s.data().students.size();
   StudentID activeCapacity = s.totalActiveGroupCapacity();
@@ -288,7 +290,7 @@ void assignTeamsAndStudents(State &s) {
   std::cout << "Team assignment successful." << std::endl;
   std::vector<int32_t> assignment = calculateAssignment(s);
   success = applyAssignment(s, assignment);
-  assert(success);
+  return success;
 }
 
 // Top level function that calculates an assignment with a specified minimum capacity for the groups
@@ -296,7 +298,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   StudentID allowed_min = 1;
   StudentID active_capacity = s.totalActiveGroupCapacity();
   while (true) {
-    assignTeamsAndStudents(s);
+    assert(assignTeamsAndStudents(s));
     StudentID current_min = std::numeric_limits<StudentID>::max();
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       if (s.groupIsEnabled(group)) {
@@ -339,6 +341,74 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
       }
     } else {
       break;
+    }
+  }
+}
+
+// Top level function that add filters to reassign participants,
+// so that a minimum number per group can be ensured
+void assertMinimumNumberPerGroupForSpecificType(State &s,
+    std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> filters) {
+  bool success = true;
+  while (success) {
+    std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
+    size_t num_empty = 0;
+    for (size_t i = 0; i < filters.size(); ++i) {
+      auto [filter, minimum, _] = filters[i];
+      std::vector<std::pair<GroupID, StudentID>> order = groupsByNumFiltered(s, minimum, filter);
+      std::vector<std::pair<GroupID, StudentID>> rev_order;
+      while (!order.empty()) {
+        auto [group, num] = order.back();
+        order.pop_back();
+        // disable group without this type directly
+        if (num == 0) {
+          s.addFilterToGroup(group, filter);
+        } else {
+          rev_order.emplace_back(group, num);
+        }
+      }
+      if (rev_order.empty()) {
+        ++num_empty;
+      }
+      group_disable_order.push_back(std::move(rev_order));
+    }
+
+    if (num_empty >= filters.size()) {
+      break;
+    }
+
+    // disable groups for specific participants
+    for (size_t i = 0; i < DISABLED_GROUPS_PER_STEP; ++i) {
+      size_t max_index = 0;
+      int32_t max_rating = std::numeric_limits<int32_t>::min();
+      for (size_t j = 0; j < group_disable_order.size(); ++j) {
+        if (!group_disable_order[j].empty()) {
+          auto [group, num] = group_disable_order[j].back();
+          // 2 times diff to minimum minus current number
+          int32_t rating = 2 * (std::get<1>(filters[i]) - num) - num;
+          if (rating > max_rating) {
+            max_rating = rating;
+            max_index = j;
+          }
+        }
+      }
+      const GroupID group = group_disable_order[max_index].back().first;
+      group_disable_order[max_index].pop_back();
+      auto [filter, minimum, name] = filters[max_index];
+      if (VERBOSE) {
+        std::cout << "> Removing students of type \"" << name << "\" from group "
+                  << s.groupData(group).name << std::endl;
+      }
+      s.addFilterToGroup(group, filter);
+    }
+
+    // try to calculate new assignment
+    State s_temp(s);
+    success = assignTeamsAndStudents(s_temp);
+    if (success) {
+      s = s_temp;
+    } else {
+      std::cout << "Could not continue reassignment. Stopping." << std::endl;
     }
   }
 }

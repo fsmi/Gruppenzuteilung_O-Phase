@@ -130,21 +130,33 @@ int main() {
   for (GroupData &group : input.groups) {
     group.capacity = 5;
   }
-
   input.students[4] =
       StudentData("Info 1", CourseType::Info, DegreeType::Bachelor, false);
-
-  s = State(input);
-  assignTeamsAndStudents(s);
   auto is_math = [](const StudentData &data) {
     return data.course_type == CourseType::Mathe;
   };
-  printCurrentAssignment(s);
+
+  // minimum number with local search
+  s = State(input);
+  assignTeamsAndStudents(s);
   assertMininumNumber(s, 2, is_math);
+  printCurrentAssignment(s);
   std::vector<StudentID> num_per_group = numPerGroup(s, is_math);
   for (StudentID num : num_per_group) {
     assert(num == 0 || num >= 2);
   }
+  std::cout << "Local search test done." << std::endl << std::endl;
+
+  // minimum number with filters
+  s = State(input);
+  assignTeamsAndStudents(s);
+  assertMinimumNumberPerGroupForSpecificType(s, {{is_math, 2, "Mathe"}});
+  printCurrentAssignment(s);
+  num_per_group = numPerGroup(s, is_math);
+  for (StudentID num : num_per_group) {
+    assert(num == 0 || num >= 2);
+  }
+  std::cout << "Filter test done." << std::endl << std::endl;
 
   // test filters
   input.students.emplace_back("Lerngruppenteilnehmer X", CourseType::Mathe,
