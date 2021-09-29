@@ -48,7 +48,7 @@ int main(int argc, const char *argv[]) {
 
   printNumberPerRating(state);
 
-  std::cout << "Calculating local search moves." << std::endl;
+  std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
   // the local search works much better with a slightly increased capacity
   for (GroupID group = 0; group < state.numGroups(); ++group) {
     state.decreaseCapacity(group, -1);
@@ -57,7 +57,7 @@ int main(int argc, const char *argv[]) {
     return data.course_type == CourseType::Mathe &&
            data.degree_type != DegreeType::Master;
   };
-  assertMininumNumber(state, 5, is_math_and_no_ma);
+  assertMinimumNumberPerGroupForSpecificType(state, {{is_math_and_no_ma, 5, "Mathe (nicht MA)"}});
 
   printNumberPerRating(state);
 

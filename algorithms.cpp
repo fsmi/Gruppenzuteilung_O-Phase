@@ -352,7 +352,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
   bool success = true;
   while (success) {
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
-    size_t num_empty = 0;
+    size_t total_num_groups = 0;
     for (size_t i = 0; i < filters.size(); ++i) {
       auto [filter, minimum, _] = filters[i];
       std::vector<std::pair<GroupID, StudentID>> order = groupsByNumFiltered(s, minimum, filter);
@@ -367,18 +367,16 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
           rev_order.emplace_back(group, num);
         }
       }
-      if (rev_order.empty()) {
-        ++num_empty;
-      }
+      total_num_groups += rev_order.size();
       group_disable_order.push_back(std::move(rev_order));
     }
 
-    if (num_empty >= filters.size()) {
+    if (total_num_groups == 0) {
       break;
     }
 
     // disable groups for specific participants
-    for (size_t i = 0; i < DISABLED_GROUPS_PER_STEP; ++i) {
+    for (size_t i = 0; i < std::min(DISABLED_GROUPS_PER_STEP, (total_num_groups + 4) / 5); ++i) {
       size_t max_index = 0;
       int32_t max_rating = std::numeric_limits<int32_t>::min();
       for (size_t j = 0; j < group_disable_order.size(); ++j) {
