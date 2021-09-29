@@ -9,7 +9,6 @@ static const size_t NUM_RATINGS = 5;
 static const size_t DEGREE_PER_GROUP = 7;
 static const size_t DISABLED_GROUPS_PER_STEP = 1;
 static const uint32_t MIN_GROUP_SIZE = 12;
-static const uint32_t MAX_GROUP_SIZE = 16;
 static const double CAPACITY_BUFFER = 1.05;
 static const bool VERBOSE = false;
 
@@ -32,6 +31,8 @@ struct Rating {
   bool operator==(const Rating &other) const;
 
   bool operator!=(const Rating &other) const;
+
+  Rating() = default;
 };
 
 using GroupID = uint32_t;
@@ -41,7 +42,8 @@ using ParticipantID = uint32_t;
 enum class CourseType {
   Info = 0,
   Mathe = 1,
-  Any = 2,
+  Lehramt = 2,
+  Any = 3,
 };
 
 enum class DegreeType {
@@ -50,29 +52,35 @@ enum class DegreeType {
   Any = 2,
 };
 
+enum class Semester {
+  Ersti = 0,
+  Dritti = 1,
+};
+
 struct GroupData {
+  std::string id;
   std::string name;
   StudentID capacity;
   CourseType course_type;
-  DegreeType degree_type;
 
-  GroupData(std::string name, StudentID capacity, CourseType ct, DegreeType dt);
+  GroupData(std::string id, std::string name, StudentID capacity, CourseType ct);
 };
 
 struct StudentData {
+  std::string id;
   std::string name;
   CourseType course_type;
   DegreeType degree_type;
-  bool is_commuter;
+  Semester semester;
 
-  StudentData(std::string name, CourseType ct, DegreeType dt, bool is_commuter);
+  StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s);
 };
 
 struct TeamData {
-  std::string name;
+  std::string id;
   std::vector<StudentID> members;
 
-  TeamData(std::string name, std::vector<StudentID> members);
+  TeamData(std::string id, std::vector<StudentID> members);
 
   size_t size() const;
 };

@@ -35,9 +35,9 @@ void printCurrentAssignment(const State &s) {
 bool combinationIsValid(const StudentData &student, const GroupData &group) {
   bool course_is_valid = (group.course_type == CourseType::Any) ||
                          (student.course_type == group.course_type);
-  bool degree_is_valid = (group.degree_type == DegreeType::Any) ||
-                         (student.degree_type == group.degree_type);
-  return course_is_valid && degree_is_valid;
+  // bool degree_is_valid = (group.degree_type == DegreeType::Any) ||
+  //                        (student.degree_type == group.degree_type);
+  return course_is_valid;
 }
 
 bool combinationIsValid(const TeamData &team, const GroupData &group,
@@ -50,18 +50,18 @@ bool combinationIsValid(const TeamData &team, const GroupData &group,
 }
 
 // returns a factor for the weights of a single participant
-double getFactor(const State &s, ParticipantID part) {
-  if (s.isTeam(part)) {
-    for (StudentID member : s.teamData(part).members) {
-      if (s.data().students[member].is_commuter) {
-        return 2.0;
-      }
-    }
-  } else {
-    if (s.studentData(part).is_commuter) {
-      return 2.0;
-    }
-  }
+double getFactor(const State &/*s*/, ParticipantID /*part*/) {
+  // if (s.isTeam(part)) {
+  //   for (StudentID member : s.teamData(part).members) {
+  //     if (s.data().students[member].is_commuter) {
+  //       return 2.0;
+  //     }
+  //   }
+  // } else {
+  //   if (s.studentData(part).is_commuter) {
+  //     return 2.0;
+  //   }
+  // }
   return 1.0;
 }
 
@@ -164,7 +164,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
       assignment[part] = group;
     } else {
       const std::string &name =
-          s.isTeam(part) ? s.teamData(part).name : s.studentData(part).name;
+          s.isTeam(part) ? s.teamData(part).id : s.studentData(part).name;
       std::cerr << "WARNING: Participant \"" << name << "\" not assigned!"
                 << std::endl;
       success = false;
@@ -229,7 +229,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
           modified_groups.push_back(group);
           bool success = s.assignParticipant(team, group);
           if (success && VERBOSE) {
-            std::cout << "> Preassign team \"" << s.teamData(team).name
+            std::cout << "> Preassign team \"" << s.teamData(team).id
                       << "\" to group \"" << s.groupData(group).name << "\"."
                       << std::endl;
           }
@@ -318,8 +318,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
                 << "." << std::endl;
       std::vector<GroupID> groups_to_remove;
       for (GroupID group = 0; group < s.numGroups(); ++group) {
-        if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min &&
-            s.groupData(group).degree_type != DegreeType::Master) {
+        if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min) {
           groups_to_remove.push_back(group);
         }
       }

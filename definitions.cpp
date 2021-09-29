@@ -21,16 +21,14 @@ bool Rating::operator!=(const Rating &other) const {
   return index != other.index;
 }
 
-GroupData::GroupData(std::string name, StudentID capacity, CourseType ct,
-                     DegreeType dt)
-    : name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
+GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct)
+    : id(id), name(name), capacity(capacity), course_type(ct) {}
 
-StudentData::StudentData(std::string name, CourseType ct, DegreeType dt,
-                         bool is_commuter)
-    : name(name), course_type(ct), degree_type(dt), is_commuter(is_commuter) {}
+StudentData::StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s)
+    : id(id), name(name), course_type(ct), degree_type(dt), semester(s) {}
 
-TeamData::TeamData(std::string name, std::vector<StudentID> members)
-    : name(name), members(std::move(members)) {}
+TeamData::TeamData(std::string id, std::vector<StudentID> members)
+    : id(id), members(std::move(members)) {}
 
 size_t TeamData::size() const { return members.size(); }
 

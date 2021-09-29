@@ -1,0 +1,46 @@
+input:
+{
+	"groups" : [
+		{
+            "id" : <UUID Gruppe>,
+			"name" : <Name Gruppe>,
+			"capacity" : <Kapazität (Int)>,
+			"course_type" : <eines aus: "mathe", "any">
+		},
+		...
+	],
+	"students" : [
+		{
+            "id" : <UUID Student>,
+			"name" : <Name Student>,
+			"course_type" : <eines aus: "mathe", "info", "lehramt">,
+			"degree_type" : <eines aus: "bachelor", "master">,
+			"semester" : <eines aus: "ersti", "dritti">
+		},
+		...
+	],
+	"teams" : [
+		{
+			"id" : <UUID Lerngruppe/erstes Mitglied>,
+			"members" : [
+                <UUID Student>,
+                ...
+            ]
+		},
+		...
+	],
+	"ratings" : {
+        <UUID Student> : [
+            <UUID am höchsten bewertete Gruppe>,
+            ...,
+            <UUID am niedrigsten bewertete Gruppe>
+        ],
+        ...
+	}
+}
+
+output:
+{
+    <UUID Student> : <UUID Gruppe>,
+    ...
+}

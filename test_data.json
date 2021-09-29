@@ -1,50 +1,83 @@
 {
 	"groups" : [
 		{
-			"name" : "Gruppe (beliebige Teilnehmer)",
+            "id" : "uuid1G",
+			"name" : "Gruppe Info 1",
 			"capacity" : 4,
-			"course_type" : 2,
-			"degree_type" : 2
-		}, {
-			"name" : "Gruppe (Mathe Master)",
-			"capacity" : 4,
-			"course_type" : 1,
-			"degree_type" : 1
+			"course_type" : "any"
+		},
+		{
+            "id" : "uuid2G",
+			"name" : "Gruppe Info 2",
+			"capacity" : 6,
+			"course_type" : "any"
+		},
+		{
+            "id" : "uuid3G",
+			"name" : "Gruppe Mathe",
+			"capacity" : 3,
+			"course_type" : "mathe"
 		}
 	],
 	"students" : [
 		{
-			"name" : "Student (Info Master)",
-			"course_type" : 0,
-			"degree_type" : 1,
-			"is_commuter" : false
-		}, {
-			"name" : "Student (Info Bachelor, Pendler)",
-			"course_type" : 0,
-			"degree_type" : 0,
-			"is_commuter" : true
-		}, {
-			"name" : "Student (Mathe Master)",
-			"course_type" : 1,
-			"degree_type" : 1,
-			"is_commuter" : false
-		}, {
-			"name" : "Student (Studiengang nicht angegeben)",
-			"course_type" : 2,
-			"degree_type" : 2,
-			"is_commuter" : false
+            "id" : "uuid1S",
+			"name" : "Info Student",
+			"course_type" : "info",
+			"degree_type" : "bachelor",
+			"semester" : "ersti"
+		},
+		{
+            "id" : "uuid2S",
+			"name" : "Mathe Student",
+			"course_type" : "mathe",
+			"degree_type" : "bachelor",
+			"semester" : "ersti"
+		},
+		{
+            "id" : "uuid3S",
+			"name" : "Lehramt Student",
+			"course_type" : "lehramt",
+			"degree_type" : "bachelor",
+			"semester" : "dritti"
+		},
+		{
+            "id" : "uuid4S",
+			"name" : "Master Student",
+			"course_type" : "info",
+			"degree_type" : "master",
+			"semester" : "ersti"
 		}
 	],
 	"teams" : [
 		{
-			"name" : "Lerngruppe 1",
-			"members" : [0, 3]
+			"id" : "uuid2S",
+			"members" : [
+                "uuid2S",
+                "uuid3S"
+            ]
 		}
 	],
-	"ratings" : [
-		[3, 3],
-		[4, 0],
-		[1, 4],
-		[3, 3]
-	]
+	"ratings" : {
+        "uuid2S" : [
+            "uuid3G",
+            "uuid1G",
+            "uuid2G"
+        ],
+        "uuid1S" : [
+            "uuid1G",
+            "uuid2G",
+            "uuid3G"
+        ],
+        "uuid4S" : [
+            "uuid2G",
+            "uuid1G",
+            "uuid3G"
+        ],
+        "uuid3S" : [
+            "uuid3G",
+            "uuid1G",
+            "uuid2G"
+        ]
+	}
 }
