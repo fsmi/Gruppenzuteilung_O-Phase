@@ -69,7 +69,7 @@ double getFactor(const State &s, ParticipantID part) {
 // ########     Algorithms     ########
 // ####################################
 
-std::vector<int32_t> calculateAssignment(const State &s) {
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
   // initialize vertices
   std::vector<GraphTraits::vertex_descriptor> first_group_vertex;
   std::vector<GroupID> vertex_to_group;
@@ -154,6 +154,7 @@ std::vector<int32_t> calculateAssignment(const State &s) {
   GraphTraits::vertex_iterator vi, vi_end;
   boost::tie(vi, vi_end) = vertices(g);
 
+  bool success = true;
   ParticipantID part_idx = 0;
   for (vi += first_participant; vi != vi_end; ++vi) {
     ParticipantID part = participants.at(part_idx);
@@ -166,10 +167,11 @@ std::vector<int32_t> calculateAssignment(const State &s) {
           s.isTeam(part) ? s.teamData(part).name : s.studentData(part).name;
       std::cerr << "WARNING: Participant \"" << name << "\" not assigned!"
                 << std::endl;
+      success = false;
     }
     ++part_idx;
   }
-  return std::move(assignment);
+  return {std::move(assignment), success};
 }
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
@@ -273,7 +275,10 @@ bool assignTeamsAndStudents(State &s) {
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       s_temp.decreaseCapacity(group, diff + reduced_capacities[group]);
     }
-    std::vector<int32_t> assignment = calculateAssignment(s_temp);
+    auto [assignment, success_first_step] = calculateAssignment(s_temp);
+    if (!success_first_step) {
+      std::cout << "Canceling due to error in assignment." << std::endl;
+    }
     success = applyAssignment(s, assignment, true, false);
     if (!success) {
       std::cerr << "WARNING: Team assignment not successful due to exceeded "
@@ -288,8 +293,8 @@ bool assignTeamsAndStudents(State &s) {
   } while (!success);
 
   std::cout << "Team assignment successful." << std::endl;
-  std::vector<int32_t> assignment = calculateAssignment(s);
-  success = applyAssignment(s, assignment);
+  auto [assignment, success_final] = calculateAssignment(s);
+  success = applyAssignment(s, assignment) && success_final;
   return success;
 }
 

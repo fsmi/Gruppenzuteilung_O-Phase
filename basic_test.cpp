@@ -51,7 +51,7 @@ int main() {
 
   State s(input);
   auto assignment = calculateAssignment(s);
-  applyAssignment(s, assignment);
+  applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
   for (ParticipantID part = 1; part < 5; ++part) {
@@ -77,7 +77,7 @@ int main() {
   s.reset();
   s.assignParticipant(1, 3);
   assignment = calculateAssignment(s);
-  applyAssignment(s, assignment);
+  applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
   assert(s.assignment(1) == 3);

@@ -2,7 +2,7 @@
 
 #include "definitions.h"
 
-std::vector<int32_t> calculateAssignment(const State &s);
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s);
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams = true, bool students = true);
