@@ -6,45 +6,34 @@
 
 int main() {
   Input input;
-  input.groups.emplace_back("First Contact", 3, CourseType::Any,
-                            DegreeType::Any);
-  input.groups.emplace_back("Team Gecko", 3, CourseType::Any, DegreeType::Any);
-  input.groups.emplace_back("Mathe", 3, CourseType::Mathe, DegreeType::Any);
-  input.groups.emplace_back("Master", 3, CourseType::Any, DegreeType::Master);
-  input.students.emplace_back("Ersti 1", CourseType::Info, DegreeType::Bachelor,
-                              false);
+  input.groups.emplace_back("fc", "First Contact", 3, CourseType::Any);
+  input.groups.emplace_back("tg", "Team Gecko", 3, CourseType::Any);
+  input.groups.emplace_back("mathe", "Mathe", 3, CourseType::Mathe);
+  input.students.emplace_back("e1", "Ersti 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(4), Rating(3), Rating(2), Rating(1)});
-  input.students.emplace_back("Ersti 2", CourseType::Info, DegreeType::Bachelor,
-                              false);
+  input.students.emplace_back("e2", "Ersti 2", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
-  input.students.emplace_back("Ersti 3", CourseType::Info, DegreeType::Bachelor,
-                              false);
+  input.students.emplace_back("e3", "Ersti 3", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(3), Rating(4), Rating(4)});
-  input.students.emplace_back("Ersti 4", CourseType::Info, DegreeType::Bachelor,
-                              false);
+  input.students.emplace_back("e4", "Ersti 4", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(2), Rating(1), Rating(1), Rating(1)});
-  input.students.emplace_back("Mathe 1", CourseType::Mathe,
-                              DegreeType::Bachelor, false);
+  input.students.emplace_back("m1", "Mathe 1", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(1), Rating(1), Rating(4), Rating(1)});
-  input.students.emplace_back("Mathe 2", CourseType::Mathe,
-                              DegreeType::Bachelor, false);
+  input.students.emplace_back("m2", "Mathe 2", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
-  input.students.emplace_back("Mathe 3", CourseType::Mathe,
-                              DegreeType::Bachelor, false);
+  input.students.emplace_back("m3", "Mathe 3", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(4), Rating(3), Rating(2), Rating(3)});
-  input.students.emplace_back("Master", CourseType::Info, DegreeType::Master,
-                              false);
+  input.students.emplace_back("ma", "Master", CourseType::Info, DegreeType::Master, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
-  input.students.emplace_back("Lerngruppenteilnehmer 1", CourseType::Any,
-                              DegreeType::Any, false);
+  input.students.emplace_back("l1", "Lerngruppenteilnehmer 1", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID>{8});
@@ -61,26 +50,19 @@ int main() {
   for (ParticipantID part = 6; part < 7; ++part) {
     assert(s.assignment(part) == 2);
   }
-  // Master
-  assert(s.assignment(8) == 3);
-
-  std::cout
-      << "Disable group \"First Contact\" and assign \"Ersti 1\" to \"Master\"."
-      << std::endl
-      << std::endl;
 
   for (GroupData &group : input.groups) {
-    group.capacity = 4;
+    group.capacity = 5;
   }
 
   s.disableGroup(0);
   s.reset();
-  s.assignParticipant(1, 3);
+  s.assignParticipant(1, 2);
   assignment = calculateAssignment(s);
   applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
-  assert(s.assignment(1) == 3);
+  assert(s.assignment(1) == 2);
   for (ParticipantID part = 2; part < 5; ++part) {
     assert(s.assignment(part) < 2);
   }
@@ -88,19 +70,14 @@ int main() {
   for (ParticipantID part = 6; part < 7; ++part) {
     assert(s.assignment(part) == 2);
   }
-  // Master
-  assert(s.assignment(8) == 3);
 
-  input.students.emplace_back("Lerngruppenteilnehmer 2", CourseType::Any,
-                              DegreeType::Any, false);
+  input.students.emplace_back("l2", "Lerngruppenteilnehmer 2", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
-  input.students.emplace_back("Lerngruppenteilnehmer 3", CourseType::Any,
-                              DegreeType::Any, false);
+  input.students.emplace_back("l3", "Lerngruppenteilnehmer 3", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
-  input.students.emplace_back("Lerngruppenteilnehmer 4", CourseType::Any,
-                              DegreeType::Any, false);
+  input.students.emplace_back("l4", "Lerngruppenteilnehmer 4", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
   input.teams[0].members.push_back(9);
@@ -108,7 +85,7 @@ int main() {
   input.teams[0].members.push_back(11);
 
   for (GroupData &group : input.groups) {
-    group.capacity = 4;
+    group.capacity = 5;
   }
 
   s = State(input);
@@ -122,8 +99,6 @@ int main() {
   for (ParticipantID part = 6; part < 7; ++part) {
     assert(s.assignment(part) == 2);
   }
-  // Master
-  assert(s.assignment(8) == 3);
   // Lerngruppe
   assert(s.groupSize(s.assignment(1)) >= 4);
 
@@ -131,7 +106,7 @@ int main() {
     group.capacity = 5;
   }
   input.students[4] =
-      StudentData("Info 1", CourseType::Info, DegreeType::Bachelor, false);
+      StudentData("info1", "Info 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   auto is_math = [](const StudentData &data) {
     return data.course_type == CourseType::Mathe;
   };
@@ -159,8 +134,7 @@ int main() {
   std::cout << "Filter test done." << std::endl << std::endl;
 
   // test filters
-  input.students.emplace_back("Lerngruppenteilnehmer X", CourseType::Mathe,
-                              DegreeType::Any, false);
+  input.students.emplace_back("lx", "Lerngruppenteilnehmer X", CourseType::Mathe, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
   input.teams.emplace_back("Lerngruppe X", std::vector<StudentID>{12});
