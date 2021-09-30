@@ -25,7 +25,7 @@ MoveStep::MoveStep(size_t parent, int32_t path_rating,
       target(target) {}
 
 SearchLevel::SearchLevel(size_t parent)
-    : parent(parent), level(NUM_RATINGS - 1) {}
+    : parent(parent), level(/*NUM_RATINGS - */1) { assert(false); }
 
 SearchLevel SearchLevel::next() const {
   assert(level > 0);

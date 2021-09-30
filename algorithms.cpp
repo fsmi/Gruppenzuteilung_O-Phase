@@ -92,7 +92,11 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
       participants.push_back(part);
     }
   }
-  assert(first_participant >= num_vertices - first_participant);
+  if (first_participant < num_vertices - first_participant) {
+    std::cerr << "Not enough capacity available: " << (num_vertices - first_participant)
+              << " participants, but only " << first_participant << " group vertices!" << std::endl;
+    std::exit(-1);
+  }
 
   Graph g(num_vertices);
   std::vector<GraphTraits::vertex_descriptor> mates(num_vertices);
@@ -249,7 +253,6 @@ bool assignTeamsAndStudents(State &s) {
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     initial_capacity = std::max(initial_capacity, s.groupCapacity(group));
   }
-  std::vector<StudentID> reduced_capacities(s.numGroups(), 0);
   StudentID total_reduced = 0;
 
   bool success;
@@ -263,17 +266,16 @@ bool assignTeamsAndStudents(State &s) {
     double team_factor =
         static_cast<double>(num_students - additional_students_in_teams) /
         static_cast<double>(num_students);
-    double reduction_factor =
+    double mod_reduced_factor =
         static_cast<double>(activeCapacity + total_reduced) /
-        static_cast<double>(s.numActiveGroups());
-    StudentID capacity = ceil(team_factor * reduction_factor);
-    std::cout << "Capacity for team assignment set to " << capacity << "."
+        static_cast<double>(activeCapacity);
+    double reduction_factor = team_factor * mod_reduced_factor;
+    std::cout << "Relative capacity for team assignment set to " << reduction_factor << "."
               << std::endl;
-    StudentID diff = initial_capacity - capacity;
 
     State s_temp(s);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
-      s_temp.decreaseCapacity(group, diff + reduced_capacities[group]);
+      s_temp.setCapacity(group, ceil(reduction_factor * s_temp.groupCapacity(group)));
     }
     auto [assignment, success_first_step] = calculateAssignment(s_temp);
     if (!success_first_step) {
@@ -286,9 +288,6 @@ bool assignTeamsAndStudents(State &s) {
                    "capacity. Assign single teams and retry."
                 << std::endl;
       std::vector<GroupID> modified_groups = preassignLargeTeams(s, assignment);
-      for (const GroupID &modified : modified_groups) {
-        reduced_capacities.at(modified)++;
-      }
       total_reduced += modified_groups.size();
     }
   } while (!success);

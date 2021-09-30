@@ -7,9 +7,10 @@
 // ########     Input Data     ########
 // ####################################
 
-Rating::Rating(uint32_t index) : index(index) { assert(index < NUM_RATINGS); }
+Rating::Rating(uint32_t index) : index(index) { }
 
 uint32_t Rating::getValue(GroupID num_groups) const {
+  assert(index < num_groups);
   return num_groups * num_groups - (index * (index + 1) / 2);
 }
 
@@ -281,12 +282,7 @@ void State::reset() {
   }
 }
 
-void State::decreaseCapacity(GroupID id, int32_t val) {
-  assert(id < data().groups.size());
-  StudentID& capacity = _group_states[id].capacity;
-  if (static_cast<int32_t>(capacity) <= val) {
-    capacity = 0;
-  } else {
-    capacity -= val;
-  }
+void State::setCapacity(GroupID id, uint32_t val) {
+  assert(id < data().groups.size() && val < MAX_GROUP_SIZE);
+  _group_states[id].capacity = val;
 }

@@ -9,7 +9,7 @@
 
 // print number of ratings for different rating levels
 void printNumberPerRating(const State& state) {
-  std::vector<int> num_ratings(NUM_RATINGS, 0);
+  std::vector<int> num_ratings(state.numGroups(), 0);
   for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
     Rating r = state.rating(part).at(state.assignment(part));
     int num = 1;
@@ -18,7 +18,7 @@ void printNumberPerRating(const State& state) {
     }
     num_ratings.at(r.index) += num;
   }
-  for (uint32_t i = 0; i < NUM_RATINGS; ++i) {
+  for (uint32_t i = 0; i < state.numGroups(); ++i) {
     std::cout << "Number of " << Rating(i).getName() << ": "
               << num_ratings.at(i) << std::endl;
   }
