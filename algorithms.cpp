@@ -277,7 +277,8 @@ bool assignTeamsAndStudents(State &s) {
     }
     auto [assignment, success_first_step] = calculateAssignment(s_temp);
     if (!success_first_step) {
-      std::cout << "Canceling due to error in assignment." << std::endl;
+      std::cout << "Team assignment failed. Canceling." << std::endl;
+      return false;
     }
     success = applyAssignment(s, assignment, true, false);
     if (!success) {

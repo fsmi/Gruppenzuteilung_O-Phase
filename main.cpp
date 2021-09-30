@@ -49,10 +49,6 @@ int main(int argc, const char *argv[]) {
   printNumberPerRating(state);
 
   std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
-  // the local search works much better with a slightly increased capacity
-  for (GroupID group = 0; group < state.numGroups(); ++group) {
-    state.decreaseCapacity(group, -1);
-  }
   auto is_math_and_no_ma = [](const StudentData &data) {
     return data.course_type == CourseType::Mathe &&
            data.degree_type != DegreeType::Master;
