@@ -9,9 +9,11 @@
 
 Rating::Rating(uint32_t index) : index(index) { assert(index < NUM_RATINGS); }
 
-uint32_t Rating::getValue() const { return RATING_VAL_TABLE[index]; }
+uint32_t Rating::getValue(GroupID num_groups) const {
+  return num_groups * num_groups - (index * (index + 1) / 2);
+}
 
-const char *Rating::getName() const { return RATING_NAME_TABLE[index]; }
+std::string Rating::getName() const { return std::to_string(index); }
 
 bool Rating::operator==(const Rating &other) const {
   return index == other.index;
@@ -229,7 +231,7 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
       _group_assignments[target].push_back(std::make_pair(id, participant));
     }
     _group_states[target].weight +=
-        data.size() * rating(participant)[target].getValue();
+        data.size() * rating(participant)[target].getValue(numGroups());
   } else {
     if (groupCapacity(target) == 0) {
       return false;
@@ -237,7 +239,7 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
     _group_states[target].capacity--;
     _group_assignments[target].push_back(
         std::make_pair(_participants[participant].index, participant));
-    _group_states[target].weight += rating(participant)[target].getValue();
+    _group_states[target].weight += rating(participant)[target].getValue(numGroups());
   }
   _participants[participant].assignment = target;
   return true;
@@ -255,7 +257,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
         [&](const auto &pair) { return pair.second == participant; });
     if (to_remove != assign_list.end()) {
       _group_states[group].capacity++;
-      _group_states[group].weight += rating(participant)[group].getValue();
+      _group_states[group].weight += rating(participant)[group].getValue(numGroups());
       assign_list.erase(to_remove);
     } else {
       break;

@@ -130,7 +130,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
             selected.push_back(random_index);
           }
 
-          uint32_t rating = ceil(factor * s.rating(part).at(group).getValue());
+          uint32_t rating = ceil(factor * s.rating(part).at(group).getValue(s.numGroups()));
           for (size_t index : selected) {
             assert(first_group_vertex[group] + index < first_group_vertex[group + 1]);
             add_edge(first_group_vertex[group] + index, first_participant + i, EdgeProperty(rating), g);

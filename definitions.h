@@ -12,21 +12,22 @@ static const uint32_t MIN_GROUP_SIZE = 12;
 static const double CAPACITY_BUFFER = 1.05;
 static const bool VERBOSE = false;
 
-static const uint32_t RATING_VAL_TABLE[NUM_RATINGS] = {100, 130, 180, 195, 200};
-static const char *const RATING_NAME_TABLE[NUM_RATINGS] = {"--", "-", "O", "+", "++"};
-
 // ####################################
 // ########     Input Data     ########
 // ####################################
+
+using GroupID = uint32_t;
+using StudentID = uint32_t;
+using ParticipantID = uint32_t;
 
 struct Rating {
   uint32_t index;
 
   Rating(uint32_t index);
 
-  uint32_t getValue() const;
+  uint32_t getValue(GroupID num_groups) const;
 
-  const char *getName() const;
+  std::string getName() const;
 
   bool operator==(const Rating &other) const;
 
@@ -34,10 +35,6 @@ struct Rating {
 
   Rating() = default;
 };
-
-using GroupID = uint32_t;
-using StudentID = uint32_t;
-using ParticipantID = uint32_t;
 
 enum class CourseType {
   Info = 0,

@@ -139,9 +139,9 @@ moveFromGroup(const State &s, GroupID group,
                 (rating[i].index == lvl.level)) {
               MoveStep step(lvl.parent,
                             parent_node.path_rating +
-                                static_cast<int32_t>(rating[i].getValue()) -
+                                static_cast<int32_t>(rating[i].getValue(s.numGroups())) -
                                 static_cast<int32_t>(
-                                    rating[parent_node.target].getValue()),
+                                    rating[parent_node.target].getValue(s.numGroups())),
                             pair.second, i);
               queue.emplace_back(step);
             }
@@ -231,8 +231,8 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
           int32_t curr_rating =
               result->second +
               static_cast<int32_t>(num_to_remove) *
-                  (static_cast<int32_t>(rating[g_id].getValue()) -
-                   static_cast<int32_t>(rating[group].getValue()));
+                  (static_cast<int32_t>(rating[g_id].getValue(s.numGroups())) -
+                   static_cast<int32_t>(rating[group].getValue(s.numGroups())));
           if (curr_rating > max_rating) {
             max_rating = curr_rating;
             max_id = g_id;
