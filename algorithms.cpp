@@ -352,7 +352,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
 // Top level function that add filters to reassign participants,
 // so that a minimum number per group can be ensured
 void assertMinimumNumberPerGroupForSpecificType(State &s,
-    std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> filters) {
+    const std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> &filters) {
   bool success = true;
   while (success) {
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
@@ -380,14 +380,14 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     // disable groups for specific participants
-    for (size_t i = 0; i < std::min(DISABLED_GROUPS_PER_STEP, (total_num_groups + 4) / 5); ++i) {
+    for (size_t _i = 0; _i < std::min(DISABLED_GROUPS_PER_STEP, (total_num_groups + 4) / 5); ++_i) {
       size_t max_index = 0;
       int32_t max_rating = std::numeric_limits<int32_t>::min();
       for (size_t j = 0; j < group_disable_order.size(); ++j) {
         if (!group_disable_order[j].empty()) {
           auto [group, num] = group_disable_order[j].back();
           // 2 times diff to minimum minus current number
-          int32_t rating = 2 * (std::get<1>(filters[i]) - num) - num;
+          int32_t rating = 2 * (std::get<1>(filters[j]) - num) - num;
           if (rating > max_rating) {
             max_rating = rating;
             max_index = j;

@@ -13,6 +13,6 @@ void assignWithMinimumNumberPerGroup(
     State &s, StudentID min_capacity);
 
 void assertMinimumNumberPerGroupForSpecificType(State &s,
-    std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> filters);
+    const std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> &filters);
 
 void printCurrentAssignment(const State &s);
