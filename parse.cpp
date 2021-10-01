@@ -155,11 +155,55 @@ PTree writeOutputToTree(const State &s) {
   return std::move(root);
 }
 
+void outputStudentDataToFile(const StudentData& data,  const std::string &rating, std::ofstream& file) {
+  std::string course;
+  switch (data.course_type) {
+  case CourseType::Info:
+    course = "Info";
+    break;
+  case CourseType::Mathe:
+    course = "Mathe";
+    break;
+  case CourseType::Lehramt:
+    course = "Lehramt";
+    break;
+  default:
+    course = "-";
+  }
+  std::string degree;
+  switch (data.degree_type) {
+  case DegreeType::Bachelor:
+    degree = "Bachelor";
+    break;
+  case DegreeType::Master:
+    degree = "Master";
+    break;
+  default:
+    degree = "-";
+  }
+  std::string semester;
+  switch (data.semester) {
+  case Semester::Ersti:
+    semester = "Ersti";
+    break;
+  case Semester::Dritti:
+    semester = "Dritti";
+    break;
+  default:
+    semester = "-";
+  }
+  file << data.name << ", " << course << ", " << degree << ", " << semester
+        << ", [" << rating << "]" << std::endl;
+}
+
 // Writes the output in (more) human-readable form to the specified path
-void writeOutputToFiles(const State &s, std::string path) {
+void writeOutputToFiles(const State &s, std::string path,
+    const std::vector<std::pair<std::function<bool(const StudentData&)>, std::string>> &filters) {
   // TODO
   std::string removed_path = path + "/RemovedGroups";
   std::ofstream removed(removed_path);
+  std::string stats_path = path + "/Stats";
+  std::ofstream stats(stats_path);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     assert(group < s.numGroups());
     std::string group_path = path + "/" + s.groupData(group).name;
@@ -167,35 +211,22 @@ void writeOutputToFiles(const State &s, std::string path) {
       removed << s.groupData(group).name << std::endl;
     } else {
       std::ofstream file(group_path);
+      std::vector<size_t> num_per_type(filters.size());
       for (const auto &pair : s.groupAssignmentList(group)) {
         StudentData data = s.data().students[pair.first];
         const std::string &rating = s.rating(pair.second)[group].getName();
-        std::string course;
-        switch (data.course_type) {
-        case CourseType::Info:
-          course = "Info";
-          break;
-        case CourseType::Mathe:
-          course = "Mathe";
-          break;
-        case CourseType::Any:
-          course = "None";
-          break;
+        outputStudentDataToFile(data, rating, file);
+        for (size_t i = 0; i < filters.size(); ++i) {
+          if (filters[i].first(data)) {
+            ++num_per_type[i];
+          }
         }
-        std::string degree;
-        switch (data.degree_type) {
-        case DegreeType::Bachelor:
-          degree = "Bachelor";
-          break;
-        case DegreeType::Master:
-          degree = "Master";
-          break;
-        case DegreeType::Any:
-          degree = "None";
-          break;
-        }
-        file << data.name << "," << course << "," << degree << "," << " [" << rating << "]" << std::endl;
       }
-    }
+      std::string group_stats = s.groupData(group).name + ": Size=" + std::to_string(s.groupSize(group)) + "; ";
+      for (size_t i = 0; i < filters.size(); ++i) {
+        group_stats += filters[i].second + "=" + std::to_string(num_per_type[i]) + "; ";
+      }
+      stats << group_stats << std::endl;
+  }
   }
 }
