@@ -9,7 +9,7 @@ template <typename T, typename F>
 std::vector<T> parseList(const PTree &tree, F fn) {
   std::vector<T> result;
   for (auto &element : tree) {
-    result.push_back(fn(element.second));
+    result.push_back(fn(element));
   }
   return std::move(result);
 }
@@ -60,36 +60,18 @@ Semester parseSemester(const std::string& name) {
   }
 }
 
-GroupData parseGroup(const PTree &tree) {
-  std::string id = tree.get<std::string>("id");
-  std::string name = tree.get<std::string>("name");
-  StudentID capacity = tree.get<StudentID>("capacity");
-  CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
-  return GroupData(id, name, capacity, course_type);
-}
-
-StudentData parseStudent(const PTree &tree) {
-  std::string id = tree.get<std::string>("id");
-  std::string name = tree.get<std::string>("name");
-  CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
-  DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type"));
-  Semester semester = parseSemester(tree.get<std::string>("semester"));
-  return StudentData(id, name, course_type, degree_type, semester);
-}
-
-TeamData parseTeam(const PTree &tree, const std::unordered_map<std::string, size_t>& student_id_to_index) {
-  std::string id = tree.get<std::string>("id");
+TeamData parseTeam(const std::string id, const PTree &tree, const std::unordered_map<std::string, size_t>& student_id_to_index) {
   std::vector<StudentID> members =
-    parseList<StudentID>(tree.find("members")->second, [&](const PTree &t) {
-      return student_id_to_index.at(t.get_value<std::string>());
+    parseList<StudentID>(tree, [&](const auto &t) {
+      return student_id_to_index.at(t.second.PTree::get_value<std::string>());
     });
   return TeamData(id, members);
 }
 
 std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std::string, size_t>& group_id_to_index, size_t num_groups) {
   std::vector<std::string> group_order = parseList<std::string>(tree,
-    [&](const PTree &t) {
-      return t.get_value<std::string>();
+    [&](const auto &t) {
+      return t.second.PTree::get_value<std::string>();
     });
   if (group_order.size() != num_groups) {
     std::cerr << "Rating list has different size (" << group_order.size()
@@ -101,18 +83,35 @@ std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std
     size_t group_index = group_id_to_index.at(group_order[i]);
     result[group_index] = Rating(i);
   }
-  return std::move(result);
+  return result;
 }
 
 Input parseInput(const PTree &tree) {
   Input input;
-  input.groups = parseList<GroupData>(tree.find("groups")->second, &parseGroup);
+  auto parseGroup = [](auto element){
+    std::string id = element.first;
+    PTree tree = element.second;
+    std::string name = tree.get<std::string>("name");
+    StudentID capacity = tree.get<StudentID>("capacity");
+    CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
+    return GroupData(id, name, capacity, course_type);
+  };
+  auto parseStudent = [](auto element){
+    std::string id = element.first;
+    PTree tree = element.second;
+    std::string name = tree.get<std::string>("name");
+    CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
+    DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type"));
+    Semester semester = parseSemester(tree.get<std::string>("semester"));
+    return StudentData(id, name, course_type, degree_type, semester);
+  };
+  input.groups = parseList<GroupData>(tree.find("groups")->second, parseGroup);
   auto group_mapping = createMapping(input.groups);
-  input.students = parseList<StudentData>(tree.find("students")->second, &parseStudent);
+  input.students = parseList<StudentData>(tree.find("students")->second, parseStudent);
   auto student_mapping = createMapping(input.students);
   input.teams = parseList<TeamData>(tree.find("teams")->second,
-    [&](const PTree &t) {
-      return parseTeam(t, student_mapping);
+    [&](const auto &t) {
+      return parseTeam(t.first, t.second, student_mapping);
     });
   assert(tree.find("ratings")->second.size() == input.students.size());
   std::vector<std::vector<Rating>> ratings(input.students.size());
@@ -121,7 +120,7 @@ Input parseInput(const PTree &tree) {
     ratings[student_mapping.at(element.first)] = rating_list;
   }
   input.ratings = std::move(ratings);
-  return std::move(input);
+  return input;
 }
 
 PTree writeOutputToTree(const State &s) {
