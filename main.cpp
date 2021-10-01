@@ -39,6 +39,63 @@ int main(int argc, const char *argv[]) {
     std::cerr << "Error opening output file" << std::endl;
     std::exit(-1);
   }
+
+  // Definitions for different types of students
+  auto is_info_ba = [](const StudentData &data) {
+    return data.course_type == CourseType::Info &&
+           data.degree_type != DegreeType::Master;
+  };
+  auto is_math_ba = [](const StudentData &data) {
+    return data.course_type == CourseType::Mathe &&
+           data.degree_type != DegreeType::Master;
+  };
+  auto is_lehramt_ba = [](const StudentData &data) {
+    return data.course_type == CourseType::Lehramt &&
+           data.degree_type != DegreeType::Master;
+  };
+  auto is_ersti = [](const StudentData &data) {
+    return data.semester == Semester::Ersti &&
+           data.degree_type != DegreeType::Master;
+  };
+  auto is_dritti = [](const StudentData &data) {
+    return data.semester == Semester::Dritti &&
+           data.degree_type != DegreeType::Master;
+  };
+  auto is_master = [](const StudentData &data) {
+    return data.degree_type == DegreeType::Master;
+  };
+  auto is_info_ersti = [=](const StudentData &data) {
+    return is_info_ba(data) && is_ersti(data);
+  };
+  auto is_math_ersti = [=](const StudentData &data) {
+    return is_math_ba(data) && is_ersti(data);
+  };
+  auto is_lehramt_ersti = [=](const StudentData &data) {
+    return is_lehramt_ba(data) && is_ersti(data);
+  };
+  auto is_info_dritti = [=](const StudentData &data) {
+    return is_info_ba(data) && is_dritti(data);
+  };
+  auto is_math_dritti = [=](const StudentData &data) {
+    return is_math_ba(data) && is_dritti(data);
+  };
+  auto is_lehramt_dritti = [=](const StudentData &data) {
+    return is_lehramt_ba(data) && is_dritti(data);
+  };
+  auto is_info_master = [=](const StudentData &data) {
+    return data.course_type == CourseType::Info && is_master(data);
+  };
+  auto is_math_master = [=](const StudentData &data) {
+    return data.course_type == CourseType::Mathe && is_master(data);
+  };
+  auto is_lehramt_master = [=](const StudentData &data) {
+    return data.course_type == CourseType::Lehramt && is_master(data);
+  };
+  auto is_lehramt = [](const StudentData &data) {
+    return data.course_type == CourseType::Lehramt;
+  };
+
+  // the main code
   PTree pt;
   boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
@@ -48,18 +105,32 @@ int main(int argc, const char *argv[]) {
 
   printNumberPerRating(state);
 
+  // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
+
   std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
-  auto is_math_and_no_ma = [](const StudentData &data) {
-    return data.course_type == CourseType::Mathe &&
-           data.degree_type != DegreeType::Master;
-  };
-  assertMinimumNumberPerGroupForSpecificType(state, {{is_math_and_no_ma, 5, "Mathe (nicht MA)"}});
+  assertMinimumNumberPerGroupForSpecificType(state, {
+    {is_info_ba, 5, "Info (BA)"},
+    {is_math_ba, 5, "Mathe (BA)"},
+    {is_lehramt_ba, 5, "Lehramt (BA)"},
+    {is_ersti, 10, "Ersti"},
+    {is_dritti, 5, "Dritti"},
+    {is_master, 5, "Master"},
+  });
 
   printNumberPerRating(state);
 
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
   if (argc == 4) {
-    writeOutputToFiles(state, argv[3]);
+    writeOutputToFiles(state, argv[3], {
+      {is_info_ersti, "Info-Ersti"},
+      {is_math_ersti, "Mathe-Ersti"},
+      {is_lehramt_ersti, "Lehramt-Ersti"},
+      {is_info_dritti, "Info-Dritti"},
+      {is_math_dritti, "Mathe-Dritti"},
+      {is_info_master, "Info-Master"},
+      {is_math_master, "Mathe-Master"},
+      {is_lehramt, "Lehramt (gesamt)"},
+    });
   }
 }
