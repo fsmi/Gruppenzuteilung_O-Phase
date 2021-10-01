@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "parse.h"
 
@@ -123,36 +124,28 @@ Input parseInput(const PTree &tree) {
   return std::move(input);
 }
 
-PTree writeStudent(const Input &input, GroupID group, StudentID student) {
-  // TODO
-  StudentData data = input.students[student];
-  PTree tree;
-  tree.put<std::string>("name", data.name);
-  tree.put<int>("course_type", static_cast<int>(data.course_type));
-  tree.put<int>("degree_type", static_cast<int>(data.degree_type));
-  // tree.put<uint32_t>("rating", input.ratings[student][group].index);
-  return std::move(tree);
-}
-
 PTree writeOutputToTree(const State &s) {
-  // TODO
   PTree root;
-  PTree groups;
-  for (GroupID group = 0; group < s.numGroups(); ++group) {
-    PTree group_tree;
-    const GroupData &gd = s.groupData(group);
-    group_tree.put<int>("course_type", static_cast<int>(gd.course_type));
-    group_tree.put<uint32_t>("size", s.groupSize(group));
-    PTree student_array;
-    for (const auto &pair : s.groupAssignmentList(group)) {
-      student_array.push_back(
-          std::make_pair("", writeStudent(s.data(), group, pair.first)));
+  std::unordered_set<std::string> considered_students;
+  for (StudentID participant = 0; participant < s.numParticipants(); ++participant) {
+    std::string group_id = s.groupData(s.getAssignment(participant)).id;
+    if (s.isTeam(participant)) {
+      for (StudentID member : s.teamData(participant).members) {
+        const std::string student_id = s.data().students[member].id;
+        root.put<std::string>(student_id, group_id);
+        considered_students.insert(student_id);
+      }
+    } else {
+      const std::string student_id = s.studentData(participant).id;
+      root.put<std::string>(student_id, group_id);
+      considered_students.insert(student_id);
     }
-    group_tree.add_child("students", std::move(student_array));
-    groups.push_back(std::make_pair("", group_tree));
   }
-  root.add_child("groups", std::move(groups));
-  return std::move(root);
+  if (considered_students.size() != s.data().students.size()) {
+    std::cerr << "WARNING: Output data points (" << considered_students.size()
+              << ") don't match the number of students (" << s.data().students.size() << ")!" << std::endl;
+  }
+  return root;
 }
 
 void outputStudentDataToFile(const StudentData& data,  const std::string &rating, std::ofstream& file) {
@@ -199,7 +192,6 @@ void outputStudentDataToFile(const StudentData& data,  const std::string &rating
 // Writes the output in (more) human-readable form to the specified path
 void writeOutputToFiles(const State &s, std::string path,
     const std::vector<std::pair<std::function<bool(const StudentData&)>, std::string>> &filters) {
-  // TODO
   std::string removed_path = path + "/RemovedGroups";
   std::ofstream removed(removed_path);
   std::string stats_path = path + "/Stats";

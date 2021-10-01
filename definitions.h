@@ -149,6 +149,8 @@ public:
 
   bool isAssigned(ParticipantID id) const;
 
+  GroupID getAssignment(ParticipantID id) const;
+
   const StudentData &studentData(ParticipantID id) const;
 
   const TeamData &teamData(ParticipantID id) const;

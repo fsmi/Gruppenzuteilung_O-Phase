@@ -152,6 +152,11 @@ bool State::isAssigned(ParticipantID id) const {
   return _participants[id].assignment >= 0;
 }
 
+GroupID State::getAssignment(ParticipantID id) const {
+  assert(isAssigned(id) && _participants[id].assignment >= 0);
+  return _participants[id].assignment;
+}
+
 const StudentData &State::studentData(ParticipantID id) const {
   assert(!isTeam(id));
   StudentID student_id = _participants[id].index;
