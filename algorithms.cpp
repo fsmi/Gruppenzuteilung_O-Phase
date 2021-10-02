@@ -308,8 +308,8 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
         StudentID capacity = s.groupData(group).capacity;
         if (active_capacity - capacity >=
             ceil(CAPACITY_BUFFER * s.data().students.size())) {
-          std::cout << "> Disable group \"" << s.groupData(group).name << "\"."
-                    << std::endl;
+          std::cout << "> Disable group \"" << s.groupData(group).name << "\" ("
+                    << s.groupSize(group) << " participants)." << std::endl;
           s.disableGroup(group);
           active_capacity -= capacity;
           removed = true;

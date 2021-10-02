@@ -63,6 +63,10 @@ Semester parseSemester(const std::string& name) {
 TeamData parseTeam(const std::string id, const PTree &tree, const std::unordered_map<std::string, size_t>& student_id_to_index) {
   std::vector<StudentID> members =
     parseList<StudentID>(tree, [&](const auto &t) {
+      std::string id = t.second.PTree::get_value<std::string>();
+      if (student_id_to_index.find(id) == student_id_to_index.end()) {
+        std::cout << "Student ID not found: " << id << std::endl;
+      }
       return student_id_to_index.at(t.second.PTree::get_value<std::string>());
     });
   return TeamData(id, members);
@@ -75,7 +79,7 @@ std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std
     });
   if (group_order.size() != num_groups) {
     std::cerr << "Rating list has different size (" << group_order.size()
-              << ") then number of groups (" << num_groups << ")." << std::endl;
+              << ") than number of groups (" << num_groups << ")." << std::endl;
     std::exit(-1);
   }
   std::vector<Rating> result(num_groups);
