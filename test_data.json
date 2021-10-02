@@ -1,63 +1,53 @@
 {
-	"groups" : [
-		{
-            "id" : "uuid1G",
+	"groups" : {
+		"uuid1G" : {
 			"name" : "Gruppe Info 1",
 			"capacity" : 4,
 			"course_type" : "any"
 		},
-		{
-            "id" : "uuid2G",
-			"name" : "Gruppe Info 2",
-			"capacity" : 6,
+		"uuid2G" : {
+			"name" : "Gruppe Info 1",
+			"capacity" : 4,
 			"course_type" : "any"
 		},
-		{
-            "id" : "uuid3G",
-			"name" : "Gruppe Mathe",
-			"capacity" : 3,
-			"course_type" : "mathe"
+		"uuid3G" : {
+			"name" : "Gruppe Info 1",
+			"capacity" : 4,
+			"course_type" : "any"
 		}
-	],
-	"students" : [
-		{
-            "id" : "uuid1S",
+	},
+	"students" : {
+		"uuid1S" : {
 			"name" : "Info Student",
 			"course_type" : "info",
 			"degree_type" : "bachelor",
 			"semester" : "ersti"
 		},
-		{
-            "id" : "uuid2S",
-			"name" : "Mathe Student",
-			"course_type" : "mathe",
+		"uuid2S" : {
+			"name" : "Info Student",
+			"course_type" : "info",
 			"degree_type" : "bachelor",
 			"semester" : "ersti"
 		},
-		{
-            "id" : "uuid3S",
-			"name" : "Lehramt Student",
-			"course_type" : "lehramt",
-			"degree_type" : "bachelor",
-			"semester" : "dritti"
-		},
-		{
-            "id" : "uuid4S",
-			"name" : "Master Student",
+		"uuid3S" : {
+			"name" : "Info Student",
 			"course_type" : "info",
-			"degree_type" : "master",
+			"degree_type" : "bachelor",
+			"semester" : "ersti"
+		},
+		"uuid4S" : {
+			"name" : "Info Student",
+			"course_type" : "info",
+			"degree_type" : "bachelor",
 			"semester" : "ersti"
 		}
-	],
-	"teams" : [
-		{
-			"id" : "uuid2S",
-			"members" : [
+	},
+	"teams" : {
+		"uuid2S" : [
                 "uuid2S",
                 "uuid3S"
             ]
-		}
-	],
+    },
 	"ratings" : {
         "uuid2S" : [
             "uuid3G",
