@@ -197,9 +197,10 @@ void writeOutputToFiles(const State &s, std::string path,
   std::ofstream stats(stats_path);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     assert(group < s.numGroups());
-    std::string group_path = path + "/" + s.groupData(group).name;
+    const std::string group_name_id = s.groupData(group).name + "-" + s.groupData(group).id.substr(0, 5);
+    const std::string group_path = path + "/" + group_name_id;
     if (s.groupAssignmentList(group).empty()) {
-      removed << s.groupData(group).name << std::endl;
+      removed << s.groupData(group).name << " (" << s.groupData(group).id << ")" << std::endl;
     } else {
       std::ofstream file(group_path);
       std::vector<size_t> num_per_type(filters.size());
@@ -213,7 +214,7 @@ void writeOutputToFiles(const State &s, std::string path,
           }
         }
       }
-      std::string group_stats = s.groupData(group).name + ": Size=" + std::to_string(s.groupSize(group)) + "; ";
+      std::string group_stats = group_name_id + ": Size=" + std::to_string(s.groupSize(group)) + "; ";
       for (size_t i = 0; i < filters.size(); ++i) {
         group_stats += filters[i].second + "=" + std::to_string(num_per_type[i]) + "; ";
       }

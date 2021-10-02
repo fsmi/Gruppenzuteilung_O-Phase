@@ -100,6 +100,7 @@ int main(int argc, const char *argv[]) {
   boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
   std::cout << "Input file successfully parsed." << std::endl;
+  std::cout << "Number of students: " << input.students.size() << std::endl;
   State state(input);
   assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
 

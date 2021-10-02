@@ -96,9 +96,9 @@ int main() {
 
   std::cout << std::endl << "Reassingning specific students." << std::endl;
   assertMinimumNumberPerGroupForSpecificType(s, {
-    {is_math_and_no_ma, 5, "Mathe (nicht MA)"},
-    {is_lehramt_and_no_ma, 5, "Lehramt (nicht MA)"},
-    {is_dritti_and_no_ma, 7, "Dritti (nicht MA)"},
+    {is_math_and_no_ma, 5, "Mathe (BA)"},
+    {is_lehramt_and_no_ma, 5, "Lehramt (BA)"},
+    {is_dritti_and_no_ma, 7, "Dritti (BA)"},
     {is_master, 5, "Master"}
   });
 }
