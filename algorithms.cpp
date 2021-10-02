@@ -371,12 +371,12 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
           }
         }
       }
-      const GroupID group = group_disable_order[max_index].back().first;
+      auto [group, num] = group_disable_order[max_index].back();
       group_disable_order[max_index].pop_back();
       auto [filter, minimum, name] = filters[max_index];
       if (VERBOSE) {
         std::cout << "> Removing students of type \"" << name << "\" from group "
-                  << s.groupData(group).name << std::endl;
+                  << s.groupData(group).name << " (" << num << " students)" << std::endl;
       }
       s.addFilterToGroup(group, filter);
     }

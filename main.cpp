@@ -110,11 +110,12 @@ int main(int argc, const char *argv[]) {
 
   std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
   assertMinimumNumberPerGroupForSpecificType(state, {
-    {is_info_ba, 5, "Info (BA)"},
-    {is_math_ba, 5, "Mathe (BA)"},
+    {is_info_ersti, 5, "Info (Ersti)"},
+    {is_math_ersti, 5, "Mathe (Ersti)"},
     {is_lehramt_ba, 5, "Lehramt (BA)"},
-    {is_ersti, 10, "Ersti"},
-    {is_dritti, 5, "Dritti"},
+    {is_ersti, 8, "Ersti"},
+    {is_info_dritti, 4, "Info-Dritti"},
+    {is_math_dritti, 3, "Mathe-Dritti"},
     {is_master, 5, "Master"},
   });
 
