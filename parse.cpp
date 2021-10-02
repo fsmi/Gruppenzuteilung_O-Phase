@@ -193,8 +193,20 @@ void writeOutputToFiles(const State &s, std::string path,
     const std::vector<std::pair<std::function<bool(const StudentData&)>, std::string>> &filters) {
   std::string removed_path = path + "/RemovedGroups";
   std::ofstream removed(removed_path);
-  std::string stats_path = path + "/Stats";
+  std::string stats_path = path + "/Stats.csv";
   std::ofstream stats(stats_path);
+
+  // csv header
+  std::string header = "Name, Size, ";
+  for (size_t i = 0; i < filters.size(); ++i) {
+    header += filters[i].second + (i + 1 == filters.size() ? "" : ", ");
+  }
+  stats << header << std::endl;
+
+  StudentID sum = 0;
+  std::vector<StudentID> filter_sums(filters.size());
+
+  // group data
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     assert(group < s.numGroups());
     const std::string group_name_id = s.groupData(group).name + "-" + s.groupData(group).id.substr(0, 5);
@@ -214,11 +226,19 @@ void writeOutputToFiles(const State &s, std::string path,
           }
         }
       }
-      std::string group_stats = group_name_id + ": Size=" + std::to_string(s.groupSize(group)) + "; ";
+      std::string group_stats = group_name_id + ", " + std::to_string(s.groupSize(group)) + ", ";
+      sum += s.groupSize(group);
       for (size_t i = 0; i < filters.size(); ++i) {
-        group_stats += filters[i].second + "=" + std::to_string(num_per_type[i]) + "; ";
+        group_stats += std::to_string(num_per_type[i]) + (i + 1 == filters.size() ? "" : ", ");
+        filter_sums[i] += num_per_type[i];
       }
       stats << group_stats << std::endl;
+    }
   }
+  // Sums
+  std::string sums = "Summe, " + std::to_string(sum) + ", ";
+  for (size_t i = 0; i < filter_sums.size(); ++i) {
+    sums += std::to_string(filter_sums[i]) + (i + 1 == filters.size() ? "" : ", ");
   }
+  stats << sums << std::endl;
 }
