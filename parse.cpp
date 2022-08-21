@@ -11,7 +11,7 @@ std::vector<T> parseList(const PTree &tree, F fn) {
   for (auto &element : tree) {
     result.push_back(fn(element));
   }
-  return std::move(result);
+  return result;
 }
 
 template <typename T>
@@ -20,7 +20,7 @@ std::unordered_map<std::string, size_t> createMapping(const std::vector<T> &list
   for (size_t i = 0; i < list.size(); ++i) {
     result.insert({list[i].id, i});
   }
-  return std::move(result);
+  return result;
 }
 
 CourseType parseCourseType(const std::string& name) {

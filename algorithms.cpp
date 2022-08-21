@@ -218,7 +218,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
       }
     }
   }
-  return std::move(modified_groups);
+  return modified_groups;
 }
 
 bool assignTeamsAndStudents(State &s) {

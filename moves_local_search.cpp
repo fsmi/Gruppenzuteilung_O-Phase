@@ -67,7 +67,7 @@ groupsByNumber(const State &s, StudentID min_members,
       result.push_back(pair.first);
     }
   }
-  return std::move(result);
+  return result;
 }
 
 std::vector<StudentID>
@@ -83,7 +83,7 @@ numPerGroup(const State &s,
       }
     }
   }
-  return std::move(num_per_group);
+  return num_per_group;
 }
 
 // perform a BFS for the best possible move
