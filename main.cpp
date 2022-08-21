@@ -2,10 +2,14 @@
 #include <iostream>
 
 #include "boost/property_tree/json_parser.hpp"
+#include "boost/program_options.hpp"
 
 #include "algorithms.h"
 #include "moves_local_search.h"
 #include "parse.h"
+#include "config.h"
+
+namespace po = boost::program_options;
 
 // print number of ratings for different rating levels
 void printNumberPerRating(const State& state) {
@@ -24,17 +28,62 @@ void printNumberPerRating(const State& state) {
   }
 }
 
-int main(int argc, const char *argv[]) {
-  if (argc != 3 && argc != 4) {
-    std::cout << "Usage: ./Main <input> <output> [<out_path>]" << std::endl;
-    std::exit(-1);
+// parse command line arguments and (if provided) config file,
+// using the boost program options library
+void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
+                       std::string& out_filename, std::string& groups_filename) {
+  po::options_description config_options = getConfigOptions();
+
+  std::string config;
+  po::options_description cmd_options("Primary Options");
+  cmd_options.add_options()
+          ("input,i",
+            po::value<std::string>(&in_filename)->value_name("<string>")->required(),
+            "Input filename")
+          ("output,o",
+            po::value<std::string>(&out_filename)->value_name("<string>")->required(),
+            "Output filename")
+          ("config,c",
+            po::value<std::string>(&config)->value_name("<string>"),
+            "Config filename")
+          ("groups,g",
+            po::value<std::string>(&groups_filename)->value_name("<string>"),
+            "Groups filename: If present, creates for each group a "
+            "file with all assigned students of the group")
+          ("help", "show help message");
+  cmd_options.add(config_options);
+
+  po::variables_map cmd_vm;
+  po::store(po::parse_command_line(argc, argv, cmd_options), cmd_vm);
+
+  if (cmd_vm.count("help") != 0 || argc == 1) {
+    std::cout << cmd_options << std::endl;
+    exit(0);
   }
-  std::ifstream in_file(argv[1]);
+  po::notify(cmd_vm);
+
+  if ( config != "" ) {
+    std::ifstream config_file(config.c_str());
+    if (!config_file) {
+      std::cerr << "Error opening config file" << std::endl;
+      std::exit(-1);
+    }
+
+    po::store(po::parse_config_file(config_file, config_options, true), cmd_vm);
+    po::notify(cmd_vm);
+  }
+}
+
+int main(int argc, const char *argv[]) {
+  std::string in_filename, out_filename, groups_filename;
+  parseCmdAndConfig(argc, argv, in_filename, out_filename, groups_filename);
+
+  std::ifstream in_file(in_filename);
   if (!in_file) {
     std::cerr << "Error opening input file" << std::endl;
     std::exit(-1);
   }
-  std::ofstream out_file(argv[2]);
+  std::ofstream out_file(out_filename);
   if (!out_file) {
     std::cerr << "Error opening output file" << std::endl;
     std::exit(-1);
@@ -122,8 +171,8 @@ int main(int argc, const char *argv[]) {
 
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
-  if (argc == 4) {
-    writeOutputToFiles(state, argv[3], {
+  if (groups_filename != "") {
+    writeOutputToFiles(state, groups_filename, {
       {is_info_ersti, "Info-Ersti"},
       {is_math_ersti, "Mathe-Ersti"},
       {is_lehramt_ersti, "Lehramt-Ersti"},

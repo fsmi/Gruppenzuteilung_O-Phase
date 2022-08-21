@@ -2,22 +2,26 @@ cmake_minimum_required(VERSION 3.12)
 set(CMAKE_CXX_STANDARD 17)
 project(OPhaseGroupAssignment)
 
-add_executable(Main main.cpp definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp)
-add_executable(BasicTest basic_test definitions.cpp moves_local_search.cpp algorithms.cpp alg_common.cpp)
-add_executable(RandomizedTest randomized_test definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp)
-
 execute_process(COMMAND cmake -P ${CMAKE_CURRENT_SOURCE_DIR}/download_boost.cmake)
 
 include_directories(SYSTEM ${CMAKE_CURRENT_BINARY_DIR}/boost/)
 
 # glob boost sources
-file(GLOB MINI_BOOST_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/boost/libs/graph/src/*.cpp)
+file(GLOB MINI_BOOST_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/boost/libs/program_options/src/*.cpp)
 
 add_library(mini_boost STATIC ${MINI_BOOST_SOURCES})
 set_target_properties(mini_boost PROPERTIES LINKER_LANGUAGE CXX)
 set(Boost_LIBRARIES mini_boost)
 set(Boost_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/boost/boost/)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
+
+set(CPP_FILES main.cpp definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp config.cpp)
+
+add_executable(Main ${CPP_FILES})
+target_link_libraries(Main ${Boost_LIBRARIES})
+add_executable(BasicTest ${CPP_FILES})
+add_executable(RandomizedTest ${CPP_FILES})
 
 # set flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
