@@ -11,31 +11,31 @@ int main() {
   input.groups.emplace_back("mathe", "Mathe", 3, CourseType::Mathe);
   input.students.emplace_back("e1", "Ersti 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(4), Rating(3), Rating(2), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.students.emplace_back("e2", "Ersti 2", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
+      std::vector<Rating>{Rating(2), Rating(1), Rating(0)});
   input.students.emplace_back("e3", "Ersti 3", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(3), Rating(4), Rating(4)});
+      std::vector<Rating>{Rating(1), Rating(2), Rating(0)});
   input.students.emplace_back("e4", "Ersti 4", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(2), Rating(1), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.students.emplace_back("m1", "Mathe 1", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(1), Rating(1), Rating(4), Rating(1)});
+      std::vector<Rating>{Rating(2), Rating(1), Rating(0)});
   input.students.emplace_back("m2", "Mathe 2", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
+      std::vector<Rating>{Rating(2), Rating(1), Rating(0)});
   input.students.emplace_back("m3", "Mathe 3", CourseType::Mathe, DegreeType::Bachelor, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(4), Rating(3), Rating(2), Rating(3)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.students.emplace_back("ma", "Master", CourseType::Info, DegreeType::Master, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(1), Rating(2), Rating(3), Rating(4)});
+      std::vector<Rating>{Rating(2), Rating(1), Rating(0)});
   input.students.emplace_back("l1", "Lerngruppenteilnehmer 1", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID>{8});
 
   State s(input);
@@ -73,13 +73,13 @@ int main() {
 
   input.students.emplace_back("l2", "Lerngruppenteilnehmer 2", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.students.emplace_back("l3", "Lerngruppenteilnehmer 3", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.students.emplace_back("l4", "Lerngruppenteilnehmer 4", CourseType::Any, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.teams[0].members.push_back(9);
   input.teams[0].members.push_back(10);
   input.teams[0].members.push_back(11);
@@ -107,7 +107,7 @@ int main() {
   }
   input.students[4] =
       StudentData("info1", "Info 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
-  auto is_math = [](const StudentData &data) {
+  auto is_math = [](const StudentData &data) noexcept {
     return data.course_type == CourseType::Mathe;
   };
 
@@ -136,12 +136,12 @@ int main() {
   // test filters
   input.students.emplace_back("lx", "Lerngruppenteilnehmer X", CourseType::Mathe, DegreeType::Any, Semester::Ersti);
   input.ratings.emplace_back(
-      std::vector<Rating>{Rating(3), Rating(2), Rating(1), Rating(1)});
+      std::vector<Rating>{Rating(2), Rating(1), Rating(0)});
   input.teams.emplace_back("Lerngruppe X", std::vector<StudentID>{12});
 
   s = State(input);
   assert(!s.isExludedFromGroup(0, 0));
-  s.addFilterToGroup(0, [](const StudentData& data) {
+  s.addFilterToGroup(0, [](const StudentData& data) noexcept {
     return data.course_type == CourseType::Mathe;
   });
   // Lerngruppe A
