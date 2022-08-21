@@ -280,7 +280,8 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   StudentID allowed_min = 1;
   StudentID active_capacity = s.totalActiveGroupCapacity();
   while (true) {
-    assert(assignTeamsAndStudents(s));
+    const bool success = assignTeamsAndStudents(s);
+    assert(success);
     StudentID current_min = std::numeric_limits<StudentID>::max();
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       if (s.groupIsEnabled(group)) {
@@ -330,6 +331,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
 // so that a minimum number per group can be ensured
 void assertMinimumNumberPerGroupForSpecificType(State &s,
     const std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> &filters) {
+  std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
   bool success = true;
   while (success) {
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
@@ -353,6 +355,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     if (total_num_groups == 0) {
+      std::cout << "Successfully calculated reassignment!" << std::endl;
       break;
     }
 
@@ -387,7 +390,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     if (success) {
       s = s_temp;
     } else {
-      std::cout << "Could not continue reassignment. Stopping." << std::endl;
+      std::cout << "WARNING: Could not continue reassignment. Stopping." << std::endl;
     }
   }
 }

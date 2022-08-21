@@ -117,6 +117,8 @@ Input parseInput(const PTree &tree) {
     [&](const auto &t) {
       return parseTeam(t.first, t.second, student_mapping);
     });
+  std::cout << "Number of ratings: " << tree.find("ratings")->second.size() << std::endl;
+  std::cout << "Number of students: " << input.students.size() << std::endl;
   assert(tree.find("ratings")->second.size() == input.students.size());
   std::vector<std::vector<Rating>> ratings(input.students.size());
   for (auto &element : tree.find("ratings")->second) {
@@ -188,7 +190,7 @@ void outputStudentDataToFile(const StudentData& data,  const std::string &rating
   default:
     semester = "-";
   }
-  file << data.name << ", " << course << ", " << degree << ", " << semester
+  file << data.name << ", " << data.id << ", " << course << ", " << degree << ", " << semester
         << ", [" << rating << "]" << std::endl;
 }
 

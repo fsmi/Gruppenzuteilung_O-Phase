@@ -108,7 +108,6 @@ int main(int argc, const char *argv[]) {
 
   // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
 
-  std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
   assertMinimumNumberPerGroupForSpecificType(state, {
     {is_info_ersti, 5, "Info (Ersti)"},
     {is_math_ersti, 5, "Mathe (Ersti)"},

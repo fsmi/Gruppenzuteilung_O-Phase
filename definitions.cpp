@@ -136,6 +136,7 @@ StudentID State::groupSize(GroupID id) const {
 }
 
 uint32_t State::groupWeight(GroupID id) const {
+  // TODO: assert correctness?!
   assert(id < data().groups.size());
   return _group_states[id].weight;
 }
@@ -255,8 +256,10 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
   assert(isAssigned(participant));
   assert(assignment(participant) == group);
 
-  std::vector<std::pair<StudentID, ParticipantID>> &assign_list =
+  std::vector<std::pair<StudentID, ParticipantID>>& assign_list =
       _group_assignments[group];
+
+  // because a participant might be a team, we need to remove all members in a loop
   while (true) {
     auto to_remove = std::find_if(
         assign_list.begin(), assign_list.end(),
