@@ -69,6 +69,7 @@ State::State(const Input &data)
     assert(!team.members.empty());
     for (const StudentID &student : team.members) {
       assert(student < is_in_team.size() && !is_in_team[student]);
+      assert(data.ratings[student].size() == data.groups.size());
       assert(
           ratingsEqual(data.ratings[student], data.ratings[team.members[0]]));
       is_in_team[student] = true;
@@ -266,7 +267,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
         [&](const auto &pair) { return pair.second == participant; });
     if (to_remove != assign_list.end()) {
       _group_states[group].capacity++;
-      _group_states[group].weight += rating(participant)[group].getValue(numGroups());
+      _group_states[group].weight -= rating(participant)[group].getValue(numGroups());
       assign_list.erase(to_remove);
     } else {
       break;
