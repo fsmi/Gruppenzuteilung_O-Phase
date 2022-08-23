@@ -55,7 +55,7 @@ moveFromGroup(const State &s, GroupID group,
               std::function<bool(const StudentData &)> predicate,
               int32_t best_expected = 0);
 
-void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
+void moveAllFromGroup(State &s, GroupID group, StudentID min,
                       std::function<bool(const StudentData &)> predicate);
 
 void assertMininumNumber(State &s, StudentID min,

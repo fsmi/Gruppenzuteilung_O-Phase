@@ -32,7 +32,7 @@ void printNumberPerRating(const State& state) {
 // using the boost program options library
 void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
                        std::string& out_filename, std::string& groups_filename) {
-  po::options_description config_options = getConfigOptions();
+  po::options_description config_options = Config::getConfigOptions();
 
   std::string config;
   po::options_description cmd_options("Primary Options");
@@ -151,7 +151,7 @@ int main(int argc, const char *argv[]) {
   std::cout << "Input file successfully parsed." << std::endl;
   std::cout << "Number of students: " << input.students.size() << std::endl;
   State state(input);
-  assignWithMinimumNumberPerGroup(state, MIN_GROUP_SIZE);
+  assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
 
   printNumberPerRating(state);
 

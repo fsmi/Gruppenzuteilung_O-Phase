@@ -4,12 +4,48 @@
 #include <string>
 #include <vector>
 
-// TODO: Max team size
-static const size_t DISABLED_GROUPS_PER_STEP = 1;
-static const uint32_t MIN_GROUP_SIZE = 10;
-static const uint32_t MAX_GROUP_SIZE = 200;
-static const double CAPACITY_BUFFER = 1.05;
-static const bool VERBOSE = false;
+// ####################################
+// ########   Logging Macros   ########
+// ####################################
+
+#define GREEN "\033[1;92m"
+#define CYAN "\033[1;96m"
+#define YELLOW "\033[1;93m"
+#define RED "\033[1;91m"
+#define END "\033[0m"
+
+#define LOG(msg, verbosity) \
+  do { \
+    if (Config::get().verbosity_level > 0 \
+        && (verbosity) <= Config::get().verbosity_level) { \
+      std::cout << msg << std::endl; \
+    } \
+  } while (false)
+
+#define ERROR(msg, top_level) LOG(RED << "[ERROR]" << END << " " << msg, top_level ? 0 : 1)
+// #define ERROR(msg) ERROR(msg, true)
+#define MAJOR_INFO(msg, top_level) LOG(GREEN << "[INFO]" << END << " " << msg, top_level ? 0 : 1)
+// #define MAJOR_INFO(msg) INFO(msg, true)
+#define INFO(msg, top_level) LOG(GREEN << "[INFO]" << END << " " << msg, top_level ? 1 : 2)
+// #define INFO(msg) MINOR_INFO(msg, true)
+#define WARNING(msg, top_level) LOG(YELLOW << "[WARNING]" << END << " " << msg, top_level ? 1 : 2)
+// #define WARNING(msg) WARNING(msg, true)
+#define TRACE_START CYAN << ">" << END << " "
+#define TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 3 : 4)
+// #define TRACE(msg) TRACE(msg, true)
+
+#define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg; std::exit(-1)
+#define ASSERT_WITH(cond, msg) \
+  do { \
+    if (!(cond)) { \
+      std::cout << RED << "[ERROR]" << END << " Assertion failed at: " \
+                << __FILENAME__ << ": " << __FUNCTION__ << ": " << __LINE__ << std::endl; \
+      std::cout << "`ASSERT(" << #cond << ")`" << std::endl; \
+      std::cout << msg << std::endl; \
+    } \
+  } while (false)
+#define ASSERT(cond) ASSERT(cond, msg)
+
 
 // ####################################
 // ########     Input Data     ########

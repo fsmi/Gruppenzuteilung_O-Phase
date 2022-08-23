@@ -9,12 +9,11 @@
 #include <boost/algorithm/string.hpp>
 
 #include "alg_common.h"
-
-const static int64_t STEPS_PER_VALUE = 1000;
+#include "config.h"
 
 void printMove(const State &s, ParticipantID /*part*/, GroupID from, GroupID to) {
   const std::string p_name = std::string("****");
-  std::cout << "move \"" << p_name << "\" from group \""
+  std::cout << "move from group \""
             << s.groupData(from).name << "\" to group \""
             << s.groupData(to).name << "\", ";
 }
@@ -100,10 +99,9 @@ moveFromGroup(const State &s, GroupID group,
   size_t max_idx = 0;
   while (
       !queue.empty() &&
-      (max_idx == 0 || (-static_cast<int64_t>(search_tree[max_idx].path_rating -
-                                              best_expected) *
-                            STEPS_PER_VALUE >
-                        counter))) {
+      (max_idx == 0 || (-static_cast<int64_t>(search_tree[max_idx].path_rating - best_expected) *
+                            Config::get().search_steps_per_value
+                            > counter))) {
     std::variant<MoveStep, SearchLevel> next = queue.front();
     queue.pop_front();
     if (std::holds_alternative<MoveStep>(next)) {
@@ -169,8 +167,8 @@ moveFromGroup(const State &s, GroupID group,
 }
 
 std::optional<std::pair<std::vector<MoveSequence>, int32_t>>
-moveAllFromGroup(const State &s, GroupID group, StudentID number,
-                 std::function<bool(const StudentData &)> predicate) {
+moveIterativelyFromGroup(const State &s, GroupID group, StudentID number,
+                         std::function<bool(const StudentData &)> predicate) {
   assert(s.groupSize(group) >= number);
   int32_t total_rating = 0;
   std::vector<MoveSequence> result;
@@ -189,7 +187,7 @@ moveAllFromGroup(const State &s, GroupID group, StudentID number,
 }
 
 // Reassign all students of a specified group that match a certain predicate
-void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
+void moveAllFromGroup(State &s, GroupID group, StudentID min,
                       std::function<bool(const StudentData &)> predicate) {
   while (true) {
     const std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
@@ -226,7 +224,7 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
           g_num_remove = num_to_remove - s.groupCapacity(g_id);
         }
         // std::cout << "g_num_remove=" << g_num_remove << std::endl;
-        auto result = moveAllFromGroup(s, g_id, g_num_remove, predicate);
+        auto result = moveIterativelyFromGroup(s, g_id, g_num_remove, predicate);
         if (result.has_value()) {
           int32_t curr_rating =
               result->second +
@@ -242,18 +240,16 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
       }
     }
     assert(max_rating > std::numeric_limits<int32_t>::min());
-    if (print_moves) {
-      std::cout << "> Moves: ";
+    if (Config::get().verbosity_level > 3) {
+      std::cout << TRACE_START << "Moves: ";
     }
     for (const MoveSequence &seq : max_seqs) {
-      seq.apply(s, print_moves);
+      seq.apply(s, true);
     }
 
     assert(s.assignParticipant(part, max_id));
-    if (print_moves) {
+    if (Config::get().verbosity_level > 3) {
       printMove(s, part, group, max_id);
-    }
-    if (print_moves) {
       std::cout << " (diff=" << max_rating << ")." << std::endl;
     }
   }
@@ -264,14 +260,15 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min, bool print_moves,
 // This is done by a local search algorithm that reassigns the students
 void assertMininumNumber(State &s, StudentID min,
                          std::function<bool(const StudentData &)> predicate) {
+  // TODO: name of predicate
   std::vector<GroupID> groups = groupsByNumber(s, min, predicate);
   while (!groups.empty()) {
-    moveAllFromGroup(s, groups[0], min, VERBOSE, predicate);
+    moveAllFromGroup(s, groups[0], min, predicate);
     groups = groupsByNumber(s, min, predicate);
   }
 
-  if (VERBOSE) {
-    std::cout << "Number of students with minimum per group:" << std::endl;
+  if (Config::get().verbosity_level > 1) {
+    INFO("Number of students with minimum per group:", true);
     std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       std::cout << s.groupData(group).name << ": " << num_per_group[group]

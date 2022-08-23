@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include "alg_common.h"
+#include "config.h"
 
 using EdgeProperty = boost::property<boost::edge_weight_t, uint32_t>;
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
@@ -167,11 +168,8 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
         assignment[part] >= 0) {
       bool assign_success = s_temp.assignParticipant(part, assignment[part]);
       if (!assign_success) {
-        if (VERBOSE) {
-          std::cerr << "WARNING: Capacity of group \""
-                    << s_temp.groupData(assignment[part]).name << "\" exceeded."
-                    << std::endl;
-        }
+        WARNING("WARNING: Capacity of group \"" << s_temp.groupData(assignment[part]).name
+                << "\" exceeded.", true);
         success = false;
       }
     }
@@ -209,10 +207,12 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
         if (s.teamData(team).size() == max_size[group]) {
           modified_groups.push_back(group);
           bool success = s.assignParticipant(team, group);
-          if (success && VERBOSE) {
-            std::cout << "> Preassign team \"" << s.teamData(team).id
-                      << "\" to group \"" << s.groupData(group).name << "\"."
-                      << std::endl;
+          if (success) {
+            TRACE("Preassign team \"" << s.teamData(team).id
+                  << "\" to group \"" << s.groupData(group).name << "\".", true);
+          } else {
+            TRACE("Assigning team \"" << s.teamData(team).id
+                  << "\" to group \"" << s.groupData(group).name << "\" failed.", true);
           }
         }
       }
@@ -308,7 +308,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
       for (GroupID group : groups_to_remove) {
         StudentID capacity = s.groupData(group).capacity;
         if (active_capacity - capacity >=
-            ceil(CAPACITY_BUFFER * s.data().students.size())) {
+            ceil(Config::get().capacity_buffer * s.data().students.size())) {
           std::cout << "> Disable group \"" << s.groupData(group).name << "\" ("
                     << s.groupSize(group) << " participants)." << std::endl;
           s.disableGroup(group);
@@ -360,7 +360,8 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     // disable groups for specific participants
-    for (size_t _i = 0; _i < std::min(DISABLED_GROUPS_PER_STEP, (total_num_groups + 4) / 5); ++_i) {
+    const StudentID num_steps = std::min(Config::get().disabled_groups_per_step, (static_cast<StudentID>(total_num_groups) + 3) / 4);
+    for (StudentID _i = 0; _i < num_steps; ++_i) {
       size_t max_index = 0;
       int32_t max_rating = std::numeric_limits<int32_t>::min();
       for (size_t j = 0; j < group_disable_order.size(); ++j) {
@@ -377,10 +378,8 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
       auto [group, num] = group_disable_order[max_index].back();
       group_disable_order[max_index].pop_back();
       auto [filter, minimum, name] = filters[max_index];
-      if (VERBOSE) {
-        std::cout << "> Removing students of type \"" << name << "\" from group "
-                  << s.groupData(group).name << " (" << num << " students)" << std::endl;
-      }
+      TRACE("Removing students of type \"" << name << "\" from group "
+            << s.groupData(group).name << " (" << num << " students)", true);
       s.addFilterToGroup(group, filter);
     }
 

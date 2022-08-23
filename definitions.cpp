@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <assert.h>
 
+#include "config.h"
+
 // ####################################
 // ########     Input Data     ########
 // ####################################
@@ -292,6 +294,6 @@ void State::reset() {
 }
 
 void State::setCapacity(GroupID id, uint32_t val) {
-  assert(id < data().groups.size() && val < MAX_GROUP_SIZE);
+  assert(id < data().groups.size() && val < Config::get().max_group_size);
   _group_states[id].capacity = val;
 }
