@@ -6,6 +6,7 @@ A test using randomly generated data of similar size to the real data.
 #include <iostream>
 #include <random>
 
+#include "config.h"
 #include "algorithms.h"
 #include "moves_local_search.h"
 
@@ -77,7 +78,7 @@ int main() {
   }
 
   State s(input);
-  assignWithMinimumNumberPerGroup(s, MIN_GROUP_SIZE);
+  assignWithMinimumNumberPerGroup(s, Config::get().min_group_size);
   auto is_math_and_no_ma = [](const StudentData &data) {
     return data.course_type == CourseType::Mathe &&
            data.degree_type != DegreeType::Master;
@@ -94,7 +95,7 @@ int main() {
     return data.degree_type == DegreeType::Master;
   };
 
-  std::cout << std::endl << "Reassingning specific students." << std::endl;
+  std::cout << std::endl << "Reassigning specific students." << std::endl;
   assertMinimumNumberPerGroupForSpecificType(s, {
     {is_math_and_no_ma, 5, "Mathe (BA)"},
     {is_lehramt_and_no_ma, 5, "Lehramt (BA)"},

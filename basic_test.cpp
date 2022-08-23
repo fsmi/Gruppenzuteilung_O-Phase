@@ -6,7 +6,7 @@
 
 int main() {
   Input input;
-  input.groups.emplace_back("fc", "First Contact", 3, CourseType::Any);
+  input.groups.emplace_back("fc", "First Contact", 4, CourseType::Any);
   input.groups.emplace_back("tg", "Team Gecko", 3, CourseType::Any);
   input.groups.emplace_back("mathe", "Mathe", 3, CourseType::Mathe);
   input.students.emplace_back("e1", "Ersti 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti);
@@ -39,7 +39,7 @@ int main() {
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID>{8});
 
   State s(input);
-  auto assignment = calculateAssignment(s);
+  auto assignment = calculateAssignment(s, true);
   applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
@@ -58,7 +58,7 @@ int main() {
   s.disableGroup(0);
   s.reset();
   s.assignParticipant(1, 2);
-  assignment = calculateAssignment(s);
+  assignment = calculateAssignment(s, true);
   applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
@@ -89,7 +89,7 @@ int main() {
   }
 
   s = State(input);
-  assignTeamsAndStudents(s);
+  assignTeamsAndStudents(s, true);
   printCurrentAssignment(s);
   // Erstis
   for (ParticipantID part = 1; part < 5; ++part) {
@@ -113,7 +113,7 @@ int main() {
 
   // minimum number with local search
   s = State(input);
-  assignTeamsAndStudents(s);
+  assignTeamsAndStudents(s, true);
   assertMininumNumber(s, 2, is_math);
   printCurrentAssignment(s);
   std::vector<StudentID> num_per_group = numPerGroup(s, is_math);
@@ -124,7 +124,7 @@ int main() {
 
   // minimum number with filters
   s = State(input);
-  assignTeamsAndStudents(s);
+  assignTeamsAndStudents(s, true);
   assertMinimumNumberPerGroupForSpecificType(s, {{is_math, 2, "Mathe"}});
   printCurrentAssignment(s);
   num_per_group = numPerGroup(s, is_math);

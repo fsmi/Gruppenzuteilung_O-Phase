@@ -16,13 +16,13 @@ set(Boost_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/boost/boost/)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 
-set(CPP_FILES main.cpp definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp config.cpp)
+set(CPP_FILES definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp config.cpp)
 
-add_executable(Main ${CPP_FILES})
+add_executable(Main main.cpp ${CPP_FILES})
 target_link_libraries(Main ${Boost_LIBRARIES})
-add_executable(BasicTest ${CPP_FILES})
+add_executable(BasicTest basic_test.cpp ${CPP_FILES})
 target_link_libraries(BasicTest ${Boost_LIBRARIES})
-add_executable(RandomizedTest ${CPP_FILES})
+add_executable(RandomizedTest randomized_test.cpp ${CPP_FILES})
 target_link_libraries(RandomizedTest ${Boost_LIBRARIES})
 
 # set flags
