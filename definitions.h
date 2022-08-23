@@ -37,13 +37,16 @@
 // #define TRACE(msg) TRACE(msg, true)
 
 #define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg << std::endl; std::exit(-1)
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #define ASSERT_WITH(cond, msg) \
   do { \
     if (!(cond)) { \
-      std::cout << RED << "[ERROR]" << END << " Assertion failed at: " \
-                << __FILENAME__ << ": " << __FUNCTION__ << ": " << __LINE__ << std::endl; \
-      std::cout << "`ASSERT(" << #cond << ")`" << std::endl; \
+      std::cout << RED << "[ERROR]" << END << " Assertion at: " \
+                << __FILENAME__ << ":" << __LINE__ \
+                << " - `ASSERT(" << #cond << ")`" << std::endl; \
       std::cout << msg << std::endl; \
+      std::exit(-1); \
     } \
   } while (false)
 #define ASSERT(cond) ASSERT(cond, msg)
