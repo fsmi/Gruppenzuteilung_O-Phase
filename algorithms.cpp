@@ -69,7 +69,7 @@ double getFactor(const State &/*s*/, ParticipantID /*part*/) {
 // ########     Algorithms     ########
 // ####################################
 
-std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool top_level) {
   // initialize vertices
   std::vector<GraphTraits::vertex_descriptor> first_group_vertex;
   std::vector<GroupID> vertex_to_group;
@@ -93,9 +93,8 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
     }
   }
   if (first_participant < num_vertices - first_participant) {
-    std::cerr << "Not enough capacity available: " << (num_vertices - first_participant)
-              << " participants, but only " << first_participant << " group vertices!" << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Not enough capacity available: " << (num_vertices - first_participant)
+                << " participants, but only " << first_participant << " group vertices!");
   }
 
   Graph g(num_vertices);
@@ -126,11 +125,11 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
   // calculate the matching
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
   maximum_weighted_matching(g, &mates[0]);
-  std::cout << "Matching with size " << matching_size(g, &mates[0])
-            << " and total weight " << matching_weight_sum(g, &mates[0])
-            << " calculated ("
-            << std::chrono::duration<double>(std::chrono::system_clock::now() - start).count()
-            << " s)." << std::endl;
+  MAJOR_INFO("Matching with size " << matching_size(g, &mates[0])
+             << " and total weight " << matching_weight_sum(g, &mates[0])
+             << " calculated ("
+             << std::chrono::duration<double>(std::chrono::system_clock::now() - start).count()
+             << " s).", top_level);
 
   // translate the matching to an assignment
   std::vector<int32_t> assignment(s.numParticipants(), -1);
@@ -148,8 +147,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
     } else {
       const std::string &name =
           s.isTeam(part) ? s.teamData(part).id : s.studentData(part).name;
-      std::cerr << "WARNING: Participant \"" << name << "\" not assigned!"
-                << std::endl;
+      ERROR("Participant \"" << name << "\" not assigned!", top_level);
       success = false;
     }
     ++part_idx;
@@ -158,7 +156,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s) {
 }
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
-                     bool teams, bool students) {
+                     bool teams, bool students, bool top_level) {
   assert(s.numParticipants() == assignment.size());
   State s_temp(s);
   bool success = true;
@@ -168,8 +166,8 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
         assignment[part] >= 0) {
       bool assign_success = s_temp.assignParticipant(part, assignment[part]);
       if (!assign_success) {
-        WARNING("WARNING: Capacity of group \"" << s_temp.groupData(assignment[part]).name
-                << "\" exceeded.", true);
+        WARNING("Capacity of group \"" << s_temp.groupData(assignment[part]).name
+                << "\" exceeded.", top_level);
         success = false;
       }
     }
@@ -181,7 +179,7 @@ bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
 }
 
 std::vector<GroupID>
-preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
+preassignLargeTeams(State &s, const std::vector<int32_t> &assignment, bool top_level) {
   // calculate statistics of the team
   std::vector<std::vector<ParticipantID>> teams_per_group(s.numGroups());
   std::vector<StudentID> max_size(s.numGroups(), 0);
@@ -209,10 +207,10 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
           bool success = s.assignParticipant(team, group);
           if (success) {
             TRACE("Preassign team \"" << s.teamData(team).id
-                  << "\" to group \"" << s.groupData(group).name << "\".", true);
+                  << "\" to group \"" << s.groupData(group).name << "\".", top_level);
           } else {
             TRACE("Assigning team \"" << s.teamData(team).id
-                  << "\" to group \"" << s.groupData(group).name << "\" failed.", true);
+                  << "\" to group \"" << s.groupData(group).name << "\" failed.", top_level);
           }
         }
       }
@@ -221,7 +219,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment) {
   return modified_groups;
 }
 
-bool assignTeamsAndStudents(State &s) {
+bool assignTeamsAndStudents(State &s, bool top_level) {
   s.reset();
   StudentID num_students = s.data().students.size();
   StudentID activeCapacity = s.totalActiveGroupCapacity();
@@ -248,31 +246,33 @@ bool assignTeamsAndStudents(State &s) {
         static_cast<double>(activeCapacity);
     double reduction_factor = team_factor * mod_reduced_factor;
     assert(reduction_factor <= 1);
-    std::cout << "Relative capacity for team assignment set to " << reduction_factor << "."
-              << std::endl;
+    TRACE("Relative capacity for team assignment set to " << reduction_factor << ".", top_level);
 
     State s_temp(s);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       s_temp.setCapacity(group, ceil(reduction_factor * s_temp.groupCapacity(group)));
     }
-    auto [assignment, success_first_step] = calculateAssignment(s_temp);
+    auto [assignment, success_first_step] = calculateAssignment(s_temp, top_level);
     if (!success_first_step) {
-      std::cout << "Team assignment failed. Canceling." << std::endl;
+      ERROR("Team assignment failed. Canceling.", top_level);
       return false;
     }
     success = applyAssignment(s, assignment, true, false);
     if (!success) {
-      std::cerr << "WARNING: Team assignment not successful due to exceeded "
-                   "capacity. Assign single teams and retry."
-                << std::endl;
-      std::vector<GroupID> modified_groups = preassignLargeTeams(s, assignment);
+      WARNING("Team assignment not successful due to exceeded "
+              "capacity. Assign single teams and retry.", top_level);
+      std::vector<GroupID> modified_groups = preassignLargeTeams(s, assignment, top_level);
       total_reduced += modified_groups.size();
     }
   } while (!success);
 
-  std::cout << "Team assignment successful." << std::endl;
-  auto [assignment, success_final] = calculateAssignment(s);
+  TRACE("Team assignment successful.", top_level);
+  auto [assignment, success_final] = calculateAssignment(s, top_level);
   success = applyAssignment(s, assignment) && success_final;
+  if (success) {
+    INFO("Current assignment completed.", top_level);
+  }
+
   return success;
 }
 
@@ -280,9 +280,11 @@ bool assignTeamsAndStudents(State &s) {
 void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   StudentID allowed_min = 1;
   StudentID active_capacity = s.totalActiveGroupCapacity();
+  const bool success_initial = assignTeamsAndStudents(s, true);
+  if (!success_initial) {
+    FATAL_ERROR("Could not calculate an initial assignment.");
+  }
   while (true) {
-    const bool success = assignTeamsAndStudents(s);
-    assert(success);
     StudentID current_min = std::numeric_limits<StudentID>::max();
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       if (s.groupIsEnabled(group)) {
@@ -293,8 +295,8 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
     // Some groups are below the minimum capacity, therefore we disable these groups and retry.
     if (current_min < min_capacity) {
       allowed_min = std::max(allowed_min, current_min) + 1;
-      std::cout << "Disabling groups with size smaller then " << allowed_min
-                << "." << std::endl;
+      MAJOR_TRACE("Disabling groups with size smaller then " << allowed_min << ".", true);
+
       std::vector<GroupID> groups_to_remove;
       for (GroupID group = 0; group < s.numGroups(); ++group) {
         if (s.groupIsEnabled(group) && s.groupSize(group) < allowed_min) {
@@ -310,29 +312,37 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
         StudentID capacity = s.groupData(group).capacity;
         if (active_capacity - capacity >=
             ceil(Config::get().capacity_buffer * s.data().students.size())) {
-          std::cout << "> Disable group \"" << s.groupData(group).name << "\" ("
-                    << s.groupSize(group) << " participants)." << std::endl;
+          MAJOR_TRACE("Disable group \"" << s.groupData(group).name << "\" ("
+                      << s.groupSize(group) << " participants).", true);
           s.disableGroup(group);
           active_capacity -= capacity;
           removed = true;
         }
       }
       if (!removed) {
-        std::cout << "No further group could be removed. Stopping."
-                  << std::endl;
+        INFO("No further group could be removed. Stopping.", true);
         break;
       }
     } else {
       break;
     }
+
+    State s_temp(s);
+    const bool success = assignTeamsAndStudents(s_temp, true);
+    if (!success) {
+      ERROR("Could not calculate assignment. Falling back to previous solution.", true);
+      break;
+    }
+    s = s_temp;
   }
+  INFO("Initial assignment completed.", true);
 }
 
 // Top level function that add filters to reassign participants,
 // so that a minimum number per group can be ensured
 void assertMinimumNumberPerGroupForSpecificType(State &s,
     const std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> &filters) {
-  std::cout << "Calculating reassignments to assert minimum number." << std::endl << std::endl;
+  INFO("Calculating reassignments to assert minimum numbers per group.", true);
   bool success = true;
   while (success) {
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
@@ -356,7 +366,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     if (total_num_groups == 0) {
-      std::cout << "Successfully calculated reassignment!" << std::endl;
+      INFO("Successfully calculated reassignment!", true);
       break;
     }
 
@@ -379,18 +389,18 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
       auto [group, num] = group_disable_order[max_index].back();
       group_disable_order[max_index].pop_back();
       auto [filter, minimum, name] = filters[max_index];
-      TRACE("Removing students of type \"" << name << "\" from group "
-            << s.groupData(group).name << " (" << num << " students)", true);
       s.addFilterToGroup(group, filter);
+      MAJOR_TRACE("Removing students of type \"" << name << "\" from group "
+                  << s.groupData(group).name << " (" << num << " students)", true);
     }
 
     // try to calculate new assignment
     State s_temp(s);
-    success = assignTeamsAndStudents(s_temp);
+    success = assignTeamsAndStudents(s_temp, false);
     if (success) {
       s = s_temp;
     } else {
-      std::cout << "WARNING: Could not continue reassignment. Stopping." << std::endl;
+      WARNING("Could not continue reassignment. Stopping.", true);
     }
   }
 }

@@ -65,8 +65,7 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
   if ( config != "" ) {
     std::ifstream config_file(config.c_str());
     if (!config_file) {
-      std::cerr << "Error opening config file" << std::endl;
-      std::exit(-1);
+      FATAL_ERROR("Error opening config file");
     }
 
     po::store(po::parse_config_file(config_file, config_options, true), cmd_vm);
@@ -77,16 +76,15 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
 int main(int argc, const char *argv[]) {
   std::string in_filename, out_filename, groups_filename;
   parseCmdAndConfig(argc, argv, in_filename, out_filename, groups_filename);
+  TRACE("Reading arguments and config completed.", true);
 
   std::ifstream in_file(in_filename);
   if (!in_file) {
-    std::cerr << "Error opening input file" << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Error opening input file");
   }
   std::ofstream out_file(out_filename);
   if (!out_file) {
-    std::cerr << "Error opening output file" << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Error opening output file");
   }
 
   // Definitions for different types of students
@@ -148,8 +146,9 @@ int main(int argc, const char *argv[]) {
   PTree pt;
   boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
-  std::cout << "Input file successfully parsed." << std::endl;
-  std::cout << "Number of students: " << input.students.size() << std::endl;
+  MAJOR_INFO("Input file successfully parsed.", true);
+  INFO("Number of students: " << input.students.size(), true);
+
   State state(input);
   assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
 

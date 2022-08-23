@@ -273,8 +273,7 @@ void assertMininumNumber(State &s, StudentID min,
     INFO("Number of students with minimum per group:", true);
     std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
-      std::cout << s.groupData(group).name << ": " << num_per_group[group]
-                << std::endl;
+      MAJOR_TRACE(s.groupData(group).name << ": " << num_per_group[group], true);
     }
   }
 }

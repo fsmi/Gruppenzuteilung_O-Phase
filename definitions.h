@@ -31,10 +31,12 @@
 #define WARNING(msg, top_level) LOG(YELLOW << "[WARNING]" << END << " " << msg, top_level ? 1 : 2)
 // #define WARNING(msg) WARNING(msg, true)
 #define TRACE_START CYAN << ">" << END << " "
+#define MAJOR_TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 2 : 3)
+// #define MAJOR_TRACE(msg) MAJOR_TRACE(msg, true)
 #define TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 3 : 4)
 // #define TRACE(msg) TRACE(msg, true)
 
-#define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg; std::exit(-1)
+#define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg << std::endl; std::exit(-1)
 #define ASSERT_WITH(cond, msg) \
   do { \
     if (!(cond)) { \
