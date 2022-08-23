@@ -21,7 +21,9 @@ set(CPP_FILES main.cpp definitions.cpp algorithms.cpp moves_local_search.cpp par
 add_executable(Main ${CPP_FILES})
 target_link_libraries(Main ${Boost_LIBRARIES})
 add_executable(BasicTest ${CPP_FILES})
+target_link_libraries(BasicTest ${Boost_LIBRARIES})
 add_executable(RandomizedTest ${CPP_FILES})
+target_link_libraries(RandomizedTest ${Boost_LIBRARIES})
 
 # set flags
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
