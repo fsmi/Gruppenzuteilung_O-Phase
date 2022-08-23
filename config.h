@@ -27,6 +27,8 @@ class Config {
 
   static po::options_description getConfigOptions();
 
+  static void check();
+
  private:
   // use only for initialization
   static Config& get_mut() {

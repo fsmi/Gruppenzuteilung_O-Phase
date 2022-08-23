@@ -8,3 +8,7 @@ po::options_description Config::getConfigOptions() {
             "Output verbosity from 0 to 4 (default: 1)");
   return options;
 }
+
+void Config::check() {
+    ASSERT_WITH(get().verbosity_level <= 4, "verbosity must be between 0 and 4");
+}

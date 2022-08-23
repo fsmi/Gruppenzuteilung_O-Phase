@@ -6,9 +6,13 @@ A test using randomly generated data of similar size to the real data.
 #include <iostream>
 #include <random>
 
+#include "boost/program_options.hpp"
+
 #include "config.h"
 #include "algorithms.h"
 #include "moves_local_search.h"
+
+namespace po = boost::program_options;
 
 static std::mt19937 GENERATOR;
 
@@ -46,7 +50,13 @@ std::vector<Rating> createRating(GroupID num_groups) {
   return result;
 }
 
-int main() {
+int main(int argc, const char *argv[]) {
+  po::options_description config_options = Config::getConfigOptions();
+  po::variables_map cmd_vm;
+  po::store(po::parse_command_line(argc, argv, config_options), cmd_vm);
+  po::notify(cmd_vm);
+  Config::check();
+
   Input input;
   std::uniform_int_distribution<int> random(2, 3);
   int num_students = 600;

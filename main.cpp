@@ -71,6 +71,7 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
     po::store(po::parse_config_file(config_file, config_options, true), cmd_vm);
     po::notify(cmd_vm);
   }
+  Config::check();
 }
 
 int main(int argc, const char *argv[]) {
