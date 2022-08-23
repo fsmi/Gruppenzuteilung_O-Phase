@@ -84,8 +84,10 @@ State::State(const Input &data)
     }
   }
   for (size_t i = 0; i < data.groups.size(); ++i) {
+    assert(data.groups[i].capacity < Config::get().max_group_size);
     _group_states[i].capacity = data.groups[i].capacity;
   }
+  assert(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
 }
 
 const Input &State::data() const { return _data.get(); }

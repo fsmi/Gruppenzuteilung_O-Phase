@@ -37,20 +37,20 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
   std::string config;
   po::options_description cmd_options("Primary Options");
   cmd_options.add_options()
+          ("help", "show help message")
           ("input,i",
             po::value<std::string>(&in_filename)->value_name("<string>")->required(),
-            "Input filename")
+            "Input filename (required)")
           ("output,o",
             po::value<std::string>(&out_filename)->value_name("<string>")->required(),
-            "Output filename")
+            "Output filename (required)")
           ("config,c",
             po::value<std::string>(&config)->value_name("<string>"),
             "Config filename")
           ("groups,g",
             po::value<std::string>(&groups_filename)->value_name("<string>"),
             "Groups filename: If present, creates for each group a "
-            "file with all assigned students of the group")
-          ("help", "show help message");
+            "file with all assigned students of the group");
   cmd_options.add(config_options);
 
   po::variables_map cmd_vm;

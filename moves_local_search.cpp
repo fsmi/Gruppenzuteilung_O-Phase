@@ -166,6 +166,8 @@ moveFromGroup(const State &s, GroupID group,
   return std::make_optional(std::move(result));
 }
 
+// Reassigns the specified number of students from the group that match the predicate
+// one by one, returning the resulting sequence and rating
 std::optional<std::pair<std::vector<MoveSequence>, int32_t>>
 moveIterativelyFromGroup(const State &s, GroupID group, StudentID number,
                          std::function<bool(const StudentData &)> predicate) {

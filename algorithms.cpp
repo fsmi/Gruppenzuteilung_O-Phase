@@ -247,6 +247,7 @@ bool assignTeamsAndStudents(State &s) {
         static_cast<double>(activeCapacity + total_reduced) /
         static_cast<double>(activeCapacity);
     double reduction_factor = team_factor * mod_reduced_factor;
+    assert(reduction_factor <= 1);
     std::cout << "Relative capacity for team assignment set to " << reduction_factor << "."
               << std::endl;
 
