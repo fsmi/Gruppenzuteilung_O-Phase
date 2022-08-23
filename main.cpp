@@ -35,7 +35,7 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
   po::options_description config_options = Config::getConfigOptions();
 
   std::string config;
-  po::options_description cmd_options("Primary Options");
+  po::options_description cmd_options("Primary Options", getTerminalWidth());
   cmd_options.add_options()
           ("help", "show help message")
           ("input,i",
