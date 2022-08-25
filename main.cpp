@@ -36,6 +36,16 @@ void printNumberPerRating(const State& state) {
   }
 }
 
+void printStudentsPerGroup(const State& state) {
+  if (Config::get().verbosity_level < 2) {
+    return;
+  }
+  for (GroupID group = 0; group < state.numGroups(); ++group) {
+    MAJOR_TRACE(state.groupSize(group) << "/" << state.groupData(group).capacity
+                << " - " << state.groupData(group).name, true);
+  }
+}
+
 // parse command line arguments and (if provided) config file,
 // using the boost program options library
 void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
@@ -162,6 +172,7 @@ int main(int argc, const char *argv[]) {
   assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
 
   printNumberPerRating(state);
+  printStudentsPerGroup(state);
 
   // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
 
@@ -176,6 +187,7 @@ int main(int argc, const char *argv[]) {
   });
 
   printNumberPerRating(state);
+  printStudentsPerGroup(state);
 
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
