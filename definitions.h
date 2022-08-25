@@ -63,6 +63,8 @@ using ParticipantID = uint32_t;
 struct Rating {
   uint32_t index;
 
+  Rating(): index(std::numeric_limits<uint32_t>::max()) {};
+
   Rating(uint32_t index);
 
   uint32_t getValue(GroupID num_groups) const;
@@ -73,7 +75,7 @@ struct Rating {
 
   bool operator!=(const Rating &other) const;
 
-  Rating() = default;
+  bool isValid() const;
 };
 
 enum class CourseType {

@@ -77,11 +77,6 @@ std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std
     [&](const auto &t) {
       return t.second.PTree::get_value<std::string>();
     });
-  if (group_order.size() != num_groups) {
-    std::cerr << "Rating list has different size (" << group_order.size()
-              << ") than number of groups (" << num_groups << ")." << std::endl;
-    std::exit(-1);
-  }
   std::vector<Rating> result(num_groups);
   for (size_t i = 0; i < group_order.size(); ++i) {
     size_t group_index = group_id_to_index.at(group_order[i]);

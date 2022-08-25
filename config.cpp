@@ -26,6 +26,10 @@ po::options_description Config::getConfigOptions() {
           ("max-team-size",
             po::value<StudentID>(&get_mut().max_team_size)->value_name("<int>"),
             "Maximum allowed team size.")
+          ("allow-default-ratings",
+            po::value<bool>(&get_mut().allow_default_ratings)->value_name("<bool>"),
+            "If true, the rating list of a student might be incomplete and missing entries are replaced "
+            "with the worst possible rating.")
           ("capacity-buffer-factor",
             po::value<double>(&get_mut().capacity_buffer)->value_name("<double>"),
             "When disabling groups, ensures that the available capacity is at least by this factor "

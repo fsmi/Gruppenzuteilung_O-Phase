@@ -26,6 +26,10 @@ bool Rating::operator!=(const Rating &other) const {
   return index != other.index;
 }
 
+bool Rating::isValid() const {
+  return index != std::numeric_limits<uint32_t>::max();
+}
+
 GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct)
     : id(id), name(name), capacity(capacity), course_type(ct) {}
 
@@ -69,6 +73,16 @@ State::State(Input &data)
       _participants() {
   ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
+
+  // sanitize ratings
+  for (StudentID student = 0; student < data.ratings.size(); ++student) {
+    for (Rating& rating: data.ratings[student]) {
+      if (Config::get().allow_default_ratings && !rating.isValid()) {
+        rating.index = data.groups.size() - 1; // TODO: valid for other rating types?
+      }
+      ASSERT_WITH(rating.isValid(), "Invalid rating for student \"" << data.students[student].id << "\"");
+    }
+  }
   // collect teams
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
