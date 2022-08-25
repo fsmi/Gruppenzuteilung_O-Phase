@@ -30,8 +30,8 @@ bool Rating::isValid() const {
   return index != std::numeric_limits<uint32_t>::max();
 }
 
-GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct)
-    : id(id), name(name), capacity(capacity), course_type(ct) {}
+GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt)
+    : id(id), name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
 
 StudentData::StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s)
     : id(id), name(name), course_type(ct), degree_type(dt), semester(s) {}

@@ -101,8 +101,9 @@ struct GroupData {
   std::string name;
   StudentID capacity;
   CourseType course_type;
+  DegreeType degree_type;
 
-  GroupData(std::string id, std::string name, StudentID capacity, CourseType ct);
+  GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt);
 };
 
 struct StudentData {

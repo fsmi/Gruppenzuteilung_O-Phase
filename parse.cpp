@@ -43,6 +43,8 @@ DegreeType parseDegreeType(const std::string& name) {
     return DegreeType::Bachelor;
   } else if (name == "master") {
     return DegreeType::Master;
+  } else if (name == "any") {
+    return DegreeType::Any;
   } else {
     FATAL_ERROR("Invalid degree type: " << name);
   }
@@ -88,8 +90,9 @@ Input parseInput(const PTree &tree) {
     PTree tree = element.second;
     std::string name = tree.get<std::string>("name");
     StudentID capacity = tree.get<StudentID>("capacity");
-    CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
-    return GroupData(id, name, capacity, course_type);
+    CourseType course_type = parseCourseType(tree.get<std::string>("course_type", "any"));
+    DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type", "any"));
+    return GroupData(id, name, capacity, course_type, degree_type);
   };
   auto parseStudent = [](auto element){
     std::string id = element.first;
@@ -97,7 +100,7 @@ Input parseInput(const PTree &tree) {
     std::string name = tree.get<std::string>("name");
     CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
     DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type"));
-    Semester semester = parseSemester(tree.get<std::string>("semester"));
+    Semester semester = parseSemester(tree.get<std::string>("semester", "ersti"));
     return StudentData(id, name, course_type, degree_type, semester);
   };
   input.groups = parseList<GroupData>(tree.find("groups")->second, parseGroup);

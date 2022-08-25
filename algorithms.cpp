@@ -35,9 +35,9 @@ void printCurrentAssignment(const State &s) {
 bool combinationIsValid(const StudentData &student, const GroupData &group) {
   bool course_is_valid = (group.course_type == CourseType::Any) ||
                          (student.course_type == group.course_type);
-  // bool degree_is_valid = (group.degree_type == DegreeType::Any) ||
-  //                        (student.degree_type == group.degree_type);
-  return course_is_valid;
+  bool degree_is_valid = (group.degree_type == DegreeType::Any) ||
+                         (student.degree_type == group.degree_type);
+  return course_is_valid && degree_is_valid;
 }
 
 bool combinationIsValid(const TeamData &team, const GroupData &group,
