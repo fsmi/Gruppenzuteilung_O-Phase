@@ -67,8 +67,8 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
             "Config filename")
           ("groups,g",
             po::value<std::string>(&groups_filename)->value_name("<string>"),
-            "Groups filename: If present, creates for each group a "
-            "file with all assigned students of the group");
+            "Groups directory: If present, creates for each group a file "
+            "with all assigned students of the group in the specified directory");
   cmd_options.add(config_options);
 
   po::variables_map cmd_vm;

@@ -175,6 +175,7 @@ public:
 
   const GroupData &groupData(GroupID id) const;
 
+  // remaining capacity of the group
   StudentID groupCapacity(GroupID id) const;
 
   bool groupIsEnabled(GroupID id) const;
@@ -182,6 +183,7 @@ public:
   const std::vector<std::pair<StudentID, ParticipantID>> &
   groupAssignmentList(GroupID id) const;
 
+  // number of students in the group
   StudentID groupSize(GroupID id) const;
 
   uint32_t groupWeight(GroupID id) const;
@@ -211,9 +213,6 @@ public:
   bool assignParticipant(ParticipantID participant, GroupID target);
 
   void unassignParticipant(ParticipantID participant, GroupID group);
-
-  // groups are still disabled
-  void resetWithCapacity(StudentID capacity);
 
   void reset();
 
