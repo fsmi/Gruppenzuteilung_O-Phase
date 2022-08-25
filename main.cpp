@@ -13,6 +13,10 @@ namespace po = boost::program_options;
 
 // print number of ratings for different rating levels
 void printNumberPerRating(const State& state) {
+  if (Config::get().verbosity_level < 2) {
+    return;
+  }
+
   std::vector<int> num_ratings(state.numGroups(), 0);
   for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
     Rating r = state.rating(part).at(state.assignment(part));
@@ -22,9 +26,13 @@ void printNumberPerRating(const State& state) {
     }
     num_ratings.at(r.index) += num;
   }
-  for (uint32_t i = 0; i < state.numGroups(); ++i) {
-    std::cout << "Number of " << Rating(i).getName() << ": "
-              << num_ratings.at(i) << std::endl;
+  while (!num_ratings.empty() && num_ratings.back() == 0) {
+    num_ratings.pop_back();
+  }
+  MAJOR_TRACE("### Resulting assignment ###", true);
+  for (size_t i = 0; i < num_ratings.size(); ++i) {
+    MAJOR_TRACE("Participants with rating " << Rating(i).getName()
+                << ": " << num_ratings.at(i), true);
   }
 }
 

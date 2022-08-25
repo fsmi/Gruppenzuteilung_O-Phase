@@ -4,6 +4,7 @@
 #include <unordered_set>
 
 #include "parse.h"
+#include "config.h"
 
 template <typename T, typename F>
 std::vector<T> parseList(const PTree &tree, F fn) {
@@ -33,8 +34,7 @@ CourseType parseCourseType(const std::string& name) {
   } else if (name == "any") {
     return CourseType::Any;
   } else {
-    std::cerr << "Invalider Typ des Studiengangs: " << name << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Invalid course type: " << name);
   }
 }
 
@@ -44,8 +44,7 @@ DegreeType parseDegreeType(const std::string& name) {
   } else if (name == "master") {
     return DegreeType::Master;
   } else {
-    std::cerr << "Invalider Typ des Abschlusses: " << name << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Invalid degree type: " << name);
   }
 }
 
@@ -55,8 +54,7 @@ Semester parseSemester(const std::string& name) {
   } else if (name == "dritti") {
     return Semester::Dritti;
   } else {
-    std::cerr << "Invalides Semester: " << name << std::endl;
-    std::exit(-1);
+    FATAL_ERROR("Invalid semseter: " << name);
   }
 }
 
@@ -64,9 +62,7 @@ TeamData parseTeam(const std::string id, const PTree &tree, const std::unordered
   std::vector<StudentID> members =
     parseList<StudentID>(tree, [&](const auto &t) {
       std::string id = t.second.PTree::get_value<std::string>();
-      if (student_id_to_index.find(id) == student_id_to_index.end()) {
-        std::cout << "Student ID not found: " << id << std::endl;
-      }
+      ASSERT(student_id_to_index.find(id) != student_id_to_index.end());
       return student_id_to_index.at(t.second.PTree::get_value<std::string>());
     });
   return TeamData(id, members);
@@ -139,8 +135,8 @@ PTree writeOutputToTree(const State &s) {
     }
   }
   if (considered_students.size() != s.data().students.size()) {
-    std::cerr << "WARNING: Output data points (" << considered_students.size()
-              << ") don't match the number of students (" << s.data().students.size() << ")!" << std::endl;
+    WARNING("Output data points (" << considered_students.size()
+            << ") don't match the number of students (" << s.data().students.size() << ")!", true);
   }
   return root;
 }
