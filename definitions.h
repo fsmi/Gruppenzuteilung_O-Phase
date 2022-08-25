@@ -160,7 +160,7 @@ class State {
   std::vector<Participant> _participants;
 
 public:
-  State(const Input &data);
+  State(Input &data);
 
   const Input &data() const;
 

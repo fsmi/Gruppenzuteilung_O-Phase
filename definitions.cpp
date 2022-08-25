@@ -61,7 +61,7 @@ bool ratingsEqual(const std::vector<Rating> &r1,
 Participant::Participant(uint32_t index, bool is_team)
     : index(index), is_team(is_team), assignment(-1) {}
 
-State::State(const Input &data)
+State::State(Input &data)
     : _data(data),
       _group_states(data.groups.size()),
       _group_assignments(data.groups.size(),
@@ -69,23 +69,37 @@ State::State(const Input &data)
       _participants() {
   ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
+  // collect teams
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
     ASSERT_WITH(team.members.size() > 1, "team \"" << team.id << "\" has 0 or 1 member");
+    std::vector<Rating> team_rating;
     for (const StudentID &student : team.members) {
       ASSERT(student < is_in_team.size() && !is_in_team[student]);
-      ASSERT(data.ratings[student].size() == data.groups.size());
-      ASSERT(
-          ratingsEqual(data.ratings[student], data.ratings[team.members[0]]));
+      ASSERT_WITH(data.ratings[student].empty() || data.ratings[student].size() == data.groups.size(),
+                  "student \"" << data.students[student].id << "\" has invalid rating");
       is_in_team[student] = true;
+      if (!data.ratings[student].empty()) {
+        ASSERT_WITH(team_rating.empty() || ratingsEqual(data.ratings[student], team_rating),
+                    "conflicting ratings for team \"" << team.id << "\"");
+        team_rating = data.ratings[student];
+      }
+    }
+    ASSERT_WITH(!team_rating.empty(), "no rating found for team \"" << team.id << "\"");
+    for (const StudentID &student : team.members) {
+      if (data.ratings[student].empty()) {
+        data.ratings[student] = team_rating;
+      }
     }
     _participants.emplace_back(team_id, true);
   }
+  // collect students without team
   for (size_t i = 0; i < data.students.size(); ++i) {
     if (!is_in_team[i]) {
       _participants.emplace_back(i, false);
     }
   }
+  // group capacities
   for (size_t i = 0; i < data.groups.size(); ++i) {
     ASSERT_WITH(data.groups[i].capacity < Config::get().max_group_size,
                 "group \"" << data.groups[i].name << "\" has invalid capacity");
