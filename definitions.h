@@ -49,7 +49,7 @@
       std::exit(-1); \
     } \
   } while (false)
-#define ASSERT(cond) ASSERT(cond, msg)
+#define ASSERT(cond) ASSERT_WITH(cond, "")
 
 
 // ####################################
