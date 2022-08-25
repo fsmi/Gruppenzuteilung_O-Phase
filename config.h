@@ -19,6 +19,7 @@ class Config {
   GroupID disabled_groups_per_step = 3;
   StudentID min_group_size = 10;
   StudentID max_group_size = 200;
+  StudentID max_team_size = 5;
   double capacity_buffer = 1.05;
   int64_t search_steps_per_value = 1000;
 

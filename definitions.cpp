@@ -33,7 +33,10 @@ StudentData::StudentData(std::string id, std::string name, CourseType ct, Degree
     : id(id), name(name), course_type(ct), degree_type(dt), semester(s) {}
 
 TeamData::TeamData(std::string id, std::vector<StudentID> members)
-    : id(id), members(std::move(members)) {}
+    : id(id), members(std::move(members)) {
+      ASSERT_WITH(members.size() <= Config::get().max_team_size,
+                  "team \"" << id << "\" exceeds maximum team size");
+    }
 
 size_t TeamData::size() const { return members.size(); }
 

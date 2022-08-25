@@ -23,6 +23,9 @@ po::options_description Config::getConfigOptions() {
           ("max-group-size",
             po::value<StudentID>(&get_mut().max_group_size)->value_name("<int>"),
             "Maximum allowed group size.")
+          ("max-team-size",
+            po::value<StudentID>(&get_mut().max_team_size)->value_name("<int>"),
+            "Maximum allowed team size.")
           ("capacity-buffer-factor",
             po::value<double>(&get_mut().capacity_buffer)->value_name("<double>"),
             "When disabling groups, ensures that the available capacity is at least by this factor "
