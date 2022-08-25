@@ -12,7 +12,7 @@
 Rating::Rating(uint32_t index) : index(index) { }
 
 uint32_t Rating::getValue(GroupID num_groups) const {
-  assert(index < num_groups);
+  ASSERT(index < num_groups);
   return num_groups * num_groups - (index * (index + 1) / 2);
 }
 
@@ -67,15 +67,15 @@ State::State(const Input &data)
       _group_assignments(data.groups.size(),
                          std::vector<std::pair<StudentID, ParticipantID>>()),
       _participants() {
-  assert(data.students.size() == data.ratings.size());
+  ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
-    assert(!team.members.empty());
+    ASSERT_WITH(team.members.size() > 1, "team \"" << team.id << "\" has 0 or 1 member");
     for (const StudentID &student : team.members) {
-      assert(student < is_in_team.size() && !is_in_team[student]);
-      assert(data.ratings[student].size() == data.groups.size());
-      assert(
+      ASSERT(student < is_in_team.size() && !is_in_team[student]);
+      ASSERT(data.ratings[student].size() == data.groups.size());
+      ASSERT(
           ratingsEqual(data.ratings[student], data.ratings[team.members[0]]));
       is_in_team[student] = true;
     }
@@ -87,10 +87,11 @@ State::State(const Input &data)
     }
   }
   for (size_t i = 0; i < data.groups.size(); ++i) {
-    assert(data.groups[i].capacity < Config::get().max_group_size);
+    ASSERT_WITH(data.groups[i].capacity < Config::get().max_group_size,
+                "group \"" << data.groups[i].name << "\" has invalid capacity");
     _group_states[i].capacity = data.groups[i].capacity;
   }
-  assert(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
+  ASSERT(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
 }
 
 const Input &State::data() const { return _data.get(); }
@@ -118,70 +119,70 @@ StudentID State::totalActiveGroupCapacity() const {
 }
 
 const GroupData &State::groupData(GroupID id) const {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return data().groups[id];
 }
 
 StudentID State::groupCapacity(GroupID id) const {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return _group_states[id].capacity;
 }
 
 bool State::groupIsEnabled(GroupID id) const {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return _group_states[id].enabled;
 }
 
 const std::vector<std::pair<StudentID, ParticipantID>> &
 State::groupAssignmentList(GroupID id) const {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return _group_assignments[id];
 }
 
 StudentID State::groupSize(GroupID id) const {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return _group_assignments[id].size();
 }
 
 uint32_t State::groupWeight(GroupID id) const {
   // TODO: assert correctness?!
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   return _group_states[id].weight;
 }
 
 ParticipantID State::numParticipants() const { return _participants.size(); }
 
 bool State::isTeam(ParticipantID id) const {
-  assert(id < _participants.size());
+  ASSERT(id < _participants.size());
   return _participants[id].is_team;
 }
 
 bool State::isAssigned(ParticipantID id) const {
-  assert(id < _participants.size());
+  ASSERT(id < _participants.size());
   return _participants[id].assignment >= 0;
 }
 
 GroupID State::getAssignment(ParticipantID id) const {
-  assert(isAssigned(id) && _participants[id].assignment >= 0);
+  ASSERT(isAssigned(id) && _participants[id].assignment >= 0);
   return _participants[id].assignment;
 }
 
 const StudentData &State::studentData(ParticipantID id) const {
-  assert(!isTeam(id));
+  ASSERT(!isTeam(id));
   StudentID student_id = _participants[id].index;
-  assert(student_id < data().students.size());
+  ASSERT(student_id < data().students.size());
   return data().students[student_id];
 }
 
 const TeamData &State::teamData(ParticipantID id) const {
-  assert(isTeam(id));
+  ASSERT(isTeam(id));
   uint32_t team_id = _participants[id].index;
-  assert(team_id < data().teams.size());
+  ASSERT(team_id < data().teams.size());
   return data().teams[team_id];
 }
 
 GroupID State::assignment(ParticipantID id) const {
-  assert(isAssigned(id));
+  ASSERT(isAssigned(id));
   return static_cast<GroupID>(_participants[id].assignment);
 }
 
@@ -196,17 +197,17 @@ const std::vector<Rating> &State::rating(ParticipantID id) const {
 }
 
 void State::disableGroup(GroupID id) {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   _group_states[id].enabled = false;
 }
 
 void State::addFilterToGroup(GroupID id, std::function<bool(const StudentData&)> filter) {
-  assert(id < data().groups.size());
+  ASSERT(id < data().groups.size());
   _group_states[id].participant_filters.push_back(filter);
 }
 
 bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
-  assert(group < data().groups.size());
+  ASSERT(group < data().groups.size());
   const StudentData& s_data = data().students[student];
   for (auto filter : _group_states[group].participant_filters) {
     if (filter(s_data)) {
@@ -217,8 +218,8 @@ bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
 }
 
 bool State::isExludedFromGroup(ParticipantID participant, GroupID group) const {
-  assert(participant < _participants.size());
-  assert(group < data().groups.size());
+  ASSERT(participant < _participants.size());
+  ASSERT(group < data().groups.size());
 
   if (isTeam(participant)) {
     for (StudentID student : teamData(participant).members) {
@@ -233,8 +234,8 @@ bool State::isExludedFromGroup(ParticipantID participant, GroupID group) const {
 }
 
 bool State::assignParticipant(ParticipantID participant, GroupID target) {
-  assert(!isAssigned(participant));
-  assert(target < data().groups.size());
+  ASSERT(!isAssigned(participant));
+  ASSERT(target < data().groups.size());
 
   if (isTeam(participant)) {
     const TeamData &data = teamData(participant);
@@ -261,8 +262,8 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
 }
 
 void State::unassignParticipant(ParticipantID participant, GroupID group) {
-  assert(isAssigned(participant));
-  assert(assignment(participant) == group);
+  ASSERT(isAssigned(participant));
+  ASSERT(assignment(participant) == group);
 
   std::vector<std::pair<StudentID, ParticipantID>>& assign_list =
       _group_assignments[group];
@@ -299,6 +300,6 @@ void State::reset() {
 }
 
 void State::setCapacity(GroupID id, uint32_t val) {
-  assert(id < data().groups.size() && val < Config::get().max_group_size);
+  ASSERT(id < data().groups.size() && val < Config::get().max_group_size);
   _group_states[id].capacity = val;
 }

@@ -117,7 +117,6 @@ Input parseInput(const PTree &tree) {
     [&](const auto &t) {
       return parseTeam(t.first, t.second, student_mapping);
     });
-  assert(tree.find("ratings")->second.size() == input.students.size());
   std::vector<std::vector<Rating>> ratings(input.students.size());
   for (auto &element : tree.find("ratings")->second) {
     auto rating_list = parseRatings(element.second, group_mapping, input.groups.size());
@@ -212,7 +211,6 @@ void writeOutputToFiles(const State &s, std::string path,
 
   // group data
   for (GroupID group = 0; group < s.numGroups(); ++group) {
-    assert(group < s.numGroups());
     const std::string group_name_id = s.groupData(group).name + "-" + s.groupData(group).id.substr(0, 5);
     const std::string group_path = path + "/" + group_name_id;
     if (s.groupAssignmentList(group).empty()) {

@@ -24,10 +24,10 @@ MoveStep::MoveStep(size_t parent, int32_t path_rating,
       target(target) {}
 
 SearchLevel::SearchLevel(size_t parent)
-    : parent(parent), level(/*NUM_RATINGS - */1) { assert(false); }
+    : parent(parent), level(/*NUM_RATINGS - */1) { ASSERT(false); }
 
 SearchLevel SearchLevel::next() const {
-  assert(level > 0);
+  ASSERT(level > 0);
   SearchLevel result(*this);
   result.level--;
   return result;
@@ -49,7 +49,7 @@ void MoveSequence::apply(State &s, bool print_moves) const {
   for (size_t i = 0; i < _seq.size(); ++i) {
     GroupID from = (i == _seq.size() - 1) ? _source : _seq[i + 1].second;
     s.unassignParticipant(_seq[i].first, from);
-    assert(s.assignParticipant(_seq[i].first, _seq[i].second));
+    ASSERT(s.assignParticipant(_seq[i].first, _seq[i].second));
     if (print_moves) {
       printMove(s, _seq[i].first, from, _seq[i].second);
     }
@@ -126,7 +126,7 @@ moveFromGroup(const State &s, GroupID group,
         current = search_tree[current].parent;
         group_allowed[search_tree[current].target] = false;
       } while (search_tree[current].parent != current);
-      assert(!group_allowed[group]);
+      ASSERT(!group_allowed[group]);
       std::vector<ParticipantID> participants;
       for (const auto &pair : s.groupAssignmentList(parent_node.target)) {
         if (!s.isTeam(pair.second) &&
@@ -171,7 +171,7 @@ moveFromGroup(const State &s, GroupID group,
 std::optional<std::pair<std::vector<MoveSequence>, int32_t>>
 moveIterativelyFromGroup(const State &s, GroupID group, StudentID number,
                          std::function<bool(const StudentData &)> predicate) {
-  assert(s.groupSize(group) >= number);
+  ASSERT(s.groupSize(group) >= number);
   int32_t total_rating = 0;
   std::vector<MoveSequence> result;
   State current_state(s);
@@ -241,7 +241,7 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min,
         }
       }
     }
-    assert(max_rating > std::numeric_limits<int32_t>::min());
+    ASSERT(max_rating > std::numeric_limits<int32_t>::min());
     if (Config::get().verbosity_level > 3) {
       std::cout << TRACE_START << "Moves: ";
     }
@@ -249,7 +249,7 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min,
       seq.apply(s, true);
     }
 
-    assert(s.assignParticipant(part, max_id));
+    ASSERT(s.assignParticipant(part, max_id));
     if (Config::get().verbosity_level > 3) {
       printMove(s, part, group, max_id);
       std::cout << " (diff=" << max_rating << ")." << std::endl;

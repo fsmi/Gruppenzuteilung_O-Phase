@@ -103,7 +103,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
   // add edges
   for (ParticipantID i = 0; i < participants.size(); ++i) {
     const ParticipantID &part = participants[i];
-    assert(!s.isAssigned(part));
+    ASSERT(!s.isAssigned(part));
     double factor = getFactor(s, part);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       bool validTeam = s.isTeam(part) &&
@@ -157,7 +157,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams, bool students, bool top_level) {
-  assert(s.numParticipants() == assignment.size());
+  ASSERT(s.numParticipants() == assignment.size());
   State s_temp(s);
   bool success = true;
   for (ParticipantID part = 0; part < s_temp.numParticipants(); ++part) {
@@ -186,7 +186,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment, bool top_l
   std::vector<StudentID> total_size(s.numGroups(), 0);
   for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
     if (s.isTeam(part) && assignment[part] >= 0) {
-      assert(!s.isAssigned(part));
+      ASSERT(!s.isAssigned(part));
       GroupID group = assignment[part];
       teams_per_group[group].push_back(part);
       StudentID team_size = s.teamData(part).size();
@@ -200,7 +200,7 @@ preassignLargeTeams(State &s, const std::vector<int32_t> &assignment, bool top_l
   std::vector<GroupID> modified_groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     if (total_size[group] > s.groupCapacity(group)) {
-      assert(teams_per_group[group].size() > 0);
+      ASSERT(teams_per_group[group].size() > 0);
       for (const ParticipantID &team : teams_per_group[group]) {
         if (s.teamData(team).size() == max_size[group]) {
           modified_groups.push_back(group);
@@ -224,7 +224,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
   StudentID num_students = s.data().students.size();
   StudentID activeCapacity = s.totalActiveGroupCapacity();
   StudentID initial_capacity = 0;
-  assert(activeCapacity > num_students);
+  ASSERT(activeCapacity > num_students);
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     initial_capacity = std::max(initial_capacity, s.groupCapacity(group));
   }
@@ -245,7 +245,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
         static_cast<double>(activeCapacity + total_reduced) /
         static_cast<double>(activeCapacity);
     double reduction_factor = team_factor * mod_reduced_factor;
-    assert(reduction_factor <= 1);
+    ASSERT(reduction_factor <= 1);
     TRACE("Relative capacity for team assignment set to " << reduction_factor << ".", top_level);
 
     State s_temp(s);
