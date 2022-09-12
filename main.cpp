@@ -117,6 +117,7 @@ int main(int argc, const char *argv[]) {
       FATAL_ERROR("Error opening types file");
     }
     type_filters = parseTypesFile(types_file);
+    MAJOR_INFO("Types file successfully parsed.", true);
   }
 
   // the main code
@@ -142,15 +143,6 @@ int main(int argc, const char *argv[]) {
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
   if (groups_filename != "") {
-    writeOutputToFiles(state, groups_filename, {
-      {is_info_ersti, "Info-Ersti"},
-      {is_math_ersti, "Mathe-Ersti"},
-      {is_lehramt_ersti, "Lehramt-Ersti"},
-      {is_info_dritti, "Info-Dritti"},
-      {is_math_dritti, "Mathe-Dritti"},
-      {is_info_master, "Info-Master"},
-      {is_math_master, "Mathe-Master"},
-      {is_lehramt, "Lehramt (gesamt)"},
-    });
+    writeOutputToFiles(state, groups_filename, type_filters);
   }
 }

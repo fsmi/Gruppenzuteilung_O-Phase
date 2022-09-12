@@ -74,7 +74,7 @@ std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::if
           return true;
         }, limit, combined_name);
       } catch (const std::invalid_argument& e) {
-        ERROR("types, line " << line_index << ": last word must be an integer (limit)", true);
+        FATAL_ERROR("types, line " << line_index << ": last word must be an integer (limit)");
       }
     }
     line_index++;
