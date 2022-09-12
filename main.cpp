@@ -8,6 +8,7 @@
 #include "moves_local_search.h"
 #include "parse.h"
 #include "config.h"
+#include "student_types.h"
 
 namespace po = boost::program_options;
 
@@ -49,7 +50,7 @@ void printStudentsPerGroup(const State& state) {
 // parse command line arguments and (if provided) config file,
 // using the boost program options library
 void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
-                       std::string& out_filename, std::string& groups_filename) {
+                       std::string& out_filename, std::string& groups_filename, std::string& types_filename) {
   po::options_description config_options = Config::getConfigOptions();
 
   std::string config;
@@ -65,6 +66,9 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
           ("config,c",
             po::value<std::string>(&config)->value_name("<string>"),
             "Config filename")
+          ("types,t",
+            po::value<std::string>(&types_filename)->value_name("<string>"),
+            "Types filename")
           ("groups,g",
             po::value<std::string>(&groups_filename)->value_name("<string>"),
             "Groups directory: If present, creates for each group a file "
@@ -93,8 +97,8 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
 }
 
 int main(int argc, const char *argv[]) {
-  std::string in_filename, out_filename, groups_filename;
-  parseCmdAndConfig(argc, argv, in_filename, out_filename, groups_filename);
+  std::string in_filename, out_filename, groups_filename, types_filename;
+  parseCmdAndConfig(argc, argv, in_filename, out_filename, groups_filename, types_filename);
   TRACE("Reading arguments and config completed.", true);
 
   std::ifstream in_file(in_filename);
@@ -106,60 +110,14 @@ int main(int argc, const char *argv[]) {
     FATAL_ERROR("Error opening output file");
   }
 
-  // Definitions for different types of students
-  auto is_info_ba = [](const StudentData &data) {
-    return data.course_type == CourseType::Info &&
-           data.degree_type != DegreeType::Master;
-  };
-  auto is_math_ba = [](const StudentData &data) {
-    return data.course_type == CourseType::Mathe &&
-           data.degree_type != DegreeType::Master;
-  };
-  auto is_lehramt_ba = [](const StudentData &data) {
-    return data.course_type == CourseType::Lehramt &&
-           data.degree_type != DegreeType::Master;
-  };
-  auto is_ersti = [](const StudentData &data) {
-    return data.semester == Semester::Ersti &&
-           data.degree_type != DegreeType::Master;
-  };
-  auto is_dritti = [](const StudentData &data) {
-    return data.semester == Semester::Dritti &&
-           data.degree_type != DegreeType::Master;
-  };
-  auto is_master = [](const StudentData &data) {
-    return data.degree_type == DegreeType::Master;
-  };
-  auto is_info_ersti = [=](const StudentData &data) {
-    return is_info_ba(data) && is_ersti(data);
-  };
-  auto is_math_ersti = [=](const StudentData &data) {
-    return is_math_ba(data) && is_ersti(data);
-  };
-  auto is_lehramt_ersti = [=](const StudentData &data) {
-    return is_lehramt_ba(data) && is_ersti(data);
-  };
-  auto is_info_dritti = [=](const StudentData &data) {
-    return is_info_ba(data) && is_dritti(data);
-  };
-  auto is_math_dritti = [=](const StudentData &data) {
-    return is_math_ba(data) && is_dritti(data);
-  };
-  auto is_lehramt_dritti = [=](const StudentData &data) {
-    return is_lehramt_ba(data) && is_dritti(data);
-  };
-  auto is_info_master = [=](const StudentData &data) {
-    return data.course_type == CourseType::Info && is_master(data);
-  };
-  auto is_math_master = [=](const StudentData &data) {
-    return data.course_type == CourseType::Mathe && is_master(data);
-  };
-  auto is_lehramt_master = [=](const StudentData &data) {
-    return data.course_type == CourseType::Lehramt && is_master(data);
-  };
-  auto is_lehramt = [](const StudentData &data) {
-    return data.course_type == CourseType::Lehramt;
-  };
+  std::vector<std::tuple<FilterFn, StudentID, std::string>> type_filters;
+  if (types_filename != "") {
+    std::ifstream types_file(types_filename);
+    if (!types_file) {
+      FATAL_ERROR("Error opening types file");
+    }
+    type_filters = parseTypesFile(types_file);
+  }
 
   // the main code
   PTree pt;
@@ -176,15 +134,7 @@ int main(int argc, const char *argv[]) {
 
   // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
 
-  assertMinimumNumberPerGroupForSpecificType(state, {
-    {is_info_ersti, 5, "Info (Ersti)"},
-    {is_math_ersti, 5, "Mathe (Ersti)"},
-    {is_lehramt_ba, 5, "Lehramt (BA)"},
-    {is_ersti, 8, "Ersti"},
-    {is_info_dritti, 4, "Info-Dritti"},
-    {is_math_dritti, 3, "Mathe-Dritti"},
-    {is_master, 5, "Master"},
-  });
+  assertMinimumNumberPerGroupForSpecificType(state, type_filters);
 
   printNumberPerRating(state);
   printStudentsPerGroup(state);
