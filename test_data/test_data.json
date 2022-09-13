@@ -1,17 +1,17 @@
 {
 	"groups" : {
 		"uuid1G" : {
-			"name" : "Gruppe Info 1",
+			"name" : "Gruppe 1",
 			"capacity" : 4,
 			"course_type" : "any"
 		},
 		"uuid2G" : {
-			"name" : "Gruppe Info 1",
+			"name" : "Gruppe 2",
 			"capacity" : 4,
 			"course_type" : "any"
 		},
 		"uuid3G" : {
-			"name" : "Gruppe Info 1",
+			"name" : "Gruppe 3",
 			"capacity" : 4,
 			"course_type" : "any"
 		}
@@ -49,25 +49,25 @@
             ]
     },
 	"ratings" : {
-        "uuid2S" : [
-            "uuid3G",
-            "uuid1G",
-            "uuid2G"
-        ],
-        "uuid1S" : [
-            "uuid1G",
-            "uuid2G",
-            "uuid3G"
-        ],
-        "uuid4S" : [
-            "uuid2G",
-            "uuid1G",
-            "uuid3G"
-        ],
-        "uuid3S" : [
-            "uuid3G",
-            "uuid1G",
-            "uuid2G"
-        ]
+        "uuid2S" : {
+            "uuid3G": 0,
+            "uuid1G": 1,
+            "uuid2G": 2
+        },
+        "uuid1S" : {
+            "uuid2G": 1,
+            "uuid1G": 0,
+            "uuid3G": 2
+        },
+        "uuid4S" : {
+            "uuid2G": 0,
+            "uuid3G": 2,
+            "uuid1G": 1
+        },
+        "uuid3S" : {
+            "uuid2G": 2,
+            "uuid3G": 0,
+            "uuid1G": 1
+        }
 	}
 }

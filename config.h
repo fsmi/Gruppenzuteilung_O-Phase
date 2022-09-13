@@ -12,10 +12,20 @@ namespace po = boost::program_options;
 
 int getTerminalWidth();
 
+enum class RatingInputType {
+  Mapping,
+  OrderedList
+};
+
 // holds all config options in a singleton
 class Config {
  public:
   uint32_t verbosity_level = 2;
+
+  // input and output
+  RatingInputType rating_input_type = RatingInputType::Mapping;
+
+  // algorithm
   GroupID disabled_groups_per_step = 3;
   StudentID min_group_size = 10;
   StudentID max_group_size = 200;

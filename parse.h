@@ -5,6 +5,7 @@
 #include "boost/property_tree/ptree.hpp"
 
 #include "definitions.h"
+#include "student_types.h"
 
 using PTree = boost::property_tree::ptree;
 

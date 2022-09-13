@@ -71,14 +71,28 @@ TeamData parseTeam(const std::string id, const PTree &tree, const std::unordered
 }
 
 std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std::string, size_t>& group_id_to_index, size_t num_groups) {
-  std::vector<std::string> group_order = parseList<std::string>(tree,
-    [&](const auto &t) {
-      return t.second.PTree::get_value<std::string>();
-    });
   std::vector<Rating> result(num_groups);
-  for (size_t i = 0; i < group_order.size(); ++i) {
-    size_t group_index = group_id_to_index.at(group_order[i]);
-    result[group_index] = Rating(i);
+  auto get_index = [&](const std::string& group_id) {
+    ASSERT_WITH(group_id_to_index.find(group_id) != group_id_to_index.end(),
+                "Invalid group id in rating: " << group_id << " - Is --rating-input-type correctly specified?");
+    return group_id_to_index.at(group_id);
+  };
+
+  if (Config::get().rating_input_type == RatingInputType::OrderedList) {
+    std::vector<std::string> group_order = parseList<std::string>(tree,
+      [&](const auto &t) {
+        return t.second.PTree::get_value<std::string>();
+      });
+    for (size_t i = 0; i < group_order.size(); ++i) {
+      size_t group_index = get_index(group_order[i]);
+      result[group_index] = Rating(i);
+    }
+  } else {
+    ASSERT(Config::get().rating_input_type == RatingInputType::Mapping);
+    for(const auto& element: tree) {
+      size_t group_index = get_index(element.first);
+      result[group_index] = Rating(element.second.PTree::get_value<size_t>());
+    }
   }
   return result;
 }

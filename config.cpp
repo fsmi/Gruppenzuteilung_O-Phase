@@ -12,6 +12,19 @@ po::options_description Config::getConfigOptions() {
           ("verbosity,v",
             po::value<uint32_t>(&get_mut().verbosity_level)->value_name("<int>"),
             "Output verbosity from 0 to 4 (default: 2)")
+          ("rating-input-type",
+            po::value<std::string>()->notifier([&](const std::string& type) {
+              if (type == "mapping") {
+                get_mut().rating_input_type = RatingInputType::Mapping;
+              } else if (type == "ordered_list") {
+                get_mut().rating_input_type = RatingInputType::OrderedList;
+              } else {
+                FATAL_ERROR("--rating-input-type must be `mapping` or `ordered_list`");
+              }
+            })->value_name("<string>"),
+            "Input format for ratings:\n"
+            " - mapping: mapping of group ids to priority (0 is highest)\n"
+            " - ordered_list: list of group ids, where the first has the highest priority (and so on)")
           ("disabled-groups-per-step,d",
             po::value<GroupID>(&get_mut().disabled_groups_per_step)->value_name("<int>"),
             "When reassigning students of specific types, determines how many groups are disabled per step. "
