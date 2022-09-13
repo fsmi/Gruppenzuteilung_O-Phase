@@ -76,6 +76,8 @@ struct Rating {
   bool operator!=(const Rating &other) const;
 
   bool isValid() const;
+
+  static Rating minRating(GroupID num_groups);
 };
 
 enum class CourseType {

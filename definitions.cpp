@@ -30,6 +30,10 @@ bool Rating::isValid() const {
   return index != std::numeric_limits<uint32_t>::max();
 }
 
+Rating Rating::minRating(GroupID num_groups) {
+  return Rating(num_groups - 1);
+}
+
 GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt)
     : id(id), name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
 
@@ -78,7 +82,7 @@ State::State(Input &data)
   for (StudentID student = 0; student < data.ratings.size(); ++student) {
     for (Rating& rating: data.ratings[student]) {
       if (Config::get().allow_default_ratings && !rating.isValid()) {
-        rating.index = data.groups.size() - 1; // TODO: valid for other rating types?
+        rating = Rating::minRating(data.groups.size());
       }
       ASSERT_WITH(rating.isValid(), "Invalid rating for student \"" << data.students[student].id << "\"");
     }
