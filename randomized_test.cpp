@@ -23,7 +23,7 @@ GroupData createGroup(int &counter) {
   name += std::to_string(++counter);
   std::uniform_int_distribution<StudentID> capacity(15, 60);
   StudentID cap = capacity(GENERATOR);
-  return GroupData(name, name, cap, is_math ? CourseType::Mathe : CourseType::Any);
+  return GroupData(name, name, cap, is_math ? CourseType::Mathe : CourseType::Any, DegreeType::Any);
 }
 
 StudentData createErsti(int &counter) {
@@ -34,11 +34,13 @@ StudentData createErsti(int &counter) {
   );
   bool is_master = random(GENERATOR) < 2;
   bool is_ersti = random(GENERATOR) < 16;
+  bool type_specific_assignment = random(GENERATOR) < 10;
   std::string name("Ersti ");
   name += std::to_string(++counter);
   return StudentData(name, name, course,
                      is_master ? DegreeType::Master : DegreeType::Bachelor,
-                     is_ersti ? Semester::Ersti : Semester::Dritti);
+                     is_ersti ? Semester::Ersti : Semester::Dritti,
+                     type_specific_assignment);
 }
 
 std::vector<Rating> createRating(GroupID num_groups) {
@@ -89,19 +91,19 @@ int main(int argc, const char *argv[]) {
 
   State s(input);
   assignWithMinimumNumberPerGroup(s, Config::get().min_group_size);
-  auto is_math_and_no_ma = [](const StudentData &data) {
+  auto is_math_and_no_ma = [](const StudentData &data) noexcept {
     return data.course_type == CourseType::Mathe &&
            data.degree_type != DegreeType::Master;
   };
-  auto is_lehramt_and_no_ma = [](const StudentData &data) {
+  auto is_lehramt_and_no_ma = [](const StudentData &data) noexcept {
     return data.course_type == CourseType::Lehramt &&
            data.degree_type != DegreeType::Master;
   };
-  auto is_dritti_and_no_ma = [](const StudentData &data) {
+  auto is_dritti_and_no_ma = [](const StudentData &data) noexcept {
     return data.semester == Semester::Dritti &&
            data.degree_type != DegreeType::Master;
   };
-  auto is_master = [](const StudentData &data) {
+  auto is_master = [](const StudentData &data) noexcept {
     return data.degree_type == DegreeType::Master;
   };
 
