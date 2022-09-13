@@ -1,0 +1,9 @@
+{
+	<ID Student> : <ID Gruppe>,
+	...
+}
+ODER
+{
+	<ID Team> : <ID Gruppe>,
+	...
+}
