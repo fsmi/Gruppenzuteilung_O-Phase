@@ -114,8 +114,9 @@ struct StudentData {
   CourseType course_type;
   DegreeType degree_type;
   Semester semester;
+  bool type_specific_assignment;
 
-  StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s);
+  StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s, bool ts);
 };
 
 struct TeamData {

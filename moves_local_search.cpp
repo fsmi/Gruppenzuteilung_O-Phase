@@ -59,11 +59,11 @@ void MoveSequence::apply(State &s, bool print_moves) const {
 std::vector<GroupID>
 groupsByNumber(const State &s, StudentID min_members,
                std::function<bool(const StudentData &)> predicate) {
-  std::vector<std::pair<GroupID, StudentID>> groups = groupsByNumFiltered(s, min_members, predicate);
+  std::vector<std::tuple<GroupID, StudentID, bool>> groups = groupsByNumFiltered(s, min_members, predicate);
   std::vector<GroupID> result;
-  for (const auto &pair : groups) {
-    if (pair.second > 0) {
-      result.push_back(pair.first);
+  for (const auto& [group_id, num, _] : groups) {
+    if (num > 0) {
+      result.push_back(group_id);
     }
   }
   return result;

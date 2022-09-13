@@ -349,19 +349,30 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     size_t total_num_groups = 0;
     for (size_t i = 0; i < filters.size(); ++i) {
       auto [filter, minimum, _] = filters[i];
-      std::vector<std::pair<GroupID, StudentID>> order = groupsByNumFiltered(s, minimum, filter);
+      std::vector<std::tuple<GroupID, StudentID, bool>> order = groupsByNumFiltered(s, minimum, filter);
       std::vector<std::pair<GroupID, StudentID>> rev_order;
+      size_t last_non_ignored = 0;
       while (!order.empty()) {
-        auto [group, num] = order.back();
+        auto [group, num, contains_only_ignored] = order.back();
         order.pop_back();
         // disable group without this type directly
         if (num == 0) {
           s.addFilterToGroup(group, filter);
+        } else if (contains_only_ignored) {
+          rev_order.emplace_back(group, num);
         } else {
           rev_order.emplace_back(group, num);
+          total_num_groups++;
+          last_non_ignored = rev_order.size();
         }
       }
-      total_num_groups += rev_order.size();
+      // We need to ensure that the algorithm doesn't just add duplicate filters to a group:
+      // If a group contains only ignored, the filter might have been applied already
+      while (rev_order.size() > last_non_ignored) {
+        auto [group, _] = rev_order.back();
+        s.addFilterToGroup(group, filter);
+        rev_order.pop_back();
+      }
       group_disable_order.push_back(std::move(rev_order));
     }
 

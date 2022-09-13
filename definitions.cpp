@@ -37,8 +37,8 @@ Rating Rating::minRating(GroupID num_groups) {
 GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt)
     : id(id), name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
 
-StudentData::StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s)
-    : id(id), name(name), course_type(ct), degree_type(dt), semester(s) {}
+StudentData::StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s, bool ts)
+    : id(id), name(name), course_type(ct), degree_type(dt), semester(s), type_specific_assignment(ts) {}
 
 TeamData::TeamData(std::string id, std::vector<StudentID> members)
     : id(id), members(std::move(members)) {
@@ -241,6 +241,9 @@ void State::addFilterToGroup(GroupID id, std::function<bool(const StudentData&)>
 bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
   ASSERT(group < data().groups.size());
   const StudentData& s_data = data().students[student];
+  if (!s_data.type_specific_assignment) {
+    return false;
+  }
   for (auto filter : _group_states[group].participant_filters) {
     if (filter(s_data)) {
       return true;
@@ -254,6 +257,7 @@ bool State::isExludedFromGroup(ParticipantID participant, GroupID group) const {
   ASSERT(group < data().groups.size());
 
   if (isTeam(participant)) {
+    // TODO: this might not really work for inhomogenous teams
     for (StudentID student : teamData(participant).members) {
       if (studentIsExludedFromGroup(student, group)) {
         return true;

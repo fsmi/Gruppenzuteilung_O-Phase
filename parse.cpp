@@ -115,7 +115,8 @@ Input parseInput(const PTree &tree) {
     CourseType course_type = parseCourseType(tree.get<std::string>("course_type"));
     DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type"));
     Semester semester = parseSemester(tree.get<std::string>("semester", "ersti"));
-    return StudentData(id, name, course_type, degree_type, semester);
+    bool type_specific_assignment = tree.get<bool>("type_specific_assignment", true);
+    return StudentData(id, name, course_type, degree_type, semester, type_specific_assignment);
   };
   input.groups = parseList<GroupData>(tree.find("groups")->second, parseGroup);
   auto group_mapping = createMapping(input.groups);
