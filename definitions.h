@@ -133,6 +133,7 @@ struct Input {
   std::vector<StudentData> students;
   std::vector<TeamData> teams;
   std::vector<std::vector<Rating>> ratings;
+  std::unordered_map<std::string, std::string> student_id_to_team_id;
 };
 
 // #########################################

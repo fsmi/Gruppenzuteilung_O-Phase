@@ -43,9 +43,12 @@
 		}
 	},
 	"teams" : {
-		"uuid2S" : [
+		"uuid1T" : [
                 "uuid2S",
                 "uuid3S"
+            ],
+		"uuid2T" : [
+                "uuid1S"
             ]
     },
 	"ratings" : {

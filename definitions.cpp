@@ -78,7 +78,7 @@ State::State(Input &data)
   ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
 
-  // sanitize ratings
+  // sanitize ratings and check mapping to team id
   for (StudentID student = 0; student < data.ratings.size(); ++student) {
     for (Rating& rating: data.ratings[student]) {
       if (Config::get().allow_default_ratings && !rating.isValid()) {
@@ -86,30 +86,50 @@ State::State(Input &data)
       }
       ASSERT_WITH(rating.isValid(), "Invalid rating for student \"" << data.students[student].id << "\"");
     }
+    const std::string& student_id = data.students[student].id;
+    if (Config::get().output_per_team
+        && data.student_id_to_team_id.find(student_id) == data.student_id_to_team_id.end()) {
+      FATAL_ERROR("Output per team requested. But student \"" << student_id << "\" is not member of a team.\n"
+                  << "You either need to sanitize the input data or use --output-per-team=false");
+    }
   }
   // collect teams
+  ParticipantID mapped_team_id = 0;
+  ParticipantID num_removed_teams = 0;
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
-    ASSERT_WITH(team.members.size() > 1, "team \"" << team.id << "\" has 0 or 1 member");
-    std::vector<Rating> team_rating;
-    for (const StudentID &student : team.members) {
-      ASSERT(student < is_in_team.size() && !is_in_team[student]);
-      ASSERT_WITH(data.ratings[student].empty() || data.ratings[student].size() == data.groups.size(),
-                  "student \"" << data.students[student].id << "\" has invalid rating");
-      is_in_team[student] = true;
-      if (!data.ratings[student].empty()) {
-        ASSERT_WITH(team_rating.empty() || ratingsEqual(data.ratings[student], team_rating),
-                    "conflicting ratings for team \"" << team.id << "\"");
-        team_rating = data.ratings[student];
+    ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
+    if (team.members.size() > 1) {
+      std::vector<Rating> team_rating;
+      for (const StudentID &student : team.members) {
+        ASSERT(student < is_in_team.size() && !is_in_team[student]);
+        ASSERT_WITH(data.ratings[student].empty() || data.ratings[student].size() == data.groups.size(),
+                    "student \"" << data.students[student].id << "\" has invalid rating");
+        is_in_team[student] = true;
+        if (!data.ratings[student].empty()) {
+          ASSERT_WITH(team_rating.empty() || ratingsEqual(data.ratings[student], team_rating),
+                      "conflicting ratings for team \"" << team.id << "\"");
+          team_rating = data.ratings[student];
+        }
       }
-    }
-    ASSERT_WITH(!team_rating.empty(), "no rating found for team \"" << team.id << "\"");
-    for (const StudentID &student : team.members) {
-      if (data.ratings[student].empty()) {
-        data.ratings[student] = team_rating;
+      ASSERT_WITH(!team_rating.empty(), "no rating found for team \"" << team.id << "\"");
+      for (const StudentID &student : team.members) {
+        if (data.ratings[student].empty()) {
+          data.ratings[student] = team_rating;
+        }
       }
+      _participants.emplace_back(mapped_team_id, true);
+      mapped_team_id++;
+    } else {
+      num_removed_teams++;
     }
-    _participants.emplace_back(team_id, true);
+  }
+  if (num_removed_teams > 0) {
+    if (Config::get().output_per_team) {
+      MAJOR_TRACE("Removed " << num_removed_teams << " teams with size 1.", true);
+    } else {
+      WARNING("Removed " << num_removed_teams << " teams with size 1.", true);
+    }
   }
   // collect students without team
   for (size_t i = 0; i < data.students.size(); ++i) {

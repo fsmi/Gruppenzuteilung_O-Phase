@@ -60,14 +60,18 @@ Semester parseSemester(const std::string& name) {
   }
 }
 
-TeamData parseTeam(const std::string id, const PTree &tree, const std::unordered_map<std::string, size_t>& student_id_to_index) {
+TeamData parseTeam(const std::string team_id, const PTree &tree, const std::unordered_map<std::string, size_t>& student_id_to_index,
+                   std::unordered_map<std::string, std::string>& student_id_to_team_id) {
   std::vector<StudentID> members =
     parseList<StudentID>(tree, [&](const auto &t) {
       std::string id = t.second.PTree::get_value<std::string>();
-      ASSERT(student_id_to_index.find(id) != student_id_to_index.end());
+      ASSERT_WITH(student_id_to_index.find(id) != student_id_to_index.end(), "Invalid student id in team: " << id);
+      ASSERT_WITH(student_id_to_team_id.find(id) == student_id_to_team_id.end(),
+                  std::string("Student contained in more than one team: ") << id);
+      student_id_to_team_id[id] = team_id;
       return student_id_to_index.at(t.second.PTree::get_value<std::string>());
     });
-  return TeamData(id, members);
+  return TeamData(team_id, members);
 }
 
 std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std::string, size_t>& group_id_to_index, size_t num_groups) {
@@ -124,7 +128,7 @@ Input parseInput(const PTree &tree) {
   auto student_mapping = createMapping(input.students);
   input.teams = parseList<TeamData>(tree.find("teams")->second,
     [&](const auto &t) {
-      return parseTeam(t.first, t.second, student_mapping);
+      return parseTeam(t.first, t.second, student_mapping, input.student_id_to_team_id);
     });
   std::vector<std::vector<Rating>> ratings(input.students.size());
   for (auto &element : tree.find("ratings")->second) {
@@ -140,19 +144,30 @@ PTree writeOutputToTree(const State &s) {
   std::unordered_set<std::string> considered_students;
   for (StudentID participant = 0; participant < s.numParticipants(); ++participant) {
     std::string group_id = s.groupData(s.getAssignment(participant)).id;
-    if (s.isTeam(participant)) {
-      for (StudentID member : s.teamData(participant).members) {
-        const std::string student_id = s.data().students[member].id;
+    if (Config::get().output_per_team) {
+      std::string team_id;
+      if (s.isTeam(participant)) {
+        team_id = s.teamData(participant).id;
+      } else {
+        const std::string student_id = s.studentData(participant).id;
+        team_id = s.data().student_id_to_team_id.at(student_id);
+      }
+      root.put<std::string>(team_id, group_id);
+    } else {
+      if (s.isTeam(participant)) {
+        for (StudentID member : s.teamData(participant).members) {
+          const std::string student_id = s.data().students[member].id;
+          root.put<std::string>(student_id, group_id);
+          considered_students.insert(student_id);
+        }
+      } else {
+        const std::string student_id = s.studentData(participant).id;
         root.put<std::string>(student_id, group_id);
         considered_students.insert(student_id);
       }
-    } else {
-      const std::string student_id = s.studentData(participant).id;
-      root.put<std::string>(student_id, group_id);
-      considered_students.insert(student_id);
     }
   }
-  if (considered_students.size() != s.data().students.size()) {
+  if (!Config::get().output_per_team && considered_students.size() != s.data().students.size()) {
     WARNING("Output data points (" << considered_students.size()
             << ") don't match the number of students (" << s.data().students.size() << ")!", true);
   }
