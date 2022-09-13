@@ -101,6 +101,7 @@ State::State(Input &data)
     ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
     if (team.members.size() > 1) {
       std::vector<Rating> team_rating;
+      const StudentData* first_student_type_specific = nullptr;
       for (const StudentID &student : team.members) {
         ASSERT(student < is_in_team.size() && !is_in_team[student]);
         ASSERT_WITH(data.ratings[student].empty() || data.ratings[student].size() == data.groups.size(),
@@ -110,6 +111,18 @@ State::State(Input &data)
           ASSERT_WITH(team_rating.empty() || ratingsEqual(data.ratings[student], team_rating),
                       "conflicting ratings for team \"" << team.id << "\"");
           team_rating = data.ratings[student];
+        }
+
+        if (data.students[student].type_specific_assignment) {
+          if (first_student_type_specific == nullptr) {
+            first_student_type_specific = &data.students[student];
+          } else if (first_student_type_specific->course_type != data.students[student].course_type
+                     || first_student_type_specific->degree_type != data.students[student].degree_type
+                     || first_student_type_specific->semester != data.students[student].semester) {
+            data.students[student].type_specific_assignment = false;
+            WARNING("Potential inconsistency in type specific assignment for team " << team.id << ":\n"
+                    << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", true);
+          }
         }
       }
       ASSERT_WITH(!team_rating.empty(), "no rating found for team \"" << team.id << "\"");
