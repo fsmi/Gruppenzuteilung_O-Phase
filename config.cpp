@@ -28,6 +28,9 @@ po::options_description Config::getConfigOptions() {
           ("output-per-team",
             po::value<bool>(&get_mut().output_per_team)->value_name("<bool>"),
             "Outputs the mapping per team instead of per student. Requires that each student is member of a team (default: false).")
+          ("input-per-team",
+            po::value<bool>(&get_mut().input_per_team)->value_name("<bool>"),
+            "Input ratings per team instead of per student. Requires that each student is member of a team (default: false).")
           ("disabled-groups-per-step,d",
             po::value<GroupID>(&get_mut().disabled_groups_per_step)->value_name("<int>"),
             "When reassigning students of specific types, determines how many groups are disabled per step. "

@@ -25,6 +25,7 @@ class Config {
   // input and output
   RatingInputType rating_input_type = RatingInputType::Mapping;
   bool output_per_team = false;
+  bool input_per_team = false;
 
   // algorithm
   GroupID disabled_groups_per_step = 3;

@@ -87,10 +87,10 @@ State::State(Input &data)
       ASSERT_WITH(rating.isValid(), "Invalid rating for student \"" << data.students[student].id << "\"");
     }
     const std::string& student_id = data.students[student].id;
-    if (Config::get().output_per_team
+    if ((Config::get().output_per_team || Config::get().input_per_team)
         && data.student_id_to_team_id.find(student_id) == data.student_id_to_team_id.end()) {
-      FATAL_ERROR("Output per team requested. But student \"" << student_id << "\" is not member of a team.\n"
-                  << "You either need to sanitize the input data or use --output-per-team=false");
+      FATAL_ERROR("Input/output per team requested. But student \"" << student_id << "\" is not member of a team.\n"
+                  << "You either need to sanitize the input data or use --input-per-team=false/--output-per-team=false");
     }
   }
   // collect teams

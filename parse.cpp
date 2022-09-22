@@ -130,10 +130,24 @@ Input parseInput(const PTree &tree) {
     [&](const auto &t) {
       return parseTeam(t.first, t.second, student_mapping, input.student_id_to_team_id);
     });
+  auto team_mapping = createMapping(input.teams);
   std::vector<std::vector<Rating>> ratings(input.students.size());
   for (auto &element : tree.find("ratings")->second) {
     auto rating_list = parseRatings(element.second, group_mapping, input.groups.size());
-    ratings[student_mapping.at(element.first)] = rating_list;
+    if (Config::get().input_per_team) {
+      ASSERT_WITH(team_mapping.find(element.first) != team_mapping.end(),
+                  "Team \"" << element.first << "\" not found. Is this a student id? "
+                  "If so, you probably want to use --input-per-team=false");
+      const TeamData& team = input.teams[team_mapping.at(element.first)];
+      for (StudentID student: team.members) {
+        ratings[student] = rating_list;
+      }
+    } else {
+      ASSERT_WITH(student_mapping.find(element.first) != student_mapping.end(),
+                  "Student \"" << element.first << "\" not found. Is this a team id? "
+                  "If so, you probably want to use --input-per-team=true");
+      ratings[student_mapping.at(element.first)] = rating_list;
+    }
   }
   input.ratings = std::move(ratings);
   return input;
