@@ -18,6 +18,7 @@ Benutzung
 Für die Ein- und Ausgabe wird JSON verwendet. Für das Format siehe `input_definition.json` bzw. `output_definition.json`.
 
 Grundlegende Benutzung:
+
 ```./GroupAssignment -i <Eingabedatei> -o <Ausgabedatei> [-c <Config>] [-g <Ausgabeordner>] [-t <Typen-Datei>]```
 
 Zusätzliche Parameter können über die Kommandozeile oder eine Konfigurationsdatei (übergeben via `-c`) spezifiziert werden.
@@ -26,4 +27,5 @@ Weiterhin können Minimalzahlen von Studenten eines spezifischen Typs definiert 
 Der Algorithmus wird versuchen, diese Minimalwerte sicherzustellen - was natürlich nicht in allen Fällen möglich ist.
 
 Für eine Übersicht über alle verfügbaren Parameter:
+
 ```./GroupAssignment```
