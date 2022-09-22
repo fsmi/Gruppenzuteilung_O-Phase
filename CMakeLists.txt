@@ -18,8 +18,8 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 set(CPP_FILES definitions.cpp algorithms.cpp moves_local_search.cpp parse.cpp alg_common.cpp config.cpp student_types.cpp)
 
-add_executable(Main main.cpp ${CPP_FILES})
-target_link_libraries(Main ${Boost_LIBRARIES})
+add_executable(GroupAssignment main.cpp ${CPP_FILES})
+target_link_libraries(GroupAssignment ${Boost_LIBRARIES})
 add_executable(BasicTest basic_test.cpp ${CPP_FILES})
 target_link_libraries(BasicTest ${Boost_LIBRARIES})
 add_executable(RandomizedTest randomized_test.cpp ${CPP_FILES})
