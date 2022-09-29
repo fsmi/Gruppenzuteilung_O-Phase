@@ -23,18 +23,14 @@
   } while (false)
 
 #define ERROR(msg, top_level) LOG(RED << "[ERROR]" << END << " " << msg, top_level ? 0 : 1)
-// #define ERROR(msg) ERROR(msg, true)
-#define MAJOR_INFO(msg, top_level) LOG(GREEN << "[INFO]" << END << " " << msg, top_level ? 0 : 1)
-// #define MAJOR_INFO(msg) INFO(msg, true)
 #define INFO(msg, top_level) LOG(GREEN << "[INFO]" << END << " " << msg, top_level ? 1 : 2)
-// #define INFO(msg) MINOR_INFO(msg, true)
 #define WARNING(msg, top_level) LOG(YELLOW << "[WARNING]" << END << " " << msg, top_level ? 1 : 2)
-// #define WARNING(msg) WARNING(msg, true)
-#define TRACE_START CYAN << ">" << END << " "
+
+#define MAJOR_PROGRESS(msg, top_level) LOG(GREEN << ">>" << END << " " << msg, top_level ? 1 : 2)
+#define PROGRESS(msg, top_level) LOG(GREEN << ">>" << END << " " << msg, top_level ? 2 : 3)
+#define TRACE_START CYAN << ">" << END << "  "
 #define MAJOR_TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 2 : 3)
-// #define MAJOR_TRACE(msg) MAJOR_TRACE(msg, true)
 #define TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 3 : 4)
-// #define TRACE(msg) TRACE(msg, true)
 
 #define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg << std::endl; std::exit(-1)
 

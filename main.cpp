@@ -15,10 +15,6 @@ namespace po = boost::program_options;
 
 // print number of ratings for different rating levels
 void printNumberPerRating(const State& state) {
-  if (Config::get().verbosity_level < 2) {
-    return;
-  }
-
   std::vector<int> num_ratings(state.numGroups(), 0);
   for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
     Rating r = state.rating(part).at(state.assignment(part));
@@ -31,20 +27,17 @@ void printNumberPerRating(const State& state) {
   while (!num_ratings.empty() && num_ratings.back() == 0) {
     num_ratings.pop_back();
   }
-  MAJOR_TRACE("### Resulting assignment ###", true);
+  LOG(TRACE_START << "### Resulting assignment ###", 1);
   for (size_t i = 0; i < num_ratings.size(); ++i) {
-    MAJOR_TRACE("Participants with rating " << Rating(i).getName()
-                << ": " << num_ratings.at(i), true);
+    LOG(TRACE_START << "Participants with rating "
+                    << Rating(i).getName() << ": " << num_ratings.at(i), 1);
   }
 }
 
 void printStudentsPerGroup(const State& state) {
-  if (Config::get().verbosity_level < 2) {
-    return;
-  }
   for (GroupID group = 0; group < state.numGroups(); ++group) {
-    MAJOR_TRACE(state.groupSize(group) << "/" << state.groupData(group).capacity
-                << " - " << state.groupData(group).name, true);
+    LOG(TRACE_START << state.groupSize(group) << "/" << state.groupData(group).capacity
+                    << " - " << state.groupData(group).name, 1);
   }
 }
 
@@ -120,21 +113,23 @@ int main(int argc, const char *argv[]) {
       FATAL_ERROR("Error opening types file");
     }
     type_filters = parseTypesFile(types_file);
-    MAJOR_INFO("Types file successfully parsed.", true);
+    PROGRESS("Types file successfully parsed.", true);
   }
 
   // the main code
   PTree pt;
   boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
-  MAJOR_INFO("Input file successfully parsed.", true);
+  PROGRESS("Input file successfully parsed.", true);
   INFO("Number of students: " << input.students.size(), true);
 
   State state(input);
   assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
 
-  printNumberPerRating(state);
-  printStudentsPerGroup(state);
+  if (Config::get().verbosity_level >= 3) {
+    printNumberPerRating(state);
+    printStudentsPerGroup(state);
+  }
 
   // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
 
@@ -143,8 +138,12 @@ int main(int argc, const char *argv[]) {
   const double total_time = std::chrono::duration<double>(std::chrono::system_clock::now() - timer_start).count();
   INFO("Total time required: " <<  total_time << " s", true);
 
-  printNumberPerRating(state);
-  printStudentsPerGroup(state);
+  if (Config::get().verbosity_level >= 1) {
+    printNumberPerRating(state);
+  }
+  if (Config::get().verbosity_level >= 2) {
+    printStudentsPerGroup(state);
+  }
 
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);

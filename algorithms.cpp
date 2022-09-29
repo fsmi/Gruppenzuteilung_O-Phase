@@ -137,11 +137,11 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
   // calculate the matching
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
   maximum_weighted_matching(g, &mates[0]);
-  MAJOR_INFO("Matching with size " << matching_size(g, &mates[0])
-             << " and total weight " << matching_weight_sum(g, &mates[0])
-             << " calculated ("
-             << std::chrono::duration<double>(std::chrono::system_clock::now() - start).count()
-             << " s).", top_level);
+  MAJOR_PROGRESS("Matching with size " << matching_size(g, &mates[0])
+                 << " and total weight " << matching_weight_sum(g, &mates[0])
+                 << " calculated ("
+                 << std::chrono::duration<double>(std::chrono::system_clock::now() - start).count()
+                 << " s).", top_level);
 
   // translate the matching to an assignment
   std::vector<int32_t> assignment(s.numParticipants(), -1);
@@ -285,7 +285,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
   auto [assignment, success_final] = calculateAssignment(s, top_level);
   success = applyAssignment(s, assignment) && success_final;
   if (success) {
-    INFO("Current assignment completed.", top_level);
+    PROGRESS("Current assignment completed.", top_level);
   }
 
   return success;
@@ -417,7 +417,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
       auto [filter, minimum, name] = filters[max_index];
       s.addFilterToGroup(group, filter);
       MAJOR_TRACE("Removing students of type \"" << name << "\" from group "
-                  << s.groupData(group).name << " (" << num << " students)", true);
+                  << s.groupData(group).name << " (" << num << " students)", false);
     }
 
     // try to calculate new assignment

@@ -20,7 +20,7 @@ enum class RatingInputType {
 // holds all config options in a singleton
 class Config {
  public:
-  uint32_t verbosity_level = 2;
+  uint32_t verbosity_level = 3;
 
   // input and output
   RatingInputType rating_input_type = RatingInputType::Mapping;
