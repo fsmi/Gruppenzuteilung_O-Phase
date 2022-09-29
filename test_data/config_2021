@@ -1,5 +1,6 @@
 rating-input-type = ordered_list
 output-per-team = false
+input-per-team = false
 disabled-groups-per-step = 1
 max-team-size = 5
 allow-default-ratings = false

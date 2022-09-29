@@ -121,7 +121,7 @@ State::State(Input &data)
                      || first_student_type_specific->semester != data.students[student].semester) {
             data.students[student].type_specific_assignment = false;
             WARNING("Potential inconsistency in type specific assignment for team " << team.id << ":\n"
-                    << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", true);
+                    << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", false);
           }
         }
       }

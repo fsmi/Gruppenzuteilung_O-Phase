@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <chrono>
 
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/program_options.hpp"
@@ -97,6 +98,8 @@ void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
 }
 
 int main(int argc, const char *argv[]) {
+  std::chrono::time_point<std::chrono::system_clock> timer_start = std::chrono::system_clock::now();
+
   std::string in_filename, out_filename, groups_filename, types_filename;
   parseCmdAndConfig(argc, argv, in_filename, out_filename, groups_filename, types_filename);
   TRACE("Reading arguments and config completed.", true);
@@ -136,6 +139,9 @@ int main(int argc, const char *argv[]) {
   // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
 
   assertMinimumNumberPerGroupForSpecificType(state, type_filters);
+
+  const double total_time = std::chrono::duration<double>(std::chrono::system_clock::now() - timer_start).count();
+  INFO("Total time required: " <<  total_time << " s", true);
 
   printNumberPerRating(state);
   printStudentsPerGroup(state);

@@ -105,6 +105,7 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
     const ParticipantID &part = participants[i];
     ASSERT(!s.isAssigned(part));
     double factor = getFactor(s, part);
+    GroupID num_available_groups = 0;
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       bool validTeam = s.isTeam(part) &&
                        combinationIsValid(s.teamData(part), s.groupData(group),
@@ -113,12 +114,23 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
           !s.isTeam(part) &&
           combinationIsValid(s.studentData(part), s.groupData(group));
       if (!s.isExludedFromGroup(part, group) && (validTeam || validStudent)) {
+        ++num_available_groups;
         uint32_t rating = ceil(factor * s.rating(part).at(group).getValue(s.numGroups()));
         for (GraphTraits::vertex_descriptor vertex = first_group_vertex[group];
              vertex < first_group_vertex[group + 1]; ++vertex) {
           add_edge(vertex, first_participant + i, EdgeProperty(rating), g);
         }
       }
+    }
+
+    const std::string &name =
+        s.isTeam(part) ? s.teamData(part).id : s.studentData(part).name;
+    if (num_available_groups == 0) {
+      ERROR("No group available for participant \"" << name << "\"!\n"
+            "Maybe the group configuration is incorrect (course/degree type)?", top_level);
+      return {{}, false};
+    } else if (num_available_groups == 1) {
+      WARNING("Only one group available for participant \"" << name << "\"!", top_level);
     }
   }
 
@@ -250,6 +262,9 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
 
     State s_temp(s);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
+      const StudentID new_capacity = ceil(reduction_factor * s_temp.groupCapacity(group));
+      TRACE("Set capacity for group \"" << s.groupData(group).name << "\" to "
+            << new_capacity << " (instead of " << s_temp.groupCapacity(group) << ")", false);
       s_temp.setCapacity(group, ceil(reduction_factor * s_temp.groupCapacity(group)));
     }
     auto [assignment, success_first_step] = calculateAssignment(s_temp, top_level);
