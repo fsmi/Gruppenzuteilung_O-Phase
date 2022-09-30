@@ -17,7 +17,7 @@ set(Boost_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/boost/boost/)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 
-set(CPP_FILES src/definitions.cpp src/algorithms.cpp src/parse.cpp src/config.cpp src/student_types.cpp)
+set(CPP_FILES src/definitions.cpp src/algorithms.cpp src/io.cpp src/config.cpp src/student_types.cpp)
 
 add_executable(GroupAssignment src/main.cpp ${CPP_FILES})
 target_link_libraries(GroupAssignment ${Boost_LIBRARIES})
