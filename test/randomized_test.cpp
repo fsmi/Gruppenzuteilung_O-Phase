@@ -8,8 +8,8 @@ A test using randomly generated data of similar size to the real data.
 
 #include "boost/program_options.hpp"
 
-#include "config.h"
-#include "algorithms.h"
+#include "src/config.h"
+#include "src/algorithms.h"
 
 namespace po = boost::program_options;
 

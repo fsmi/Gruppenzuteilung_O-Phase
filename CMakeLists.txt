@@ -4,6 +4,7 @@ project(OPhaseGroupAssignment)
 
 execute_process(COMMAND cmake -P ${CMAKE_CURRENT_SOURCE_DIR}/download_boost.cmake)
 
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(SYSTEM ${CMAKE_CURRENT_BINARY_DIR}/boost/)
 
 # glob boost sources
@@ -16,13 +17,13 @@ set(Boost_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/boost/boost/)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 
 
-set(CPP_FILES definitions.cpp algorithms.cpp parse.cpp config.cpp student_types.cpp)
+set(CPP_FILES src/definitions.cpp src/algorithms.cpp src/parse.cpp src/config.cpp src/student_types.cpp)
 
-add_executable(GroupAssignment main.cpp ${CPP_FILES})
+add_executable(GroupAssignment src/main.cpp ${CPP_FILES})
 target_link_libraries(GroupAssignment ${Boost_LIBRARIES})
-add_executable(BasicTest basic_test.cpp ${CPP_FILES})
+add_executable(BasicTest test/basic_test.cpp ${CPP_FILES})
 target_link_libraries(BasicTest ${Boost_LIBRARIES})
-add_executable(RandomizedTest randomized_test.cpp ${CPP_FILES})
+add_executable(RandomizedTest test/randomized_test.cpp ${CPP_FILES})
 target_link_libraries(RandomizedTest ${Boost_LIBRARIES})
 
 # set flags

@@ -98,7 +98,7 @@ State::State(Input &data)
   ParticipantID num_removed_teams = 0;
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
-    ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
+    // ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
     if (team.members.size() > 1) {
       std::vector<Rating> team_rating;
       const StudentData* first_student_type_specific = nullptr;

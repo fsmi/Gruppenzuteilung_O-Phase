@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <iostream>
 
-#include "algorithms.h"
+#include "src/algorithms.h"
 
 std::vector<StudentID>
 numPerGroup(const State &s,
