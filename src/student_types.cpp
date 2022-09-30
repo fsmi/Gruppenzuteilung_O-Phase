@@ -4,39 +4,39 @@
 
 #include "config.h"
 
-std::unordered_map<std::string, std::pair<FilterFn, std::string>> initializeTypeToFilterMapping() {
-  std::unordered_map<std::string, std::pair<FilterFn, std::string>> mapping;
+std::unordered_map<std::string, std::tuple<FilterFn, u_int32_t, std::string>> initializeTypeToFilterMapping() {
+  std::unordered_map<std::string, std::tuple<FilterFn, u_int32_t, std::string>> mapping;
 
   // the key is used for retrieving the filter when parsing the types file
   mapping.insert({"inf", {[](const StudentData &data) noexcept {
     return data.course_type == CourseType::Info;
-  }, "Info"}});
+  }, 0, "Info"}});
   mapping.insert({"mat", {[](const StudentData &data) noexcept {
     return data.course_type == CourseType::Mathe;
-  }, "Mathe"}});
+  }, 1, "Mathe"}});
   mapping.insert({"leh", {[](const StudentData &data) noexcept {
     return data.course_type == CourseType::Lehramt;
-  }, "Lehramt"}});
+  }, 2, "Lehramt"}});
   mapping.insert({"bac", {[](const StudentData &data) noexcept {
     return data.degree_type == DegreeType::Bachelor;
-  }, "Bachelor"}});
+  }, 3, "Bachelor"}});
   mapping.insert({"mas", {[](const StudentData &data) noexcept {
     return data.degree_type == DegreeType::Master;
-  }, "Master"}});
+  }, 4, "Master"}});
   mapping.insert({"ers", {[](const StudentData &data) noexcept {
     return data.semester == Semester::Ersti;
-  }, "Ersti"}});
+  }, 5, "Ersti"}});
   mapping.insert({"dri", {[](const StudentData &data) noexcept {
     return data.semester == Semester::Dritti;
-  }, "Dritti"}});
+  }, 6, "Dritti"}});
 
   return mapping;
 }
 
-std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::ifstream& file) {
-  std::unordered_map<std::string, std::pair<FilterFn, std::string>> mapping = initializeTypeToFilterMapping();
+std::vector<std::pair<Filter, StudentID>> parseTypesFile(std::ifstream& file) {
+  auto mapping = initializeTypeToFilterMapping();
 
-  std::vector<std::tuple<FilterFn, StudentID, std::string>> result;
+  std::vector<std::pair<Filter, StudentID>> result;
   std::string line;
   size_t line_index = 0;
   while (std::getline(file, line)) {
@@ -45,7 +45,7 @@ std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::if
       boost::split(words, line, [](char c) {return c == ' ';});
       ASSERT_WITH(words.size() > 1, "types, line " << line_index << ": each line needs to have the form 'TYPENAME+ LIMIT'");
 
-      std::vector<FilterFn> filters;
+      std::vector<std::pair<FilterFn, u_int32_t>> filters;
       std::string combined_name;
       for (size_t i = 0; i + 1 < words.size(); ++i) {
         std::string current = words[i];
@@ -56,8 +56,8 @@ std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::if
         ASSERT_WITH(mapping.find(current) != mapping.end(),
                     "types, line " << line_index << ": invalid name of student type: " << words[i]);
 
-        auto [filter_fn, filter_name] = mapping[current];
-        filters.push_back(filter_fn);
+        auto [filter_fn, filter_id, filter_name] = mapping[current];
+        filters.emplace_back(filter_fn, filter_id);
         if (!combined_name.empty()) {
           combined_name += "-";
         }
@@ -65,14 +65,7 @@ std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::if
       }
       try {
         int limit = std::stoi(words.back());
-        result.emplace_back([filters](const StudentData& data) {
-          for (auto f: filters) {
-            if (!f(data)) {
-              return false;
-            }
-          }
-          return true;
-        }, limit, combined_name);
+        result.emplace_back(Filter(std::move(filters), std::move(combined_name)), limit);
       } catch (const std::invalid_argument& e) {
         FATAL_ERROR("types, line " << line_index << ": last word must be an integer (limit)");
       }

@@ -14,4 +14,4 @@ Input parseInput(const PTree &tree);
 PTree writeOutputToTree(const State &s);
 
 void writeOutputToFiles(const State &s, std::string path,
-    const std::vector<std::tuple<FilterFn, StudentID, std::string>> &filters = {});
+    const std::vector<std::pair<Filter, StudentID>> &filters = {});

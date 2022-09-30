@@ -231,7 +231,7 @@ void outputStudentDataToFile(const StudentData& data,  const std::string &rating
 
 // Writes the output in (more) human-readable form to the specified path
 void writeOutputToFiles(const State &s, std::string path,
-    const std::vector<std::tuple<FilterFn, StudentID, std::string>> &filters) {
+    const std::vector<std::pair<Filter, StudentID>> &filters) {
   std::string removed_path = path + "/RemovedGroups";
   std::ofstream removed(removed_path);
   std::string stats_path = path + "/Stats.csv";
@@ -261,7 +261,7 @@ void writeOutputToFiles(const State &s, std::string path,
         const std::string &rating = s.rating(pair.second)[group].getName();
         outputStudentDataToFile(data, rating, file);
         for (size_t i = 0; i < filters.size(); ++i) {
-          if (std::get<0>(filters[i])(data)) {
+          if (filters[i].first.apply(data)) {
             ++num_per_type[i];
           }
         }

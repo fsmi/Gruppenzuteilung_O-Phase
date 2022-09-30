@@ -136,6 +136,21 @@ struct Input {
 // ########     Assignment Data     ########
 // #########################################
 
+using FilterFn = std::function<bool(const StudentData&)>;
+
+struct Filter {
+  explicit Filter(std::vector<std::pair<FilterFn, u_int32_t>>&& filters, std::string&& name);
+
+  bool apply(const StudentData& data) const;
+
+  u_int32_t id() const;
+
+  bool intersects(const Filter& other) const;
+
+  std::vector<std::pair<FilterFn, u_int32_t>> filters;
+  std::string name;
+};
+
 bool ratingsEqual(const std::vector<Rating> &r1, const std::vector<Rating> &r2);
 
 struct Participant {
@@ -151,7 +166,7 @@ struct GroupState {
   bool enabled = true;
   uint32_t weight = 0;
   // TODO
-  std::vector<std::function<bool(const StudentData&)>> participant_filters;
+  std::vector<Filter> participant_filters;
 };
 
 // the state of the complete calculation
@@ -206,7 +221,7 @@ public:
 
   void disableGroup(GroupID id);
 
-  void addFilterToGroup(GroupID id, std::function<bool(const StudentData&)> filter);
+  void addFilterToGroup(GroupID id, Filter filter);
 
   bool isExludedFromGroup(ParticipantID participant, GroupID group) const;
 

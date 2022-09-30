@@ -105,13 +105,14 @@ int main(int argc, const char *argv[]) {
     FATAL_ERROR("Error opening output file");
   }
 
-  std::vector<std::tuple<FilterFn, StudentID, std::string>> type_filters;
+  std::vector<std::pair<Filter, StudentID>> type_filters;
   if (types_filename != "") {
     std::ifstream types_file(types_filename);
     if (!types_file) {
       FATAL_ERROR("Error opening types file");
     }
     type_filters = parseTypesFile(types_file);
+    // TODO: check for intersections
     PROGRESS("Types file successfully parsed.", true);
   }
 

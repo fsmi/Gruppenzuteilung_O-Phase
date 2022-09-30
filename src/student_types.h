@@ -8,6 +8,4 @@
 
 #include "definitions.h"
 
-using FilterFn = std::function<bool(const StudentData&)>;
-
-std::vector<std::tuple<FilterFn, StudentID, std::string>> parseTypesFile(std::ifstream& file);
+std::vector<std::pair<Filter, StudentID>> parseTypesFile(std::ifstream& file);

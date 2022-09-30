@@ -52,6 +52,43 @@ size_t TeamData::size() const { return members.size(); }
 // ########     Assignment Data     ########
 // #########################################
 
+Filter::Filter(std::vector<std::pair<FilterFn, u_int32_t>>&& filters, std::string&& name):
+        filters(std::move(filters)), name(std::move(name)) {
+  std::sort(filters.begin(), filters.end(), [](const auto& l, const auto& r) {
+    return l.second < r.second;
+  });
+}
+
+bool Filter::apply(const StudentData& data) const {
+  for (const auto& [f, _]: filters) {
+    if (!f(data)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+u_int32_t Filter::id() const {
+  u_int32_t result = 0;
+  for (const auto& [_, id]: filters) {
+    result *= 137;
+    result += id;
+    result += 13;
+  }
+  return result;
+}
+
+bool Filter::intersects(const Filter& other) const {
+  for (const auto& [_, id]: filters) {
+    for (const auto& [_, other_id]: other.filters) {
+      if (id == other_id) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool ratingsEqual(const std::vector<Rating> &r1,
                   const std::vector<Rating> &r2) {
   if (r1.size() != r2.size()) {
@@ -266,7 +303,7 @@ void State::disableGroup(GroupID id) {
   _group_states[id].enabled = false;
 }
 
-void State::addFilterToGroup(GroupID id, std::function<bool(const StudentData&)> filter) {
+void State::addFilterToGroup(GroupID id, Filter filter) {
   ASSERT(id < data().groups.size());
   _group_states[id].participant_filters.push_back(filter);
 }
@@ -278,7 +315,7 @@ bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
     return false;
   }
   for (auto filter : _group_states[group].participant_filters) {
-    if (filter(s_data)) {
+    if (filter.apply(s_data)) {
       return true;
     }
   }

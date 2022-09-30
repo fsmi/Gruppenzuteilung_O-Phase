@@ -355,14 +355,14 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
 // Top level function that add filters to reassign participants,
 // so that a minimum number per group can be ensured
 void assertMinimumNumberPerGroupForSpecificType(State &s,
-    const std::vector<std::tuple<std::function<bool(const StudentData&)>, StudentID, std::string>> &filters) {
+    const std::vector<std::pair<Filter, StudentID>>& filters) {
   INFO("Calculating reassignments to assert minimum numbers per group.", true);
   bool success = true;
   while (success) {
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
     size_t total_num_groups = 0;
     for (size_t i = 0; i < filters.size(); ++i) {
-      auto [filter, minimum, _] = filters[i];
+      auto [filter, minimum] = filters[i];
       std::vector<std::tuple<GroupID, StudentID, bool>> order = groupsByNumFiltered(s, minimum, filter);
       std::vector<std::pair<GroupID, StudentID>> rev_order;
       size_t last_non_ignored = 0;
@@ -413,9 +413,9 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
       }
       auto [group, num] = group_disable_order[max_index].back();
       group_disable_order[max_index].pop_back();
-      auto [filter, minimum, name] = filters[max_index];
+      auto [filter, minimum] = filters[max_index];
       s.addFilterToGroup(group, filter);
-      MAJOR_TRACE("Removing students of type \"" << name << "\" from group "
+      MAJOR_TRACE("Removing students of type \"" << filter.name << "\" from group "
                   << s.groupData(group).name << " (" << num << " students)", false);
     }
 
@@ -431,8 +431,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
 }
 
 std::vector<std::tuple<GroupID, StudentID, bool>>
-groupsByNumFiltered(const State &s, StudentID min_members,
-               std::function<bool(const StudentData &)> filter) {
+groupsByNumFiltered(const State &s, StudentID min_members, const Filter& filter) {
   std::vector<std::tuple<GroupID, StudentID, bool>> groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const auto &list = s.groupAssignmentList(group);
@@ -441,7 +440,7 @@ groupsByNumFiltered(const State &s, StudentID min_members,
       bool contains_only_ignored = true;
       for (const auto &pair : list) {
         StudentData data = s.data().students[pair.first];
-        if (filter(data)) {
+        if (filter.apply(data)) {
           num++;
           if (data.type_specific_assignment) {
             contains_only_ignored = false;
