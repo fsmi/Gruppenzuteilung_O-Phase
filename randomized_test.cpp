@@ -10,7 +10,6 @@ A test using randomly generated data of similar size to the real data.
 
 #include "config.h"
 #include "algorithms.h"
-#include "moves_local_search.h"
 
 namespace po = boost::program_options;
 

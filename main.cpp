@@ -6,7 +6,6 @@
 #include "boost/program_options.hpp"
 
 #include "algorithms.h"
-#include "moves_local_search.h"
 #include "parse.h"
 #include "config.h"
 #include "student_types.h"

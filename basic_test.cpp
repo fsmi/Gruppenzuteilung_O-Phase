@@ -2,7 +2,22 @@
 #include <iostream>
 
 #include "algorithms.h"
-#include "moves_local_search.h"
+
+std::vector<StudentID>
+numPerGroup(const State &s,
+            std::function<bool(const StudentData &)> predicate) {
+  std::vector<StudentID> num_per_group(s.numGroups(), 0);
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    const auto &list = s.groupAssignmentList(group);
+    for (const auto &pair : list) {
+      StudentData data = s.data().students[pair.first];
+      if (predicate(data)) {
+        num_per_group[group]++;
+      }
+    }
+  }
+  return num_per_group;
+}
 
 int main() {
   Input input;
@@ -110,23 +125,12 @@ int main() {
     return data.course_type == CourseType::Mathe;
   };
 
-  // minimum number with local search
-  s = State(input);
-  assignTeamsAndStudents(s, true);
-  assertMininumNumber(s, 2, is_math);
-  printCurrentAssignment(s);
-  std::vector<StudentID> num_per_group = numPerGroup(s, is_math);
-  for (StudentID num : num_per_group) {
-    assert(num == 0 || num >= 2);
-  }
-  std::cout << "Local search test done." << std::endl << std::endl;
-
   // minimum number with filters
   s = State(input);
   assignTeamsAndStudents(s, true);
   assertMinimumNumberPerGroupForSpecificType(s, {{is_math, 2, "Mathe"}});
   printCurrentAssignment(s);
-  num_per_group = numPerGroup(s, is_math);
+  std::vector<StudentID> num_per_group = numPerGroup(s, is_math);
   for (StudentID num : num_per_group) {
     assert(num == 0 || num >= 2);
   }
