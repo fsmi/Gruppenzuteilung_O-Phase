@@ -19,7 +19,7 @@ struct SearchLevel {
   size_t parent;
   uint32_t level;
 
-  SearchLevel(size_t parent);
+  SearchLevel(size_t parent, uint32_t min_level);
 
   SearchLevel next() const;
 };

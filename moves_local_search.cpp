@@ -12,7 +12,6 @@
 #include "config.h"
 
 void printMove(const State &s, ParticipantID /*part*/, GroupID from, GroupID to) {
-  const std::string p_name = std::string("****");
   std::cout << "move from group \""
             << s.groupData(from).name << "\" to group \""
             << s.groupData(to).name << "\", ";
@@ -23,8 +22,8 @@ MoveStep::MoveStep(size_t parent, int32_t path_rating,
     : parent(parent), path_rating(path_rating), participant(participant),
       target(target) {}
 
-SearchLevel::SearchLevel(size_t parent)
-    : parent(parent), level(/*NUM_RATINGS - */1) { ASSERT(false); }
+SearchLevel::SearchLevel(size_t parent, uint32_t min_level)
+    : parent(parent), level(min_level) { }
 
 SearchLevel SearchLevel::next() const {
   ASSERT(level > 0);
@@ -49,7 +48,8 @@ void MoveSequence::apply(State &s, bool print_moves) const {
   for (size_t i = 0; i < _seq.size(); ++i) {
     GroupID from = (i == _seq.size() - 1) ? _source : _seq[i + 1].second;
     s.unassignParticipant(_seq[i].first, from);
-    ASSERT(s.assignParticipant(_seq[i].first, _seq[i].second));
+    bool success = s.assignParticipant(_seq[i].first, _seq[i].second);
+    ASSERT(success);
     if (print_moves) {
       printMove(s, _seq[i].first, from, _seq[i].second);
     }
@@ -90,10 +90,11 @@ std::optional<MoveSequence>
 moveFromGroup(const State &s, GroupID group,
               std::function<bool(const StudentData &)> predicate,
               int32_t best_expected) {
+  const uint32_t min_level = s.numGroups() - 1;
   std::vector<MoveStep> search_tree;
   search_tree.emplace_back(0, 0, 0, group);
   std::deque<std::variant<MoveStep, SearchLevel>> queue;
-  queue.emplace_back(SearchLevel(0));
+  queue.emplace_back(SearchLevel(0, min_level));
 
   int64_t counter = 0;
   size_t max_idx = 0;
@@ -114,11 +115,13 @@ moveFromGroup(const State &s, GroupID group,
           max_idx = index;
         }
       } else {
-        queue.emplace_back(SearchLevel(index));
+        queue.emplace_back(SearchLevel(index, min_level));
       }
     } else {
       SearchLevel lvl = std::get<SearchLevel>(next);
       MoveStep parent_node = search_tree[lvl.parent];
+      // we forbid moves to a group that is already in the search
+      // path (this would create a cycle)
       std::vector<bool> group_allowed(s.numGroups(), true);
       size_t current = lvl.parent;
       group_allowed[search_tree[current].target] = false;
@@ -127,6 +130,7 @@ moveFromGroup(const State &s, GroupID group,
         group_allowed[search_tree[current].target] = false;
       } while (search_tree[current].parent != current);
       ASSERT(!group_allowed[group]);
+
       std::vector<ParticipantID> participants;
       for (const auto &pair : s.groupAssignmentList(parent_node.target)) {
         if (!s.isTeam(pair.second) &&
@@ -242,15 +246,16 @@ void moveAllFromGroup(State &s, GroupID group, StudentID min,
       }
     }
     ASSERT(max_rating > std::numeric_limits<int32_t>::min());
-    if (Config::get().verbosity_level > 3) {
+    bool print_moves = Config::get().verbosity_level > 3;
+    if (print_moves) {
       std::cout << TRACE_START << "Moves: ";
     }
     for (const MoveSequence &seq : max_seqs) {
-      seq.apply(s, true);
+      seq.apply(s, print_moves);
     }
 
     ASSERT(s.assignParticipant(part, max_id));
-    if (Config::get().verbosity_level > 3) {
+    if (print_moves) {
       printMove(s, part, group, max_id);
       std::cout << " (diff=" << max_rating << ")." << std::endl;
     }
@@ -269,11 +274,11 @@ void assertMininumNumber(State &s, StudentID min,
     groups = groupsByNumber(s, min, predicate);
   }
 
-  if (Config::get().verbosity_level > 1) {
-    INFO("Number of students with minimum per group:", true);
-    std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
-    for (GroupID group = 0; group < s.numGroups(); ++group) {
-      MAJOR_TRACE(s.groupData(group).name << ": " << num_per_group[group], true);
-    }
-  }
+  // if (Config::get().verbosity_level > 1) {
+  //   INFO("Number of students with minimum per group:", true);
+  //   std::vector<StudentID> num_per_group = numPerGroup(s, predicate);
+  //   for (GroupID group = 0; group < s.numGroups(); ++group) {
+  //     MAJOR_TRACE(s.groupData(group).name << ": " << num_per_group[group], true);
+  //   }
+  // }
 }
