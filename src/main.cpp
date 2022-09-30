@@ -112,7 +112,6 @@ int main(int argc, const char *argv[]) {
       FATAL_ERROR("Error opening types file");
     }
     type_filters = parseTypesFile(types_file);
-    // TODO: check for intersections
     PROGRESS("Types file successfully parsed.", true);
   }
 

@@ -78,17 +78,6 @@ u_int32_t Filter::id() const {
   return result;
 }
 
-bool Filter::intersects(const Filter& other) const {
-  for (const auto& [_, id]: filters) {
-    for (const auto& [_, other_id]: other.filters) {
-      if (id == other_id) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 bool ratingsEqual(const std::vector<Rating> &r1,
                   const std::vector<Rating> &r2) {
   if (r1.size() != r2.size()) {
@@ -134,7 +123,7 @@ State::State(Input &data)
   ParticipantID num_removed_teams = 0;
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
-    // ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
+    ASSERT_WITH(team.members.size() > 0, "team \"" << team.id << "\" has no member");
     if (team.members.size() > 1) {
       std::vector<Rating> team_rating;
       const StudentData* first_student_type_specific = nullptr;

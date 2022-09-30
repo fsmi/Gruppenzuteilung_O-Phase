@@ -145,8 +145,6 @@ struct Filter {
 
   u_int32_t id() const;
 
-  bool intersects(const Filter& other) const;
-
   std::vector<std::pair<FilterFn, u_int32_t>> filters;
   std::string name;
 };
