@@ -131,7 +131,6 @@ State::State(Input &data)
     }
   }
   // collect teams
-  ParticipantID mapped_team_id = 0;
   ParticipantID num_removed_teams = 0;
   for (ParticipantID team_id = 0; team_id < data.teams.size(); ++team_id) {
     const TeamData &team = data.teams[team_id];
@@ -168,8 +167,7 @@ State::State(Input &data)
           data.ratings[student] = team_rating;
         }
       }
-      _participants.emplace_back(mapped_team_id, true);
-      mapped_team_id++;
+      _participants.emplace_back(team_id, true);
     } else {
       num_removed_teams++;
     }
@@ -194,6 +192,19 @@ State::State(Input &data)
     _group_states[i].capacity = data.groups[i].capacity;
   }
   ASSERT(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
+
+  // check total participant count
+  StudentID total_count = 0;
+  for (ParticipantID p = 0; p < numParticipants(); ++p) {
+    if (isTeam(p)) {
+      total_count += teamData(p).size();
+    } else {
+      ++total_count;
+    }
+  }
+  ASSERT_WITH(data.students.size() == total_count,
+              "Internal error: Student count (" << data.students.size()
+              << ") does not match mapped count (" << total_count << ").");
 }
 
 const Input &State::data() const { return _data.get(); }
