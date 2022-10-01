@@ -100,12 +100,14 @@ State::State(Input &data)
       _group_states(data.groups.size()),
       _group_assignments(data.groups.size(),
                          std::vector<std::pair<StudentID, ParticipantID>>()),
-      _participants() {
+      _participants(),
+      _type_specific_assignment(data.students.size()) {
   ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
 
-  // sanitize ratings and check mapping to team id
+  // sanitize ratings, check mapping to team id, copy data
   for (StudentID student = 0; student < data.ratings.size(); ++student) {
+    _type_specific_assignment[student] = data.students[student].type_specific_assignment;
     for (Rating& rating: data.ratings[student]) {
       if (Config::get().allow_default_ratings && !rating.isValid()) {
         rating = Rating::minRating(data.groups.size());
@@ -144,7 +146,7 @@ State::State(Input &data)
           } else if (first_student_type_specific->course_type != data.students[student].course_type
                      || first_student_type_specific->degree_type != data.students[student].degree_type
                      || first_student_type_specific->semester != data.students[student].semester) {
-            data.students[student].type_specific_assignment = false;
+            disableTypeSpecificAssignment(student);
             WARNING("Potential inconsistency in type specific assignment for team " << team.id << ":\n"
                     << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", false);
           }
@@ -325,7 +327,7 @@ bool State::groupContainsFilter(GroupID id, const Filter& filter) const {
 bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
   ASSERT(group < data().groups.size());
   const StudentData& s_data = data().students[student];
-  if (!s_data.type_specific_assignment) {
+  if (!_type_specific_assignment[student]) {
     return false;
   }
   for (auto filter : _group_states[group].participant_filters) {
@@ -422,4 +424,19 @@ void State::reset() {
 void State::setCapacity(GroupID id, uint32_t val) {
   ASSERT(id < data().groups.size() && val < Config::get().max_group_size);
   _group_states[id].capacity = val;
+}
+
+void State::disableTypeSpecificAssignment(StudentID student) {
+  ASSERT(student < _type_specific_assignment.size());
+  _type_specific_assignment[student] = false;
+}
+
+bool State::typeSpecificAssignment(StudentID student) const {
+  ASSERT(student < _type_specific_assignment.size());
+  return _type_specific_assignment[student];
+}
+
+StudentID State::partIDToStudentID(ParticipantID id) const {
+  ASSERT(!isTeam(id));
+  return _participants[id].index;
 }

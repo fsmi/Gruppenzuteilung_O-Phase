@@ -29,6 +29,7 @@ class Config {
 
   // algorithm
   GroupID disabled_groups_per_step = 3;
+  uint32_t type_specific_assignment_treshold = 0;
   StudentID min_group_size = 10;
   StudentID max_group_size = 200;
   StudentID max_team_size = 5;

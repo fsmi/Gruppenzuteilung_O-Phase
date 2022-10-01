@@ -175,6 +175,7 @@ class State {
   std::vector<std::vector<std::pair<StudentID, ParticipantID>>>
       _group_assignments;
   std::vector<Participant> _participants;
+  std::vector<bool> _type_specific_assignment;
 
 public:
   State(Input &data);
@@ -235,6 +236,12 @@ public:
   void reset();
 
   void setCapacity(GroupID id, uint32_t val);
+
+  void disableTypeSpecificAssignment(StudentID student);
+
+  bool typeSpecificAssignment(StudentID student) const;
+
+  StudentID partIDToStudentID(ParticipantID id) const;
 
  private:
   bool studentIsExludedFromGroup(StudentID participant, GroupID group) const;

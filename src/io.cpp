@@ -188,45 +188,45 @@ PTree writeOutputToTree(const State &s) {
   return root;
 }
 
+std::string courseTypeToString(CourseType type) {
+  switch (type) {
+    case CourseType::Info:
+      return "Info";
+    case CourseType::Mathe:
+      return "Mathe";
+    case CourseType::Lehramt:
+      return "Lehramt";
+    default:
+      return "-";
+  }
+}
+
+std::string degreeTypeToString(DegreeType type) {
+  switch (type) {
+    case DegreeType::Bachelor:
+      return "Bachelor";
+    case DegreeType::Master:
+      return "Master";
+    default:
+      return "-";
+  }
+}
+
+std::string semesterToString(Semester semester) {
+  switch (semester) {
+    case Semester::Ersti:
+      return "Ersti";
+    case Semester::Dritti:
+      return "Dritti";
+    default:
+      return "-";
+  }
+}
+
 void outputStudentDataToFile(const StudentData& data,  const std::string &rating, std::ofstream& file) {
-  std::string course;
-  switch (data.course_type) {
-  case CourseType::Info:
-    course = "Info";
-    break;
-  case CourseType::Mathe:
-    course = "Mathe";
-    break;
-  case CourseType::Lehramt:
-    course = "Lehramt";
-    break;
-  default:
-    course = "-";
-  }
-  std::string degree;
-  switch (data.degree_type) {
-  case DegreeType::Bachelor:
-    degree = "Bachelor";
-    break;
-  case DegreeType::Master:
-    degree = "Master";
-    break;
-  default:
-    degree = "-";
-  }
-  std::string semester;
-  switch (data.semester) {
-  case Semester::Ersti:
-    semester = "Ersti";
-    break;
-  case Semester::Dritti:
-    semester = "Dritti";
-    break;
-  default:
-    semester = "-";
-  }
-  file << data.name << ", " << data.id << ", " << course << ", " << degree << ", " << semester
-        << ", [" << rating << "]" << std::endl;
+  file << data.name << ", " << data.id << ", " << courseTypeToString(data.course_type)
+       << ", " << degreeTypeToString(data.degree_type) << ", " << semesterToString(data.semester)
+       << ", [" << rating << "]" << std::endl;
 }
 
 // Writes the output in (more) human-readable form to the specified path

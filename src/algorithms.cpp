@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include "config.h"
+#include "io.h"
 
 using EdgeProperty = boost::property<boost::edge_weight_t, uint32_t>;
 using Graph = boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS,
@@ -352,13 +353,45 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   INFO("Initial assignment completed.", true);
 }
 
+bool disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index) {
+  bool changed = false;
+  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+    Rating r = s.rating(part).at(s.assignment(part));
+    auto disable = [&] (StudentID student) {
+      if (s.typeSpecificAssignment(student)) {
+        s.disableTypeSpecificAssignment(student);
+        const StudentData& data = s.data().students[student];
+        WARNING("Disabling type specific assignment for student \"" << data.name
+                << "\" (" << courseTypeToString(data.course_type) << ", " << degreeTypeToString(data.degree_type)
+                << ", " << semesterToString(data.semester) << ") because of low rating [" << r.getName() <<"]", false);
+        changed = true;
+      }
+    };
+    if (r.index > rating_index) {
+      if (s.isTeam(part)) {
+        for (StudentID member: s.teamData(part).members) {
+          disable(member);
+        }
+      } else {
+        disable(s.partIDToStudentID(part));
+      }
+    }
+  }
+  return changed;
+}
+
 // Top level function that add filters to reassign participants,
 // so that a minimum number per group can be ensured
 void assertMinimumNumberPerGroupForSpecificType(State &s,
     const std::vector<std::pair<Filter, StudentID>>& filters) {
   INFO("Calculating reassignments to assert minimum numbers per group.", true);
+  bool changed = false;
   bool success = true;
   while (success) {
+    if (Config::get().type_specific_assignment_treshold > 0) {
+      changed = disableTypeSpecificAssignmentBelowTreshold(s, Config::get().type_specific_assignment_treshold);
+    }
+
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
     size_t total_num_groups = 0;
     for (size_t i = 0; i < filters.size(); ++i) {
@@ -380,7 +413,6 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     if (total_num_groups == 0) {
-      INFO("Successfully calculated reassignment!", true);
       break;
     }
 
@@ -416,6 +448,17 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     } else {
       WARNING("Could not continue reassignment. Stopping.", true);
     }
+  }
+
+  if (changed) {
+    State s_temp(s);
+    success = assignTeamsAndStudents(s_temp, false);
+    if (success) {
+      s = s_temp;
+    }
+  }
+  if (success) {
+    INFO("Successfully calculated reassignment!", true);
   }
 }
 

@@ -15,3 +15,9 @@ PTree writeOutputToTree(const State &s);
 
 void writeOutputToFiles(const State &s, std::string path,
     const std::vector<std::pair<Filter, StudentID>> &filters = {});
+
+std::string courseTypeToString(CourseType type);
+
+std::string degreeTypeToString(DegreeType type);
+
+std::string semesterToString(Semester semester);
