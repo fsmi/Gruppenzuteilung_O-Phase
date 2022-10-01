@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <chrono>
+#include <ios>
 
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/program_options.hpp"
@@ -12,31 +13,83 @@
 
 namespace po = boost::program_options;
 
+template<typename T, typename F>
+void printTabularLine(const std::vector<T>& data, const std::string& head, F f) {
+  std::cout << std::left << TRACE_START << std::setw(7) << head;
+  for (const auto& val: data) {
+    std::string word = f(val);
+    const int width = std::max<int>(15, word.size());
+    int left = (width - word.size()) / 2 + word.size();
+    int right = (width - word.size() + 1) / 2;
+    std::cout << std::right << " " << std::setw(left) << f(val) << std::setw(right) << "";
+  }
+  std::cout << std::endl;
+}
+
 // print number of ratings for different rating levels
-void printNumberPerRating(const State& state) {
-  std::vector<int> num_ratings(state.numGroups(), 0);
-  for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
-    Rating r = state.rating(part).at(state.assignment(part));
-    int num = 1;
-    if (state.isTeam(part)) {
-      num = state.teamData(part).size();
+void printNumberPerRating(const State& state, const std::vector<std::pair<Filter, StudentID>>& filters) {
+  // first, collect stats
+  std::vector<std::tuple<std::vector<int>, int, std::string>> ratings_per_filter;
+  size_t required_ratings = 0;
+  for (size_t i = 0; i <= filters.size(); ++i) {
+    StudentID total = 0;
+    std::vector<int> num_ratings(state.numGroups(), 0);
+    const Filter& filter = (i == 0) ? Filter({}, "Total") : filters[i - 1].first;
+
+    for (ParticipantID part = 0; part < state.numParticipants(); ++part) {
+      Rating r = state.rating(part).at(state.assignment(part));
+      auto count_if_applies = [&] (const StudentData& data) {
+        if (filter.apply(data)) {
+          ++num_ratings.at(r.index);
+          ++total;
+        }
+      };
+      if (state.isTeam(part)) {
+        for (StudentID member: state.teamData(part).members) {
+          count_if_applies(state.data().students[member]);
+        }
+      } else {
+        count_if_applies(state.studentData(part));
+      }
     }
-    num_ratings.at(r.index) += num;
+
+    if (i == 0) {
+      while (!num_ratings.empty() && num_ratings.back() == 0) {
+        num_ratings.pop_back();
+      }
+      required_ratings = num_ratings.size();
+    } else {
+      num_ratings.resize(required_ratings);
+    }
+    ratings_per_filter.emplace_back(std::move(num_ratings), total, filter.name);
   }
-  while (!num_ratings.empty() && num_ratings.back() == 0) {
-    num_ratings.pop_back();
+
+  // second, print into tabular
+  printTabularLine(ratings_per_filter, "Rating",
+                   [](const auto& val) { return std::get<2>(val); });
+  bool skip = false;
+  for (size_t i = 0; i < required_ratings; ++i) {
+    bool empty = (std::get<0>(ratings_per_filter[0]).at(i) == 0);
+    if (empty && !skip) {
+      printTabularLine(ratings_per_filter, "..", [i](const auto&) { return ""; });
+      skip = true;
+    } else if (!empty) {
+      printTabularLine(ratings_per_filter, Rating(i).getName(), [i](const auto& val) {
+        int count = std::get<0>(val).at(i);
+        return (count == 0) ? "" : std::to_string(count);
+      });
+      skip = false;
+    }
   }
-  LOG(TRACE_START << "### Resulting assignment ###", 1);
-  for (size_t i = 0; i < num_ratings.size(); ++i) {
-    LOG(TRACE_START << "Participants with rating "
-                    << Rating(i).getName() << ": " << num_ratings.at(i), 1);
-  }
+  printTabularLine(ratings_per_filter, "Sum",
+                   [](const auto& val) { return std::to_string(std::get<1>(val)); });
 }
 
 void printStudentsPerGroup(const State& state) {
+  LOG(TRACE_START, 1);
   for (GroupID group = 0; group < state.numGroups(); ++group) {
-    LOG(TRACE_START << state.groupSize(group) << "/" << state.groupData(group).capacity
-                    << " - " << state.groupData(group).name, 1);
+    LOG(TRACE_START << std::right << std::setw(3) << state.groupSize(group) << " /"
+        << std::setw(3) << state.groupData(group).capacity << "   " << state.groupData(group).name, 1);
   }
 }
 
@@ -126,14 +179,14 @@ int main(int argc, const char *argv[]) {
   assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
 
   if (Config::get().verbosity_level >= 3) {
-    printNumberPerRating(state);
+    printNumberPerRating(state, type_filters);
     printStudentsPerGroup(state);
   }
 
   assertMinimumNumberPerGroupForSpecificType(state, type_filters);
 
   if (Config::get().verbosity_level >= 1) {
-    printNumberPerRating(state);
+    printNumberPerRating(state, type_filters);
   }
   if (Config::get().verbosity_level >= 2) {
     printStudentsPerGroup(state);

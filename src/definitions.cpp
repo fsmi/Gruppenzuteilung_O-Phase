@@ -252,6 +252,8 @@ uint32_t State::groupWeight(GroupID id) const {
   return _group_states[id].weight;
 }
 
+StudentID State::numStudents() const { return data().students.size(); }
+
 ParticipantID State::numParticipants() const { return _participants.size(); }
 
 bool State::isTeam(ParticipantID id) const {

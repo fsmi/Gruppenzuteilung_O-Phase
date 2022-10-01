@@ -19,7 +19,7 @@ std::unordered_map<std::string, std::tuple<FilterFn, u_int32_t, std::string>> in
   }, 2, "Lehramt"}});
   mapping.insert({"bac", {[](const StudentData &data) noexcept {
     return data.degree_type == DegreeType::Bachelor;
-  }, 3, "Bachelor"}});
+  }, 3, "Bach."}});
   mapping.insert({"mas", {[](const StudentData &data) noexcept {
     return data.degree_type == DegreeType::Master;
   }, 4, "Master"}});

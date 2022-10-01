@@ -202,6 +202,8 @@ public:
 
   uint32_t groupWeight(GroupID id) const;
 
+  StudentID numStudents() const;
+
   ParticipantID numParticipants() const;
 
   bool isTeam(ParticipantID id) const;
