@@ -3,6 +3,8 @@
 #include "definitions.h"
 #include "student_types.h"
 
+void signalHandler(int);
+
 std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool top_level);
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,

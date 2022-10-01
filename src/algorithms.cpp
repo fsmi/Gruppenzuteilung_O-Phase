@@ -2,8 +2,10 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/maximum_weighted_matching.hpp>
+#include <atomic>
 #include <iostream>
 #include <chrono>
+#include <thread>
 
 #include "config.h"
 #include "io.h"
@@ -63,6 +65,17 @@ double getFactor(const State &/*s*/, ParticipantID /*part*/) {
   //   }
   // }
   return 1.0;
+}
+
+// global variables for interrupt handling
+static std::atomic_bool interrupted(false);
+static std::atomic_bool finished(false);
+
+void signalHandler(int) {
+  if (interrupted.load()) {
+    std::exit(-1);
+  }
+  interrupted.store(true);
 }
 
 // ####################################
@@ -136,7 +149,29 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
 
   // calculate the matching
   std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
-  maximum_weighted_matching(g, &mates[0]);
+
+  // call graph algorithm in separate thread so it is interruptible
+  finished.store(false);
+  std::thread algo_thread([&] {
+    auto local_graph = std::move(g);
+    auto local_mates = std::move(mates);
+    maximum_weighted_matching(local_graph, &local_mates[0]);
+    if (!interrupted.load()) {
+      g = std::move(local_graph);
+      mates = std::move(local_mates);
+      finished.store(true);
+    }
+  });
+  algo_thread.detach();
+
+  do {
+    if (interrupted.load()) {
+      ERROR("SIGINT received. Interrupting...", true);
+      return {{}, false};
+    }
+    std::this_thread::yield();
+  } while (!finished.load());
+
   MAJOR_PROGRESS("Matching with size " << matching_size(g, &mates[0])
                  << " and total weight " << matching_weight_sum(g, &mates[0])
                  << " calculated ("
@@ -283,7 +318,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
 
   TRACE("Team assignment successful.", top_level);
   auto [assignment, success_final] = calculateAssignment(s, top_level);
-  success = applyAssignment(s, assignment) && success_final;
+  success = success_final && applyAssignment(s, assignment);
   if (success) {
     PROGRESS("Current assignment completed.", top_level);
   }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <chrono>
 #include <ios>
+#include <csignal>
 
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/program_options.hpp"
@@ -174,6 +175,9 @@ int main(int argc, const char *argv[]) {
   Input input = parseInput(pt);
   PROGRESS("Input file successfully parsed.", true);
   INFO("Number of students: " << input.students.size(), true);
+
+  // register signal handler
+  signal(SIGINT, signalHandler);
 
   State state(input);
   assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
