@@ -1,0 +1,921 @@
+{
+  "groups": {
+    "6461f458-2219-4ee5-86a8-aa4689d7bb90": {
+      "name": "FITMathe",
+      "capacity": 6,
+      "course_type": "mathe",
+      "degree_type": "any"
+    },
+    "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": {
+      "name": "Triviale Gruppe",
+      "capacity": 13,
+      "course_type": "any",
+      "degree_type": "any"
+    },
+    "61b286f7-6341-461b-9a38-9797f9fc538d": {
+      "name": "Das Assoziale Netzwerk",
+      "capacity": 20,
+      "course_type": "any",
+      "degree_type": "bachelor"
+    },
+    "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": {
+      "name": "Pi-nguine",
+      "capacity": 9,
+      "course_type": "any",
+      "degree_type": "master"
+    },
+    "562a3b86-c962-456c-a480-86bb9f840a13": {
+      "name": "Heu+Schrecken",
+      "capacity": 10,
+      "course_type": "any",
+      "degree_type": "any"
+    },
+    "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": {
+      "name": "Ratefüxe",
+      "capacity": 10,
+      "course_type": "info",
+      "degree_type": "any"
+    },
+    "404d25d7-2831-4a2d-ae9b-4a63b3d54154": {
+      "name": "42 Alphatierchen",
+      "capacity": 15,
+      "course_type": "info",
+      "degree_type": "any"
+    },
+    "99fb366f-15cf-4114-a948-3903bf294c26": {
+      "name": "404 Not Found",
+      "capacity": 7,
+      "course_type": "mathe",
+      "degree_type": "any"
+    },
+    "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": {
+      "name": "One group to gonna catch 'em all",
+      "capacity": 100,
+      "course_type": "any",
+      "degree_type": "any"
+    },
+    "0c17c824-af37-4d7c-a90f-0ea749f47d1b": {
+      "name": "Freibeuter",
+      "capacity": 30,
+      "course_type": "info",
+      "degree_type": "any"
+    }
+  },
+  "students": {
+    "fa0554cc-6a70-4900-b08e-934cfd5edb5d": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "adb1743d-05e0-43aa-ac4a-afadbc4bb97e": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "3d4ed71b-b06d-4f35-b365-c8e1c9d2eb12": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "b4d17c79-342e-4a0d-a879-6a2b91bfa8af": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "836a6ead-4209-4047-ae72-42632046a40f": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "756e1fd7-6bef-4479-9148-01559a1ad9e0": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "628a6a70-fb6a-4f3e-8331-eebefc8e3f07": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "6f8071e8-c6dc-4198-aaf3-5feab6bfc857": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "09797248-9cbc-4642-a968-ad8ac720bfa5": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "a896e34c-8a0c-4bc1-aee8-1dc8a3287840": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "c46e2102-2ebf-436e-8d4b-a18725bf5bea": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "3e6a98b8-8d05-409a-bb55-6e711f3c626c": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "2eaf1237-b895-470d-ae41-f2efe4312143": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "3bbb974b-dd7c-4cd3-af71-6cc8aa251a37": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "d0fa7d54-39b3-4e8a-9e18-bd778be0b88a": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "b664fd19-3f53-44f2-a5af-81e6e57a6566": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "2fdc689b-e260-413d-b64e-26fc6a2fe6b3": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "f1dfeffd-46c5-40d2-9711-89f191073411": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "89fef98d-2137-49ef-9f80-d50b8ddb603a": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "1fcd62a2-07e2-4b0d-9610-3bd991cb5b71": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "005b548f-1551-4d34-a4a6-106237180ac2": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "34ae2d8c-ee90-42f4-91a8-70bb27822e9f": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "a5cec8ba-3563-428e-ae08-8c6ec8998407": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "0113161a-78cd-4048-a71c-10fdbd305231": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "8fa9f0a8-0121-4ddd-8f1e-7302495de130": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "7e8fa385-7ec9-4809-8a1f-d0080c2754d6": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "8307457c-262a-4beb-b3af-de9a4929420b": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "591ffc31-588e-4f37-ad6e-ca8d3993c055": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "127fa08e-663d-4a1a-87b8-343db8e530e5": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "577fe604-d78f-44ef-865e-663fcd293867": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "15d0efdd-e640-41ce-8ec8-d16e057e56d4": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "9e0a54ab-e00a-4d7d-b46b-057046a09d05": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "57f02db9-7b47-4a44-b241-e530b2b9ff24": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "d90347f1-e58a-4b4d-a53f-84cb6b22c1d6": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "6ae46e70-63ba-4416-9b65-09f7149ee29e": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "0dea33a6-9f59-48b1-9d8a-6e889451a5e4": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "280785cb-cd66-49b2-9287-c883110fa4fe": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "872a45f2-c4b0-4468-a9be-a543a65de931": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "b29614d5-af00-4ad8-9a57-f1fec9eff069": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "5c737c78-fb5f-40c4-9546-5203aac7d20b": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "34130b5c-ab81-4821-b0b4-d280d5f2002b": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "303b1bda-1900-44f3-b704-5757e1a58431": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "1d6453ac-aecc-43f3-ad2d-ae4c9c038082": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "ab3cdae1-25b7-4df9-82e7-33e1e8ac00f0": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "7e19321d-53ab-4af2-8d63-8b98d2480ab9": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "6139e3e0-ac52-4857-be90-88ab4242650f": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "0688c365-fe9d-49b0-8c10-99a1cce0d066": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "3a4d3aa8-a6c8-4da0-8e13-8e8cb5b3ae4d": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "90726087-4ee7-418f-b652-0979aaa131de": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "b522f7a8-4f9a-43dd-8970-e926fcd9849d": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "5221b400-ea37-41c5-b838-f8993e46bfb3": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "683253fc-07b3-4454-a817-e11fd77c96a8": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "66420cfc-aca6-4167-b170-5409dabe2c92": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "f3ba1b1e-e59c-4e56-a6b0-227e99a7a584": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "fa18817a-c40d-43e9-8ac7-40652cb9bf1d": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "e05bb8d9-0dd7-458f-8a59-b7e2bd99ba40": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "6ed9b084-3845-4688-9f74-a703b3a80a62": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "309b27fd-1934-4908-9c35-920b332351bc": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "7732a566-7fdb-44e2-8e74-ae221980bb4d": {
+      "name": "-",
+      "course_type": "mathe",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "fb00aa24-cc6b-4005-a966-271e8f6e8a8c": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "04ce10d4-3e12-4d4c-b4e1-c995beb1994f": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "c3e09115-1975-46c5-85a4-a5313f8f6055": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    },
+    "cfbcfd8b-29be-44b6-9983-553a8a05dfe7": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "e3d0dbc2-4e26-4cbd-9977-dc89372b275b": {
+      "name": "-",
+      "course_type": "info",
+      "degree_type": "bachelor",
+      "type_specific_assignment": false
+    },
+    "a866222e-c338-4d03-a5d6-82617b45d130": {
+      "name": "-",
+      "course_type": "lehramt",
+      "degree_type": "master",
+      "type_specific_assignment": false
+    }
+  },
+  "teams": {
+    "889947b9-8e73-413c-b486-b254ada74147": [
+      "fa0554cc-6a70-4900-b08e-934cfd5edb5d",
+      "adb1743d-05e0-43aa-ac4a-afadbc4bb97e"
+    ],
+    "3ef544e1-61df-4ced-89c6-d756b9a3c0a7": [
+      "3d4ed71b-b06d-4f35-b365-c8e1c9d2eb12",
+      "b4d17c79-342e-4a0d-a879-6a2b91bfa8af"
+    ],
+    "8207ec2b-11e5-40b8-8eb7-feb757fa38e3": [
+      "836a6ead-4209-4047-ae72-42632046a40f",
+      "756e1fd7-6bef-4479-9148-01559a1ad9e0"
+    ],
+    "e98f342d-cd17-4d50-a35e-290679786daf": [
+      "628a6a70-fb6a-4f3e-8331-eebefc8e3f07",
+      "6f8071e8-c6dc-4198-aaf3-5feab6bfc857",
+      "09797248-9cbc-4642-a968-ad8ac720bfa5",
+      "a896e34c-8a0c-4bc1-aee8-1dc8a3287840",
+      "c46e2102-2ebf-436e-8d4b-a18725bf5bea"
+    ],
+    "51ffdc66-b2e7-43a6-a376-2d5c083e444d": [
+      "3e6a98b8-8d05-409a-bb55-6e711f3c626c",
+      "2eaf1237-b895-470d-ae41-f2efe4312143",
+      "3bbb974b-dd7c-4cd3-af71-6cc8aa251a37",
+      "d0fa7d54-39b3-4e8a-9e18-bd778be0b88a",
+      "b664fd19-3f53-44f2-a5af-81e6e57a6566"
+    ],
+    "9df889e6-760c-4332-b63c-e90c58d03100": [
+      "2fdc689b-e260-413d-b64e-26fc6a2fe6b3",
+      "f1dfeffd-46c5-40d2-9711-89f191073411"
+    ],
+    "0cf81c5b-790d-46d0-a02b-b51746a774cd": [
+      "89fef98d-2137-49ef-9f80-d50b8ddb603a",
+      "1fcd62a2-07e2-4b0d-9610-3bd991cb5b71",
+      "005b548f-1551-4d34-a4a6-106237180ac2"
+    ],
+    "c7ac64b3-fc7a-4e79-b73b-5c6355a64fdc": [
+      "34ae2d8c-ee90-42f4-91a8-70bb27822e9f",
+      "a5cec8ba-3563-428e-ae08-8c6ec8998407"
+    ],
+    "94dad038-ee96-489b-9d04-3154381ca786": [
+      "0113161a-78cd-4048-a71c-10fdbd305231",
+      "8fa9f0a8-0121-4ddd-8f1e-7302495de130"
+    ],
+    "7fdf1e1a-dbb6-4013-8372-52702d43c3c2": [
+      "7e8fa385-7ec9-4809-8a1f-d0080c2754d6",
+      "8307457c-262a-4beb-b3af-de9a4929420b",
+      "591ffc31-588e-4f37-ad6e-ca8d3993c055"
+    ],
+    "7dfda757-b577-4d9c-a2b7-78c194e2f069": [
+      "127fa08e-663d-4a1a-87b8-343db8e530e5",
+      "577fe604-d78f-44ef-865e-663fcd293867"
+    ],
+    "5549f895-8c13-4872-8445-d0f720aee515": [
+      "15d0efdd-e640-41ce-8ec8-d16e057e56d4"
+    ],
+    "bd8926d5-c3ca-4e4d-95ca-31100282dd3b": [
+      "9e0a54ab-e00a-4d7d-b46b-057046a09d05"
+    ],
+    "59e8777f-b90b-4ee4-b67b-068ccf01d98b": [
+      "57f02db9-7b47-4a44-b241-e530b2b9ff24"
+    ],
+    "0b39a479-6ec2-4764-ac22-f32133b8c973": [
+      "d90347f1-e58a-4b4d-a53f-84cb6b22c1d6"
+    ],
+    "0d4e0cb8-dd39-44e8-a20c-affb64f1464e": [
+      "6ae46e70-63ba-4416-9b65-09f7149ee29e"
+    ],
+    "7a45d263-bed0-47ea-a5ae-02d3b8d5cea2": [
+      "0dea33a6-9f59-48b1-9d8a-6e889451a5e4"
+    ],
+    "3425ad7f-bc3e-4244-9dc2-bc25a71afd13": [
+      "280785cb-cd66-49b2-9287-c883110fa4fe"
+    ],
+    "128251f8-8e63-4e6f-8fea-f31ed105b2e5": [
+      "872a45f2-c4b0-4468-a9be-a543a65de931"
+    ],
+    "ee941ebc-e57f-497a-a4bb-74839617e907": [
+      "b29614d5-af00-4ad8-9a57-f1fec9eff069"
+    ],
+    "ae0b7fdd-98f5-4219-ac1e-b43242abeb30": [
+      "5c737c78-fb5f-40c4-9546-5203aac7d20b"
+    ],
+    "0a5a3cd4-a915-478f-a12b-26b01792acec": [
+      "34130b5c-ab81-4821-b0b4-d280d5f2002b"
+    ],
+    "f376b8f0-7154-464b-aaa5-e3640f3af05f": [
+      "303b1bda-1900-44f3-b704-5757e1a58431"
+    ],
+    "54ac33f0-79a2-442a-99ca-7b0860145700": [
+      "1d6453ac-aecc-43f3-ad2d-ae4c9c038082"
+    ],
+    "256beceb-f5e5-47a9-b713-655ac715a76c": [
+      "ab3cdae1-25b7-4df9-82e7-33e1e8ac00f0"
+    ],
+    "812f3c4c-212a-40e5-b649-a2b33a231caa": [
+      "7e19321d-53ab-4af2-8d63-8b98d2480ab9"
+    ],
+    "3c927ab9-07a1-40cb-b38b-1a4484d0bba1": [
+      "6139e3e0-ac52-4857-be90-88ab4242650f"
+    ],
+    "c45dee0e-032f-4d62-88c4-355f72472c5c": [
+      "0688c365-fe9d-49b0-8c10-99a1cce0d066"
+    ],
+    "59346d5d-0110-4eb2-a9f7-a2b708abaa40": [
+      "3a4d3aa8-a6c8-4da0-8e13-8e8cb5b3ae4d"
+    ],
+    "284136f7-a58f-4b02-baf4-4a90dd699d34": [
+      "90726087-4ee7-418f-b652-0979aaa131de"
+    ],
+    "6f74dee2-cc76-4c83-afa9-dfb05e60d428": [
+      "b522f7a8-4f9a-43dd-8970-e926fcd9849d"
+    ],
+    "da034997-341a-4911-8717-9a4c9a4f2b21": [
+      "5221b400-ea37-41c5-b838-f8993e46bfb3"
+    ],
+    "717776ec-3c64-406e-9c56-a60ec71731c2": [
+      "683253fc-07b3-4454-a817-e11fd77c96a8"
+    ],
+    "fcc26d6e-00a6-41d1-81eb-85f23fa0b976": [
+      "66420cfc-aca6-4167-b170-5409dabe2c92"
+    ],
+    "1583337b-23cc-4c6a-b63d-23fe2b279fe7": [
+      "f3ba1b1e-e59c-4e56-a6b0-227e99a7a584"
+    ],
+    "da56a4cd-53a7-434a-a0b3-5cb687850797": [
+      "fa18817a-c40d-43e9-8ac7-40652cb9bf1d"
+    ],
+    "7351e158-a842-4f25-93ca-db937b415cbe": [
+      "e05bb8d9-0dd7-458f-8a59-b7e2bd99ba40"
+    ],
+    "52203292-b00b-4724-9173-7455a64acbf0": [
+      "6ed9b084-3845-4688-9f74-a703b3a80a62"
+    ],
+    "3ce2d679-d8fe-4881-acd3-53f05e957991": [
+      "309b27fd-1934-4908-9c35-920b332351bc"
+    ],
+    "0d55c7ac-042c-4a1c-8030-a00e794b1e53": [
+      "7732a566-7fdb-44e2-8e74-ae221980bb4d"
+    ],
+    "1903cec5-2901-43ae-9aad-ec2fae33728e": [
+      "fb00aa24-cc6b-4005-a966-271e8f6e8a8c"
+    ],
+    "fa127874-748e-4032-9776-18ea5c952570": [
+      "04ce10d4-3e12-4d4c-b4e1-c995beb1994f"
+    ],
+    "abd0747a-fc22-4d7c-87e7-4915261da835": [
+      "c3e09115-1975-46c5-85a4-a5313f8f6055"
+    ],
+    "1c5dc759-4e24-4e80-9eab-9774d6dab572": [
+      "cfbcfd8b-29be-44b6-9983-553a8a05dfe7"
+    ],
+    "b0514d35-c9ff-4ba8-aba7-3f8aa538e977": [
+      "e3d0dbc2-4e26-4cbd-9977-dc89372b275b"
+    ],
+    "4a8741b9-cb51-4ba8-ad27-05d6104ce133": [
+      "a866222e-c338-4d03-a5d6-82617b45d130"
+    ]
+  },
+  "ratings": {
+    "889947b9-8e73-413c-b486-b254ada74147": {
+      "99fb366f-15cf-4114-a948-3903bf294c26": 4,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 0,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 1,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 2,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 3
+    },
+    "3ef544e1-61df-4ced-89c6-d756b9a3c0a7": {
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "8207ec2b-11e5-40b8-8eb7-feb757fa38e3": {
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 4,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 1,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 3
+    },
+    "e98f342d-cd17-4d50-a35e-290679786daf": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 4,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 3,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 2,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 1
+    },
+    "51ffdc66-b2e7-43a6-a376-2d5c083e444d": {
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 3,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 0,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 4,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 2
+    },
+    "9df889e6-760c-4332-b63c-e90c58d03100": {
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 0,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 4,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1
+    },
+    "0cf81c5b-790d-46d0-a02b-b51746a774cd": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 1,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 2,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 4
+    },
+    "c7ac64b3-fc7a-4e79-b73b-5c6355a64fdc": {
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 2,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 1,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0
+    },
+    "94dad038-ee96-489b-9d04-3154381ca786": {
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "7fdf1e1a-dbb6-4013-8372-52702d43c3c2": {
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 4,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0
+    },
+    "7dfda757-b577-4d9c-a2b7-78c194e2f069": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0
+    },
+    "5549f895-8c13-4872-8445-d0f720aee515": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "bd8926d5-c3ca-4e4d-95ca-31100282dd3b": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 0
+    },
+    "59e8777f-b90b-4ee4-b67b-068ccf01d98b": {
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 1,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 4,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 3,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0
+    },
+    "0b39a479-6ec2-4764-ac22-f32133b8c973": {
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 4,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 0
+    },
+    "0d4e0cb8-dd39-44e8-a20c-affb64f1464e": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 4,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 0
+    },
+    "7a45d263-bed0-47ea-a5ae-02d3b8d5cea2": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 2,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 1,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 4,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 0
+    },
+    "3425ad7f-bc3e-4244-9dc2-bc25a71afd13": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "128251f8-8e63-4e6f-8fea-f31ed105b2e5": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "ee941ebc-e57f-497a-a4bb-74839617e907": {
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 0
+    },
+    "ae0b7fdd-98f5-4219-ac1e-b43242abeb30": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1
+    },
+    "0a5a3cd4-a915-478f-a12b-26b01792acec": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 3,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 1,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 0
+    },
+    "f376b8f0-7154-464b-aaa5-e3640f3af05f": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 2,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 4,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 1,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 0
+    },
+    "54ac33f0-79a2-442a-99ca-7b0860145700": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 4
+    },
+    "256beceb-f5e5-47a9-b713-655ac715a76c": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 2,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 1,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 0
+    },
+    "812f3c4c-212a-40e5-b649-a2b33a231caa": {
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2
+    },
+    "3c927ab9-07a1-40cb-b38b-1a4484d0bba1": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "c45dee0e-032f-4d62-88c4-355f72472c5c": {
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 2,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 0,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 1,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "59346d5d-0110-4eb2-a9f7-a2b708abaa40": {
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "284136f7-a58f-4b02-baf4-4a90dd699d34": {
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 4,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 0
+    },
+    "6f74dee2-cc76-4c83-afa9-dfb05e60d428": {},
+    "da034997-341a-4911-8717-9a4c9a4f2b21": {
+      "562a3b86-c962-456c-a480-86bb9f840a13": 4,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3
+    },
+    "717776ec-3c64-406e-9c56-a60ec71731c2": {},
+    "fcc26d6e-00a6-41d1-81eb-85f23fa0b976": {
+      "562a3b86-c962-456c-a480-86bb9f840a13": 4,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 3,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 2,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 0
+    },
+    "1583337b-23cc-4c6a-b63d-23fe2b279fe7": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 2,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 4
+    },
+    "da56a4cd-53a7-434a-a0b3-5cb687850797": {},
+    "7351e158-a842-4f25-93ca-db937b415cbe": {
+      "562a3b86-c962-456c-a480-86bb9f840a13": 4,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 3,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 2,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 1,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0
+    },
+    "52203292-b00b-4724-9173-7455a64acbf0": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1
+    },
+    "3ce2d679-d8fe-4881-acd3-53f05e957991": {
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4
+    },
+    "0d55c7ac-042c-4a1c-8030-a00e794b1e53": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0
+    },
+    "1903cec5-2901-43ae-9aad-ec2fae33728e": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 0,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3
+    },
+    "fa127874-748e-4032-9776-18ea5c952570": {
+      "0c17c824-af37-4d7c-a90f-0ea749f47d1b": 4,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 0,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 1,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 2,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 3
+    },
+    "abd0747a-fc22-4d7c-87e7-4915261da835": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3
+    },
+    "1c5dc759-4e24-4e80-9eab-9774d6dab572": {
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 4,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 2,
+      "ec03c59c-6b24-4464-878d-0c4de9cbcd9b": 1,
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 0
+    },
+    "b0514d35-c9ff-4ba8-aba7-3f8aa538e977": {
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 0,
+      "562a3b86-c962-456c-a480-86bb9f840a13": 4,
+      "ec7e2dda-8b47-4560-8eff-6e3dda12c69b": 3,
+      "5c512d77-7fc7-4a66-8dff-782f2d6d59cf": 2,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 1
+    },
+    "4a8741b9-cb51-4ba8-ad27-05d6104ce133": {
+      "9e393bf4-7bdb-43ed-89ce-9748cc319cdc": 4,
+      "61b286f7-6341-461b-9a38-9797f9fc538d": 0,
+      "404d25d7-2831-4a2d-ae9b-4a63b3d54154": 1,
+      "99fb366f-15cf-4114-a948-3903bf294c26": 2,
+      "6461f458-2219-4ee5-86a8-aa4689d7bb90": 3
+    }
+  }
+}
