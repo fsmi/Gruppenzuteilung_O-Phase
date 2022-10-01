@@ -64,5 +64,5 @@ Tests
 -----------
 Via `make` werden auch zwei eher grundlegende Tests gebaut, die direkt ausgeführt werden können.
 
-Weiterhin finden sich in `test_data/` anonymisierte Testdaten vergangener Jahre und in `config` die damals verwendete Konfiguration bzw. Studitypen-Constraints.
+Weiterhin finden sich in `test_data/` anonymisierte Testdaten vergangener Jahre und in `config/` die damals verwendete Konfiguration bzw. Studitypen-Constraints.
 Diese sind gut geeignet, um Testläufe direkt auf den alten Daten zu machen.
