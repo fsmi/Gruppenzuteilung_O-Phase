@@ -4,8 +4,8 @@
 
 #include "config.h"
 
-std::unordered_map<std::string, std::tuple<FilterFn, u_int32_t, std::string>> initializeTypeToFilterMapping() {
-  std::unordered_map<std::string, std::tuple<FilterFn, u_int32_t, std::string>> mapping;
+std::unordered_map<std::string, std::tuple<FilterFn, uint32_t, std::string>> initializeTypeToFilterMapping() {
+  std::unordered_map<std::string, std::tuple<FilterFn, uint32_t, std::string>> mapping;
 
   // the key is used for retrieving the filter when parsing the types file
   mapping.insert({"inf", {[](const StudentData &data) noexcept {
@@ -45,7 +45,7 @@ std::vector<std::pair<Filter, StudentID>> parseTypesFile(std::ifstream& file) {
       boost::split(words, line, [](char c) {return c == ' ';});
       ASSERT_WITH(words.size() > 1, "types, line " << line_index << ": each line needs to have the form 'TYPENAME+ LIMIT'");
 
-      std::vector<std::pair<FilterFn, u_int32_t>> filters;
+      std::vector<std::pair<FilterFn, uint32_t>> filters;
       std::string combined_name;
       for (size_t i = 0; i + 1 < words.size(); ++i) {
         std::string current = words[i];

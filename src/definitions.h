@@ -140,13 +140,13 @@ struct Input {
 using FilterFn = std::function<bool(const StudentData&)>;
 
 struct Filter {
-  explicit Filter(std::vector<std::pair<FilterFn, u_int32_t>>&& filters, std::string&& name);
+  explicit Filter(std::vector<std::pair<FilterFn, uint32_t>>&& filters, std::string&& name);
 
   bool apply(const StudentData& data) const;
 
-  u_int32_t id() const;
+  uint32_t id() const;
 
-  std::vector<std::pair<FilterFn, u_int32_t>> filters;
+  std::vector<std::pair<FilterFn, uint32_t>> filters;
   std::string name;
 };
 

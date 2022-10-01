@@ -52,7 +52,7 @@ size_t TeamData::size() const { return members.size(); }
 // ########     Assignment Data     ########
 // #########################################
 
-Filter::Filter(std::vector<std::pair<FilterFn, u_int32_t>>&& filters, std::string&& name):
+Filter::Filter(std::vector<std::pair<FilterFn, uint32_t>>&& filters, std::string&& name):
         filters(std::move(filters)), name(std::move(name)) {
   std::sort(filters.begin(), filters.end(), [](const auto& l, const auto& r) {
     return l.second < r.second;
@@ -68,8 +68,8 @@ bool Filter::apply(const StudentData& data) const {
   return true;
 }
 
-u_int32_t Filter::id() const {
-  u_int32_t result = 0;
+uint32_t Filter::id() const {
+  uint32_t result = 0;
   for (const auto& [_, id]: filters) {
     result *= 137;
     result += id;
