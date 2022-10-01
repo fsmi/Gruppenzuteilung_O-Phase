@@ -240,7 +240,7 @@ void writeOutputToFiles(const State &s, std::string path,
   // csv header
   std::string header = "Name, Size, ";
   for (size_t i = 0; i < filters.size(); ++i) {
-    header += std::get<1>(filters[i]) + (i + 1 == filters.size() ? "" : ", ");
+    header += filters[i].first.name + (i + 1 == filters.size() ? "" : ", ");
   }
   stats << header << std::endl;
 
