@@ -1,0 +1,14 @@
+# input / output format
+rating-input-type = mapping
+output-per-team = true
+input-per-team = true
+allow-default-ratings = true
+max-team-size = 5
+
+# algorithm parameters
+disabled-groups-per-step = 3
+capacity-buffer = 1.05
+min-group-size=10
+
+# we don't want anyone below top 5 ratings
+type-specific-assignment-treshold = 4
