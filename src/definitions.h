@@ -222,6 +222,8 @@ public:
 
   void addFilterToGroup(GroupID id, Filter filter);
 
+  bool groupContainsFilter(GroupID id, const Filter& filter) const;
+
   bool isExludedFromGroup(ParticipantID participant, GroupID group) const;
 
   bool assignParticipant(ParticipantID participant, GroupID target);

@@ -305,7 +305,19 @@ void State::disableGroup(GroupID id) {
 
 void State::addFilterToGroup(GroupID id, Filter filter) {
   ASSERT(id < data().groups.size());
-  _group_states[id].participant_filters.push_back(filter);
+  if (!groupContainsFilter(id, filter)) {
+    _group_states[id].participant_filters.push_back(filter);
+  }
+}
+
+bool State::groupContainsFilter(GroupID id, const Filter& filter) const {
+  ASSERT(id < data().groups.size());
+  for (const Filter& f: _group_states[id].participant_filters) {
+    if (filter.id() == f.id()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {

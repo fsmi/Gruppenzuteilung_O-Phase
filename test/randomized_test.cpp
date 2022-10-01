@@ -108,9 +108,9 @@ int main(int argc, const char *argv[]) {
 
   std::cout << std::endl << "Reassigning specific students." << std::endl;
   assertMinimumNumberPerGroupForSpecificType(s, {
-    {is_math_and_no_ma, 5, "Mathe (BA)"},
-    {is_lehramt_and_no_ma, 5, "Lehramt (BA)"},
-    {is_dritti_and_no_ma, 7, "Dritti (BA)"},
-    {is_master, 5, "Master"}
+    {Filter({{is_math_and_no_ma, 0}}, "Mathe (BA)"), 5},
+    {Filter({{is_lehramt_and_no_ma, 1}}, "Lehramt (BA)"), 5},
+    {Filter({{is_dritti_and_no_ma, 2}}, "Dritti (BA)"), 7},
+    {Filter({{is_master, 3}}, "Master"), 5}
   });
 }

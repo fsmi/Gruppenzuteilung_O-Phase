@@ -128,7 +128,7 @@ int main() {
   // minimum number with filters
   s = State(input);
   assignTeamsAndStudents(s, true);
-  assertMinimumNumberPerGroupForSpecificType(s, {{is_math, 2, "Mathe"}});
+  assertMinimumNumberPerGroupForSpecificType(s, {{Filter({{is_math, 0}}, "Mathe"), 2}});
   printCurrentAssignment(s);
   std::vector<StudentID> num_per_group = numPerGroup(s, is_math);
   for (StudentID num : num_per_group) {

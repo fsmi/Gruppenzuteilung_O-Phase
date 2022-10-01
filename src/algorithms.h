@@ -18,7 +18,7 @@ void assertMinimumNumberPerGroupForSpecificType(State &s, const std::vector<std:
 // given a specific filter, returns the groups sorted in ascending
 // order by the number of students that would be removed from the
 // group when applying the filter
-std::vector<std::tuple<GroupID, StudentID, bool>>
+std::vector<std::pair<GroupID, StudentID>>
 groupsByNumFiltered(const State &s, StudentID min_members, const Filter& filter);
 
 void printCurrentAssignment(const State &s);

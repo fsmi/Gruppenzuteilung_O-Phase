@@ -363,29 +363,18 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     size_t total_num_groups = 0;
     for (size_t i = 0; i < filters.size(); ++i) {
       auto [filter, minimum] = filters[i];
-      std::vector<std::tuple<GroupID, StudentID, bool>> order = groupsByNumFiltered(s, minimum, filter);
+      std::vector<std::pair<GroupID, StudentID>> order = groupsByNumFiltered(s, minimum, filter);
       std::vector<std::pair<GroupID, StudentID>> rev_order;
-      size_t last_non_ignored = 0;
       while (!order.empty()) {
-        auto [group, num, contains_only_ignored] = order.back();
+        auto [group, num] = order.back();
         order.pop_back();
         // disable group without this type directly
         if (num == 0) {
           s.addFilterToGroup(group, filter);
-        } else if (contains_only_ignored) {
-          rev_order.emplace_back(group, num);
-        } else {
+        } else if (!s.groupContainsFilter(group, filter)) {
           rev_order.emplace_back(group, num);
           total_num_groups++;
-          last_non_ignored = rev_order.size();
         }
-      }
-      // We need to ensure that the algorithm doesn't just add duplicate filters to a group:
-      // If a group contains only ignored, the filter might have been applied already
-      while (rev_order.size() > last_non_ignored) {
-        auto [group, _] = rev_order.back();
-        s.addFilterToGroup(group, filter);
-        rev_order.pop_back();
       }
       group_disable_order.push_back(std::move(rev_order));
     }
@@ -430,30 +419,26 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
   }
 }
 
-std::vector<std::tuple<GroupID, StudentID, bool>>
+std::vector<std::pair<GroupID, StudentID>>
 groupsByNumFiltered(const State &s, StudentID min_members, const Filter& filter) {
-  std::vector<std::tuple<GroupID, StudentID, bool>> groups;
+  std::vector<std::pair<GroupID, StudentID>> groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const auto &list = s.groupAssignmentList(group);
     StudentID num = 0;
     if (!list.empty() && s.groupIsEnabled(group)) {
-      bool contains_only_ignored = true;
       for (const auto &pair : list) {
         StudentData data = s.data().students[pair.first];
         if (filter.apply(data)) {
           num++;
-          if (data.type_specific_assignment) {
-            contains_only_ignored = false;
-          }
         }
       }
       if (num < min_members) {
-        groups.emplace_back(group, num, contains_only_ignored);
+        groups.emplace_back(group, num);
       }
     }
   }
   std::sort(groups.begin(), groups.end(), [&](const auto &p1, const auto &p2) {
-    return std::get<1>(p1) < std::get<1>(p2);
+    return p1.second < p2.second;
   });
   return groups;
 }
