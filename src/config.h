@@ -34,10 +34,6 @@ class Config {
   StudentID max_team_size = 5;
   bool allow_default_ratings = false;
   double capacity_buffer = 1.05;
-  int64_t search_steps_per_value = 1000;
-
-  // TODO: enable move-based reassignment
-  // TODO: Max team size
 
   static const Config& get() {
     return get_mut();

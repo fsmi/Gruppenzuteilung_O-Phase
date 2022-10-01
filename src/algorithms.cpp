@@ -262,8 +262,8 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
     State s_temp(s);
     for (GroupID group = 0; group < s.numGroups(); ++group) {
       const StudentID new_capacity = ceil(reduction_factor * s_temp.groupCapacity(group));
-      TRACE("Set capacity for group \"" << s.groupData(group).name << "\" to "
-            << new_capacity << " (instead of " << s_temp.groupCapacity(group) << ")", false);
+      DEBUG("Set capacity for group \"" << s.groupData(group).name << "\" to "
+            << new_capacity << " (instead of " << s_temp.groupCapacity(group) << ")");
       s_temp.setCapacity(group, ceil(reduction_factor * s_temp.groupCapacity(group)));
     }
     auto [assignment, success_first_step] = calculateAssignment(s_temp, top_level);
@@ -271,7 +271,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
       ERROR("Team assignment failed. Canceling.", top_level);
       return false;
     }
-    success = applyAssignment(s, assignment, true, false);
+    success = applyAssignment(s, assignment, true, false, top_level);
     if (!success) {
       WARNING("Team assignment not successful due to exceeded "
               "capacity. Assign single teams and retry.", top_level);
@@ -415,8 +415,8 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
       group_disable_order[max_index].pop_back();
       auto [filter, minimum] = filters[max_index];
       s.addFilterToGroup(group, filter);
-      MAJOR_TRACE("Removing students of type \"" << filter.name << "\" from group "
-                  << s.groupData(group).name << " (" << num << " students)", false);
+      MAJOR_TRACE("Removing students of type \"" << filter.name << "\" from group \""
+                  << s.groupData(group).name << "\" (" << num << " students)", false);
     }
 
     // try to calculate new assignment

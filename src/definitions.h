@@ -31,6 +31,7 @@
 #define TRACE_START CYAN << ">" << END << "  "
 #define MAJOR_TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 2 : 3)
 #define TRACE(msg, top_level) LOG(TRACE_START << msg, top_level ? 3 : 4)
+#define DEBUG(msg) LOG(msg, 5)
 
 #define FATAL_ERROR(msg) std::cout << RED << "[ERROR]" << END << " " << msg << std::endl; std::exit(-1)
 

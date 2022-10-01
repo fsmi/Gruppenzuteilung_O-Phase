@@ -130,12 +130,7 @@ int main(int argc, const char *argv[]) {
     printStudentsPerGroup(state);
   }
 
-  // Problems: Lehramt + Dritti, Master + Lehramt, Mathe + Master
-
   assertMinimumNumberPerGroupForSpecificType(state, type_filters);
-
-  const double total_time = std::chrono::duration<double>(std::chrono::system_clock::now() - timer_start).count();
-  INFO("Total time required: " <<  total_time << " s", true);
 
   if (Config::get().verbosity_level >= 1) {
     printNumberPerRating(state);
@@ -146,6 +141,11 @@ int main(int argc, const char *argv[]) {
 
   PTree result = writeOutputToTree(state);
   boost::property_tree::json_parser::write_json(out_file, result);
+
+  const double total_time = std::chrono::duration<double>(std::chrono::system_clock::now() - timer_start).count();
+  INFO("Total time required: " <<  total_time << " s", false);
+  INFO("Output written to: " << out_filename, true);
+
   if (groups_filename != "") {
     writeOutputToFiles(state, groups_filename, type_filters);
   }
