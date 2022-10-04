@@ -5,6 +5,7 @@
 #include <atomic>
 #include <iostream>
 #include <chrono>
+#include <limits>
 #include <thread>
 
 #include "config.h"
