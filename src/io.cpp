@@ -64,12 +64,12 @@ TeamData parseTeam(const std::string team_id, const PTree &tree, const std::unor
                    std::unordered_map<std::string, std::string>& student_id_to_team_id) {
   std::vector<StudentID> members =
     parseList<StudentID>(tree, [&](const auto &t) {
-      std::string id = t.second.PTree::get_value<std::string>();
+      std::string id = t.second.PTree::template get_value<std::string>();
       ASSERT_WITH(student_id_to_index.find(id) != student_id_to_index.end(), "Invalid student id in team: " << id);
       ASSERT_WITH(student_id_to_team_id.find(id) == student_id_to_team_id.end(),
                   std::string("Student contained in more than one team: ") << id);
       student_id_to_team_id[id] = team_id;
-      return student_id_to_index.at(t.second.PTree::get_value<std::string>());
+      return student_id_to_index.at(t.second.PTree::template get_value<std::string>());
     });
   return TeamData(team_id, members);
 }
@@ -85,7 +85,7 @@ std::vector<Rating> parseRatings(const PTree &tree, const std::unordered_map<std
   if (Config::get().rating_input_type == RatingInputType::OrderedList) {
     std::vector<std::string> group_order = parseList<std::string>(tree,
       [&](const auto &t) {
-        return t.second.PTree::get_value<std::string>();
+        return t.second.PTree::template get_value<std::string>();
       });
     for (size_t i = 0; i < group_order.size(); ++i) {
       size_t group_index = get_index(group_order[i]);

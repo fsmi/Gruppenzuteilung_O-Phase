@@ -9,7 +9,7 @@ Build
 Als Buildsystem wird CMake benutzt.
 
 1. Build directory erzeugen: `mkdir build && cd build`
-2. cmake ausführen: `cmake ..` (beim ersten Ausführen: beinhaltet einen Download der Boost-Dependency)
+2. cmake ausführen: `cmake .. -DCMAKE_BUILD_TYPE=Release` (beim ersten Ausführen: beinhaltet einen Download der Boost-Dependency)
 3. make ausführen: `make GroupAssignment`
 
 Benutzung
