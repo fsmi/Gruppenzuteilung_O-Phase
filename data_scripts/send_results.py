@@ -25,7 +25,7 @@ assert url, "Missing 'ASSIGNMENT_ENDPOINT' in config!"
 assert token, "Missing 'TOKEN' in config!"
 
 # select transport with a defined url endpoint
-transport = AIOHTTPTransport(url=url)
+transport = AIOHTTPTransport(url=url, headers={"AUTH_TOKEN": token})
 gql_client = Client(transport=transport)
 
 with open(args.result_file) as json_file:
