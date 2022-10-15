@@ -257,7 +257,7 @@ void writeOutputToFiles(const State &s, std::string path,
       std::ofstream file(group_path);
       std::vector<size_t> num_per_type(filters.size());
       for (const auto &pair : s.groupAssignmentList(group)) {
-        StudentData data = s.data().students[pair.first];
+        const StudentData& data = s.data().students[pair.first];
         const std::string &rating = s.rating(pair.second)[group].getName();
         outputStudentDataToFile(data, rating, file);
         for (size_t i = 0; i < filters.size(); ++i) {

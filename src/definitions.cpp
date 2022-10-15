@@ -146,7 +146,7 @@ State::State(Input &data)
           } else if (first_student_type_specific->course_type != data.students[student].course_type
                      || first_student_type_specific->degree_type != data.students[student].degree_type
                      || first_student_type_specific->semester != data.students[student].semester) {
-            disableTypeSpecificAssignment(student);
+            data.students[student].type_specific_assignment = false;
             WARNING("Potential inconsistency in type specific assignment for team " << team.id << ":\n"
                     << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", false);
           }

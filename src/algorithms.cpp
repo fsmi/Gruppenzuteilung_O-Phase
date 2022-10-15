@@ -389,8 +389,8 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   INFO("Initial assignment completed.", true);
 }
 
-bool disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index) {
-  bool changed = false;
+StudentID disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index) {
+  StudentID num_changed = 0;
   for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
     Rating r = s.rating(part).at(s.assignment(part));
     auto disable = [&] (StudentID student) {
@@ -400,7 +400,7 @@ bool disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index)
         WARNING("Disabling type specific assignment for student \"" << data.name
                 << "\" (" << courseTypeToString(data.course_type) << ", " << degreeTypeToString(data.degree_type)
                 << ", " << semesterToString(data.semester) << ") because of low rating [" << r.getName() <<"]", false);
-        changed = true;
+        ++num_changed;
       }
     };
     if (r.index > rating_index) {
@@ -413,7 +413,7 @@ bool disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index)
       }
     }
   }
-  return changed;
+  return num_changed;
 }
 
 // Top level function that add filters to reassign participants,
@@ -423,9 +423,12 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
   INFO("Calculating reassignments to assert minimum numbers per group.", true);
   bool changed = false;
   bool success = true;
+  StudentID num_disabled = 0;
   while (success) {
     if (Config::get().type_specific_assignment_treshold > 0) {
-      changed = disableTypeSpecificAssignmentBelowTreshold(s, Config::get().type_specific_assignment_treshold);
+      StudentID disabled = disableTypeSpecificAssignmentBelowTreshold(s, Config::get().type_specific_assignment_treshold);
+      num_disabled += disabled;
+      changed = (disabled > 0);
     }
 
     std::vector<std::vector<std::pair<GroupID, StudentID>>> group_disable_order;
@@ -494,7 +497,8 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
   }
   if (success) {
-    INFO("Successfully calculated reassignment!", true);
+    INFO("Successfully calculated reassignment! (Disabled type specific "
+         "assignment for " << num_disabled << " students)", true);
   }
 }
 

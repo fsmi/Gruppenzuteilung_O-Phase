@@ -94,6 +94,49 @@ void printStudentsPerGroup(const State& state) {
   }
 }
 
+// first value is only with type specifiic assignment, second value is total
+std::vector<std::pair<StudentID, StudentID>>
+groupSizesForType(const State &s, const Filter& filter) {
+  std::vector<std::pair<GroupID, StudentID>> result;
+  for (GroupID group = 0; group < s.numGroups(); ++group) {
+    StudentID num = 0;
+    StudentID type_specific = 0;
+    for (const auto &pair : s.groupAssignmentList(group)) {
+      const StudentData& data = s.data().students[pair.first];
+      if (filter.apply(data)) {
+        num++;
+        if (data.type_specific_assignment) {
+          type_specific++;
+        }
+      }
+    }
+    if (num > 0) {
+      result.emplace_back(type_specific, num);
+    }
+  }
+  std::sort(result.begin(), result.end(), [&](const auto &p1, const auto &p2) {
+    return p1.first < p2.first || (p1.first == p2.first && p1.second < p2.second);
+  });
+  return result;
+}
+
+void printGroupSizes(const State& state, const std::vector<std::pair<Filter, StudentID>>& filters) {
+  LOG(TRACE_START, 1);
+  LOG(TRACE_START << "# Group Sizes #  type_specific[total]", 1);
+  for (const auto& [filter, _]: filters) {
+    auto group_sizes = groupSizesForType(state, filter);
+    std::cout << std::left << TRACE_START << std::setw(17) << filter.name;
+    for (size_t i = 0; i < group_sizes.size(); ++i) {
+      auto [ts, total] = group_sizes[i];
+      if (i > 0) {
+        std::cout << ", ";
+      }
+      std::cout << ts << "[" << total << "]";
+    }
+    std::cout << std::endl;
+  }
+}
+
 // parse command line arguments and (if provided) config file,
 // using the boost program options library
 void parseCmdAndConfig(int argc, const char *argv[], std::string& in_filename,
@@ -194,6 +237,7 @@ int main(int argc, const char *argv[]) {
   }
   if (Config::get().verbosity_level >= 2) {
     printStudentsPerGroup(state);
+    printGroupSizes(state, type_filters);
   }
 
   PTree result = writeOutputToTree(state);
