@@ -217,7 +217,15 @@ int main(int argc, const char *argv[]) {
   boost::property_tree::json_parser::read_json(in_file, pt);
   Input input = parseInput(pt);
   PROGRESS("Input file successfully parsed.", true);
-  INFO("Number of students: " << input.students.size(), true);
+
+  StudentID n_disabled = 0;
+  for (const StudentData& s: input.students){
+    if (!s.type_specific_assignment) {
+      n_disabled++;
+    }
+  }
+  INFO("Number of students: " << input.students.size() << "     "
+       << "Type specific assignment disabled: " << n_disabled, true);
 
   // register signal handler
   signal(SIGINT, signalHandler);

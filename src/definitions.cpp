@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "config.h"
+#include "io.h"
 
 // ####################################
 // ########     Input Data     ########
@@ -146,9 +147,12 @@ State::State(Input &data)
           } else if (first_student_type_specific->course_type != data.students[student].course_type
                      || first_student_type_specific->degree_type != data.students[student].degree_type
                      || first_student_type_specific->semester != data.students[student].semester) {
-            data.students[student].type_specific_assignment = false;
+            StudentData& s_data = data.students[student];
+            s_data.type_specific_assignment = false;
             WARNING("Potential inconsistency in type specific assignment for team " << team.id << ":\n"
-                    << "Disabling type specific assignment for member \"" << data.students[student].id <<"\".", false);
+                    "Disabling type specific assignment for student \"" << s_data.name
+                    << "\" (" << courseTypeToString(s_data.course_type) << ", " << degreeTypeToString(s_data.degree_type)
+                    << ", " << semesterToString(s_data.semester) << ")", false);
           }
         }
       }
