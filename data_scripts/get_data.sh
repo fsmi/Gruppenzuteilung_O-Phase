@@ -7,4 +7,4 @@ fi
 
 echo "URL=$DATA_ENDPOINT\n"
 
-curl --header "AUTH_TOKEN: $TOKEN" "$DATA_ENDPOINT" > $1
+curl -f --header "authorization: $TOKEN" "$DATA_ENDPOINT" > $1
