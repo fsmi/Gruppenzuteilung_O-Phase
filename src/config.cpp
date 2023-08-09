@@ -40,15 +40,25 @@ po::options_description Config::getConfigOptions() {
             "When reassigning students of specific types, do not reassign students if this leads to a rating "
             "below this threshold. Set to 0 to disable (default: 0).")
           ("min-group-size",
-            po::value<StudentID>(&get_mut().min_group_size)->value_name("<int>"),
-            "Minimum group size. The algorithm will try to enforce that each group has at least this number "
-            "of students, possibly by disabling some of the groups.")
+            po::value<StudentID>(&get_mut().group_disable_threshold)->value_name("<int>"),
+            "Absolute minimum for group size. The algorithm will try to enforce that each group has at least "
+            "this number of students, possibly by disabling some of the groups.")
           ("max-group-size",
             po::value<StudentID>(&get_mut().max_group_size)->value_name("<int>"),
             "Maximum allowed group size.")
           ("max-team-size",
             po::value<StudentID>(&get_mut().max_team_size)->value_name("<int>"),
             "Maximum allowed team size.")
+          ("use-min-group-sizes",
+            po::value<bool>(&get_mut().use_min_group_sizes)->value_name("<bool>"),
+            "If true, try to distribute students more evenly based on the provided minimum group sizes.")
+          ("allow-min-group-size-default",
+            po::value<bool>(&get_mut().allow_min_group_size_default)->value_name("<bool>"),
+            "Set reasonable default value for min group size if none is provided.")
+          ("min-group-size-effect",
+            po::value<StudentID>(&get_mut().min_group_size_effect)->value_name("<int>"),
+            "Effect strength of min group size. Between 1 (small effect) and "
+            "5 (effectively overrides student preferences).")
           ("allow-default-ratings",
             po::value<bool>(&get_mut().allow_default_ratings)->value_name("<bool>"),
             "If true, the rating list of a student might be incomplete and missing entries are replaced "
@@ -66,4 +76,9 @@ void Config::check() {
                 "--verbosity must be between 0 and 5");
     ASSERT_WITH(get().capacity_buffer > 1,
                 "--capacity-buffer-factor must be > 1");
+    ASSERT_WITH(get().min_group_size_effect > 0 && get().min_group_size_effect <= 5,
+                "--min-group-size-effect must be between 1 and 5");
+    if (!get().use_min_group_sizes) {
+      get_mut().allow_min_group_size_default = true;
+    }
 }

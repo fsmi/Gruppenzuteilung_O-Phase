@@ -129,10 +129,26 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
           combinationIsValid(s.studentData(part), s.groupData(group));
       if (!s.isExludedFromGroup(part, group) && (validTeam || validStudent)) {
         ++num_available_groups;
-        uint32_t rating = ceil(factor * s.rating(part).at(group).getValue(s.numGroups()));
-        for (GraphTraits::vertex_descriptor vertex = first_group_vertex[group];
-             vertex < first_group_vertex[group + 1]; ++vertex) {
-          add_edge(vertex, first_participant + i, EdgeProperty(rating), g);
+        uint32_t min_rating = ceil(factor * s.rating(part).at(group).getValue(s.numGroups()));
+        uint32_t max_rating = min_rating + Config::get().min_group_size_effect;
+        GroupID capacity = first_group_vertex[group + 1] - first_group_vertex[group];
+        GroupID min_size = s.groupMinSize(group);
+        double step_factor = std::pow(static_cast<double>(capacity) / static_cast<double>(min_size),
+                                      1.0 / Config::get().min_group_size_effect);
+        uint32_t current_rating = max_rating;
+        double current_target = min_size;
+        for (GroupID j = 0; j < capacity; ++j) {
+          auto vertex = first_group_vertex[group] + j;
+          add_edge(vertex, first_participant + i, EdgeProperty(current_rating), g);
+          // Gradually increase the rating so some of the places in the group are better than others.
+          // This nudges the algorithm to distribute students more evenly among groups, thereby
+          // fullfilling the minimum group sizes
+          if (Config::get().use_min_group_sizes && j + 1.99 >= current_target) {
+            ASSERT(current_rating >= min_rating);
+            ASSERT(j == 0 || j + 1 < capacity || current_rating == min_rating);
+            current_target *= step_factor;
+            current_rating--;
+          }
         }
       }
     }

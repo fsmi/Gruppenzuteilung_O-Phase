@@ -21,9 +21,9 @@ numPerGroup(const State &s,
 
 int main() {
   Input input;
-  input.groups.emplace_back("fc", "First Contact", 4, CourseType::Any, DegreeType::Any);
-  input.groups.emplace_back("tg", "Team Gecko", 3, CourseType::Any, DegreeType::Any);
-  input.groups.emplace_back("mathe", "Mathe", 3, CourseType::Mathe, DegreeType::Any);
+  input.groups.emplace_back("fc", "First Contact", 4, 0, CourseType::Any, DegreeType::Any);
+  input.groups.emplace_back("tg", "Team Gecko", 3, 0, CourseType::Any, DegreeType::Any);
+  input.groups.emplace_back("mathe", "Mathe", 3, 0, CourseType::Mathe, DegreeType::Any);
   input.students.emplace_back("e1", "Ersti 1", CourseType::Info, DegreeType::Bachelor, Semester::Ersti, true);
   input.ratings.emplace_back(
       std::vector<Rating>{Rating(0), Rating(1), Rating(2)});

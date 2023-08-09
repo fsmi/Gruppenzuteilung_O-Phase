@@ -100,10 +100,12 @@ struct GroupData {
   std::string id;
   std::string name;
   StudentID capacity;
+  StudentID min_target_size;
   CourseType course_type;
   DegreeType degree_type;
 
-  GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt);
+  GroupData(std::string id, std::string name, StudentID capacity,
+            StudentID min_target_size, CourseType ct, DegreeType dt);
 };
 
 struct StudentData {
@@ -162,7 +164,7 @@ struct Participant {
 };
 
 struct GroupState {
-  StudentID capacity = 0;
+  StudentID reduced_capacity = 0;
   bool enabled = true;
   uint32_t weight = 0;
   // TODO
@@ -193,6 +195,8 @@ public:
 
   // remaining capacity of the group
   StudentID groupCapacity(GroupID id) const;
+
+  StudentID groupMinSize(GroupID id) const;
 
   bool groupIsEnabled(GroupID id) const;
 

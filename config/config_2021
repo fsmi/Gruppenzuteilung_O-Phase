@@ -10,3 +10,4 @@ disabled-groups-per-step = 1
 capacity-buffer = 1.05
 min-group-size=10
 type-specific-assignment-treshold = 0
+use-min-group-sizes = false

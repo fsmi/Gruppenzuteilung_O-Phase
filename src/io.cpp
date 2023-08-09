@@ -108,9 +108,11 @@ Input parseInput(const PTree &tree) {
     PTree tree = element.second;
     std::string name = tree.get<std::string>("name");
     StudentID capacity = tree.get<StudentID>("capacity");
+    StudentID min_target_size = Config::get().allow_min_group_size_default ?
+                                tree.get<StudentID>("min_size", capacity / 2) : tree.get<StudentID>("min_size");
     CourseType course_type = parseCourseType(tree.get<std::string>("course_type", "any"));
     DegreeType degree_type = parseDegreeType(tree.get<std::string>("degree_type", "any"));
-    return GroupData(id, name, capacity, course_type, degree_type);
+    return GroupData(id, name, capacity, min_target_size, course_type, degree_type);
   };
   auto parseStudent = [](auto element){
     std::string id = element.first;

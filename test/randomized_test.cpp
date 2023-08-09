@@ -22,7 +22,7 @@ GroupData createGroup(int &counter) {
   name += std::to_string(++counter);
   std::uniform_int_distribution<StudentID> capacity(15, 60);
   StudentID cap = capacity(GENERATOR);
-  return GroupData(name, name, cap, is_math ? CourseType::Mathe : CourseType::Any, DegreeType::Any);
+  return GroupData(name, name, cap, cap / 2, is_math ? CourseType::Mathe : CourseType::Any, DegreeType::Any);
 }
 
 StudentData createErsti(int &counter) {
@@ -89,7 +89,7 @@ int main(int argc, const char *argv[]) {
   }
 
   State s(input);
-  assignWithMinimumNumberPerGroup(s, Config::get().min_group_size);
+  assignWithMinimumNumberPerGroup(s, Config::get().group_disable_threshold);
   auto is_math_and_no_ma = [](const StudentData &data) noexcept {
     return data.course_type == CourseType::Mathe &&
            data.degree_type != DegreeType::Master;

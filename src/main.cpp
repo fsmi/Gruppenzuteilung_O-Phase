@@ -15,8 +15,9 @@
 namespace po = boost::program_options;
 
 template<typename T, typename F>
-void printTabularLine(const std::vector<T>& data, const std::string& head, F f) {
-  std::cout << std::left << TRACE_START << std::setw(7) << head;
+void printTabularLine(const std::vector<T>& data, const std::string& head, F f, int first_size = 7) {
+  // note: does not work correctly with unicode...
+  std::cout << std::left << TRACE_START << std::setw(first_size) << head;
   for (const auto& val: data) {
     std::string word = f(val);
     const int width = std::max<int>(15, word.size());
@@ -84,6 +85,17 @@ void printNumberPerRating(const State& state, const std::vector<std::pair<Filter
   }
   printTabularLine(ratings_per_filter, "Sum",
                    [](const auto& val) { return std::to_string(std::get<1>(val)); });
+}
+
+// print min and max size for each group
+void printGroupSizes(const State& state) {
+  // second, print into tabular
+  printTabularLine(std::vector{"min size", "capacity"}, "Group", [](const auto& val) { return val; }, 30);
+  for (GroupID group = 0; group < state.numGroups(); ++group) {
+    printTabularLine(std::vector{
+        state.groupData(group).min_target_size, state.groupData(group).capacity
+      }, state.groupData(group).name, [](const auto& val) { return std::to_string(val); }, 30);
+  }
 }
 
 void printStudentsPerGroup(const State& state) {
@@ -231,7 +243,11 @@ int main(int argc, const char *argv[]) {
   signal(SIGINT, signalHandler);
 
   State state(input);
-  assignWithMinimumNumberPerGroup(state, Config::get().min_group_size);
+  if (Config::get().use_min_group_sizes) {
+    printGroupSizes(state);
+  }
+
+  assignWithMinimumNumberPerGroup(state, Config::get().group_disable_threshold);
 
   if (Config::get().verbosity_level >= 3) {
     printNumberPerRating(state, type_filters);

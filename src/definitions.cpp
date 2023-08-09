@@ -14,7 +14,8 @@ Rating::Rating(uint32_t index) : index(index) { }
 
 uint32_t Rating::getValue(GroupID num_groups) const {
   ASSERT(index < num_groups);
-  return num_groups * num_groups - (index * (index + 1) / 2);
+  constexpr uint32_t granularity_factor = 2; // allow "intermediate" weights
+  return granularity_factor * num_groups * num_groups - (index * (index + 1) / 2);
 }
 
 std::string Rating::getName() const { return std::to_string(index); }
@@ -35,8 +36,10 @@ Rating Rating::minRating(GroupID num_groups) {
   return Rating(num_groups - 1);
 }
 
-GroupData::GroupData(std::string id, std::string name, StudentID capacity, CourseType ct, DegreeType dt)
-    : id(id), name(name), capacity(capacity), course_type(ct), degree_type(dt) {}
+GroupData::GroupData(std::string id, std::string name, StudentID capacity,
+                     StudentID min_target_size, CourseType ct, DegreeType dt)
+    : id(id), name(name), capacity(capacity),
+      min_target_size(min_target_size), course_type(ct), degree_type(dt) {}
 
 StudentData::StudentData(std::string id, std::string name, CourseType ct, DegreeType dt, Semester s, bool ts)
     : id(id), name(name), course_type(ct), degree_type(dt), semester(s), type_specific_assignment(ts) {}
@@ -184,7 +187,6 @@ State::State(Input &data)
   for (size_t i = 0; i < data.groups.size(); ++i) {
     ASSERT_WITH(data.groups[i].capacity < Config::get().max_group_size,
                 "group \"" << data.groups[i].name << "\" has invalid capacity");
-    _group_states[i].capacity = data.groups[i].capacity;
   }
   ASSERT(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
 
@@ -233,7 +235,15 @@ const GroupData &State::groupData(GroupID id) const {
 
 StudentID State::groupCapacity(GroupID id) const {
   ASSERT(id < data().groups.size());
-  return _group_states[id].capacity;
+  return groupData(id).capacity - _group_states[id].reduced_capacity;
+}
+
+StudentID State::groupMinSize(GroupID id) const {
+  ASSERT(id < data().groups.size());
+  if (_group_states[id].reduced_capacity >= groupData(id).min_target_size) {
+    return 0;
+  }
+  return groupData(id).min_target_size - _group_states[id].reduced_capacity;
 }
 
 bool State::groupIsEnabled(GroupID id) const {
@@ -368,7 +378,7 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
     if (data.size() > groupCapacity(target)) {
       return false;
     }
-    _group_states[target].capacity -= data.size();
+    _group_states[target].reduced_capacity += data.size();
     for (StudentID id : data.members) {
       _group_assignments[target].push_back(std::make_pair(id, participant));
     }
@@ -378,7 +388,7 @@ bool State::assignParticipant(ParticipantID participant, GroupID target) {
     if (groupCapacity(target) == 0) {
       return false;
     }
-    _group_states[target].capacity--;
+    _group_states[target].reduced_capacity++;
     _group_assignments[target].push_back(
         std::make_pair(_participants[participant].index, participant));
     _group_states[target].weight += rating(participant)[target].getValue(numGroups());
@@ -400,7 +410,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
         assign_list.begin(), assign_list.end(),
         [&](const auto &pair) { return pair.second == participant; });
     if (to_remove != assign_list.end()) {
-      _group_states[group].capacity++;
+      _group_states[group].reduced_capacity--;
       _group_states[group].weight -= rating(participant)[group].getValue(numGroups());
       assign_list.erase(to_remove);
     } else {
@@ -414,7 +424,7 @@ void State::unassignParticipant(ParticipantID participant, GroupID group) {
 void State::reset() {
   for (GroupID group = 0; group < numGroups(); ++group) {
     GroupState& state = _group_states[group];
-    state.capacity = groupData(group).capacity;
+    state.reduced_capacity = 0;
     state.weight = 0;
   }
   for (auto &assigned : _group_assignments) {
@@ -426,8 +436,8 @@ void State::reset() {
 }
 
 void State::setCapacity(GroupID id, uint32_t val) {
-  ASSERT(id < data().groups.size() && val < Config::get().max_group_size);
-  _group_states[id].capacity = val;
+  ASSERT(id < data().groups.size() && val < Config::get().max_group_size && val <= groupData(id).capacity);
+  _group_states[id].reduced_capacity = groupData(id).capacity - val;
 }
 
 void State::disableTypeSpecificAssignment(StudentID student) {
