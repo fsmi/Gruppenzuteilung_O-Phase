@@ -184,10 +184,6 @@ State::State(Input &data)
     }
   }
   // group capacities
-  for (size_t i = 0; i < data.groups.size(); ++i) {
-    ASSERT_WITH(data.groups[i].capacity < Config::get().max_group_size,
-                "group \"" << data.groups[i].name << "\" has invalid capacity");
-  }
   ASSERT(totalActiveGroupCapacity() >= ceil(Config::get().capacity_buffer * data.students.size()));
 
   // check total participant count
@@ -436,7 +432,7 @@ void State::reset() {
 }
 
 void State::setCapacity(GroupID id, uint32_t val) {
-  ASSERT(id < data().groups.size() && val < Config::get().max_group_size && val <= groupData(id).capacity);
+  ASSERT(id < data().groups.size() && val <= groupData(id).capacity);
   _group_states[id].reduced_capacity = groupData(id).capacity - val;
 }
 

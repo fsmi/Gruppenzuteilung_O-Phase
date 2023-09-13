@@ -39,13 +39,10 @@ po::options_description Config::getConfigOptions() {
             po::value<uint32_t>(&get_mut().type_specific_assignment_treshold)->value_name("<int>"),
             "When reassigning students of specific types, do not reassign students if this leads to a rating "
             "below this threshold. Set to 0 to disable (default: 0).")
-          ("min-group-size",
+          ("group-disable-threshold",
             po::value<StudentID>(&get_mut().group_disable_threshold)->value_name("<int>"),
             "Absolute minimum for group size. The algorithm will try to enforce that each group has at least "
             "this number of students, possibly by disabling some of the groups.")
-          ("max-group-size",
-            po::value<StudentID>(&get_mut().max_group_size)->value_name("<int>"),
-            "Maximum allowed group size.")
           ("max-team-size",
             po::value<StudentID>(&get_mut().max_team_size)->value_name("<int>"),
             "Maximum allowed team size.")

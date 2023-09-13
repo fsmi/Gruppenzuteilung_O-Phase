@@ -30,8 +30,7 @@ class Config {
   // algorithm
   GroupID disabled_groups_per_step = 3;
   uint32_t type_specific_assignment_treshold = 0;
-  StudentID group_disable_threshold = 10;
-  StudentID max_group_size = 200;
+  StudentID group_disable_threshold = 5;
   StudentID max_team_size = 5;
   bool allow_default_ratings = false;
   bool use_min_group_sizes = true;
