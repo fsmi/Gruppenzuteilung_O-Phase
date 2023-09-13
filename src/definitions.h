@@ -167,7 +167,6 @@ struct GroupState {
   StudentID reduced_capacity = 0;
   bool enabled = true;
   uint32_t weight = 0;
-  // TODO
   std::vector<Filter> participant_filters;
 };
 
@@ -231,6 +230,8 @@ public:
   void addFilterToGroup(GroupID id, Filter filter);
 
   bool groupContainsFilter(GroupID id, const Filter& filter) const;
+
+  bool filterAppliesToParticipant(ParticipantID participant, const Filter& filter) const;
 
   bool isExludedFromGroup(ParticipantID participant, GroupID group) const;
 

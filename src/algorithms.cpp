@@ -541,6 +541,31 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
 
 std::vector<std::pair<GroupID, StudentID>>
 groupsByNumFiltered(const State &s, StudentID min_members, const Filter& filter) {
+  // we exclude groups that contain a participant which has no viable alternative
+  // (i.e., only below the configured threshold)
+  const uint32_t threshold_index = Config::get().type_specific_assignment_threshold;
+  std::vector<bool> group_allowed(s.numGroups(), true);
+  for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
+    ASSERT(s.rating(part).size() == s.numGroups());
+    if (s.filterAppliesToParticipant(part, filter)) {
+      bool has_good_alternative = false;
+      for (GroupID rated_group = 0; rated_group < s.numGroups(); ++rated_group) {
+        Rating current = s.rating(part).at(rated_group);
+        if (current.index <= threshold_index
+            && s.assignment(part) != rated_group
+            && !s.isExludedFromGroup(part, rated_group)) {
+          has_good_alternative = true;
+          break;
+        }
+      }
+      if (!has_good_alternative && group_allowed[s.assignment(part)]) {
+        group_allowed[s.assignment(part)] = false;
+        TRACE("Can't move students of type \"" << filter.name << "\" from group "
+              << s.groupData(s.assignment(part)).name << " because there is no viable alternative.", false);
+      }
+    }
+  }
+
   std::vector<std::pair<GroupID, StudentID>> groups;
   for (GroupID group = 0; group < s.numGroups(); ++group) {
     const auto &list = s.groupAssignmentList(group);

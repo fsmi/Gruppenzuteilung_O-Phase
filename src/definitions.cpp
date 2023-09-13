@@ -334,6 +334,21 @@ bool State::groupContainsFilter(GroupID id, const Filter& filter) const {
   return false;
 }
 
+bool State::filterAppliesToParticipant(ParticipantID participant, const Filter& filter) const {
+  ASSERT(participant < _participants.size());
+  if (isTeam(participant)) {
+    for (StudentID student : teamData(participant).members) {
+      if (filter.apply(data().students[student])) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    StudentID student = _participants[participant].index;
+    return filter.apply(data().students[student]);
+  }
+}
+
 bool State::studentIsExludedFromGroup(StudentID student, GroupID group) const {
   ASSERT(group < data().groups.size());
   const StudentData& s_data = data().students[student];
@@ -353,7 +368,6 @@ bool State::isExludedFromGroup(ParticipantID participant, GroupID group) const {
   ASSERT(group < data().groups.size());
 
   if (isTeam(participant)) {
-    // TODO: this might not really work for inhomogenous teams
     for (StudentID student : teamData(participant).members) {
       if (studentIsExludedFromGroup(student, group)) {
         return true;
