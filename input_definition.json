@@ -3,6 +3,7 @@
 		<ID Gruppe> : {
 			"name" : <Name Gruppe>,
 			"capacity" : <Kapazität (Int)>,
+			["min_size" : <Minimalgröße (Int)>,]
 			["course_type" : <eines aus: "info", "mathe", "any">,]
 			["degree_type" : <eines aus: "bachelor", "master", "any">]
 		},

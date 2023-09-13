@@ -145,7 +145,8 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
           // fullfilling the minimum group sizes
           if (Config::get().use_min_group_sizes && j + 1.99 >= current_target) {
             ASSERT(current_rating >= min_rating);
-            ASSERT(j == 0 || j + 1 < capacity || current_rating == min_rating);
+            ASSERT_WITH(j == 0 || j + 1 < capacity || current_rating == min_rating,
+            "Min group size must be significantly below capacity.");
             current_target *= step_factor;
             current_rating--;
           }
