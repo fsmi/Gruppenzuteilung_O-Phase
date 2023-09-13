@@ -472,23 +472,44 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
     }
 
     // disable groups for specific participants
-    const StudentID num_steps = std::min(Config::get().disabled_groups_per_step, (static_cast<StudentID>(total_num_groups) + 3) / 4);
+    std::vector<bool> group_disabled_in_current_step(s.numGroups(), false);
+    std::vector<StudentID> num_disabled_for_filter(group_disable_order.size(), 0);
+    const StudentID num_steps = Config::get().disabled_groups_per_step;
     for (StudentID _i = 0; _i < num_steps; ++_i) {
       size_t max_index = 0;
       int32_t max_rating = std::numeric_limits<int32_t>::min();
       for (size_t j = 0; j < group_disable_order.size(); ++j) {
         if (!group_disable_order[j].empty()) {
-          auto [group, num] = group_disable_order[j].back();
-          // 2 times diff to minimum minus current number
-          int32_t rating = 2 * (std::get<1>(filters[j]) - num) - num;
-          if (rating > max_rating) {
-            max_rating = rating;
-            max_index = j;
-          }
+          bool try_again;
+          do {
+            try_again = false;
+            auto [group, num] = group_disable_order[j].back();
+            StudentID minimum_for_filter = std::get<1>(filters[j]);
+            // 2 times diff to minimum minus current number
+            int32_t rating = 2 * (minimum_for_filter - num) - num;
+            bool is_first_or_small_enough = (num_disabled_for_filter[j] == 0)
+                    || (num_disabled_for_filter[j] + num + 2 <= minimum_for_filter);
+            if (is_first_or_small_enough && !group_disabled_in_current_step[group]) {
+              if (rating > max_rating) {
+                max_rating = rating;
+                max_index = j;
+              }
+            } else if (group_disable_order[j].size() > 1 && group_disable_order[j][1].second == num) {
+              // allow next group to be considered
+              group_disable_order[j].pop_back();
+              try_again = true;
+            }
+          } while (try_again);
         }
       }
+      if (max_rating == std::numeric_limits<int32_t>::min()) {
+        break;
+      }
+
       auto [group, num] = group_disable_order[max_index].back();
       group_disable_order[max_index].pop_back();
+      group_disabled_in_current_step[group] = true;
+      num_disabled_for_filter[max_index] += num;
       auto [filter, minimum] = filters[max_index];
       s.addFilterToGroup(group, filter);
       MAJOR_TRACE("Removing students of type \"" << filter.name << "\" from group \""
