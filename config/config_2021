@@ -9,5 +9,5 @@ max-team-size = 5
 disabled-groups-per-step = 1
 capacity-buffer = 1.05
 group-disable-threshold = 10
-type-specific-assignment-treshold = 0
+type-specific-assignment-threshold = 0
 use-min-group-sizes = false

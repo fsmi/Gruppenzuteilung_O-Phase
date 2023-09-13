@@ -35,8 +35,8 @@ po::options_description Config::getConfigOptions() {
             po::value<GroupID>(&get_mut().disabled_groups_per_step)->value_name("<int>"),
             "When reassigning students of specific types, determines how many groups are disabled per step. "
             "A larger value will speed up the algorithm but possibly decrease the quality (default: 3).")
-          ("type-specific-assignment-treshold",
-            po::value<uint32_t>(&get_mut().type_specific_assignment_treshold)->value_name("<int>"),
+          ("type-specific-assignment-threshold",
+            po::value<uint32_t>(&get_mut().type_specific_assignment_threshold)->value_name("<int>"),
             "When reassigning students of specific types, do not reassign students if this leads to a rating "
             "below this threshold. Set to 0 to disable (default: 0).")
           ("group-disable-threshold",

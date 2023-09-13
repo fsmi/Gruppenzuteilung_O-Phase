@@ -12,4 +12,4 @@ group-disable-threshold = 4
 use-min-group-sizes = false
 
 # we don't want anyone below top 5 ratings
-type-specific-assignment-treshold = 4
+type-specific-assignment-threshold = 4

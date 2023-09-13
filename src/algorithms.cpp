@@ -405,7 +405,7 @@ void assignWithMinimumNumberPerGroup(State &s, StudentID min_capacity) {
   INFO("Initial assignment completed.", true);
 }
 
-StudentID disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_index) {
+StudentID disableTypeSpecificAssignmentBelowThreshold(State &s, uint32_t threshold_index) {
   StudentID num_changed = 0;
   for (ParticipantID part = 0; part < s.numParticipants(); ++part) {
     Rating r = s.rating(part).at(s.assignment(part));
@@ -419,7 +419,7 @@ StudentID disableTypeSpecificAssignmentBelowTreshold(State &s, uint32_t rating_i
         ++num_changed;
       }
     };
-    if (r.index > rating_index) {
+    if (r.index > threshold_index) {
       if (s.isTeam(part)) {
         for (StudentID member: s.teamData(part).members) {
           disable(member);
@@ -441,8 +441,8 @@ void assertMinimumNumberPerGroupForSpecificType(State &s,
   bool success = true;
   StudentID num_disabled = 0;
   while (success) {
-    if (Config::get().type_specific_assignment_treshold > 0) {
-      StudentID disabled = disableTypeSpecificAssignmentBelowTreshold(s, Config::get().type_specific_assignment_treshold);
+    if (Config::get().type_specific_assignment_threshold > 0) {
+      StudentID disabled = disableTypeSpecificAssignmentBelowThreshold(s, Config::get().type_specific_assignment_threshold);
       num_disabled += disabled;
       changed = (disabled > 0);
     }
