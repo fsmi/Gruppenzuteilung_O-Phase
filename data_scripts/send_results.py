@@ -34,17 +34,21 @@ with open(args.result_file) as json_file:
     print(f"Successfully parsed JSON ({len(parsed)} entries).")
 
     assignment_list = [f'{{teamId:"{key}",groupId:"{value}"}}' for key, value in parsed.items()]
-    list_as_str = ",".join(assignment_list)
-
-    query = gql(
-        f"""
-        mutation {{
-            assignTeams(data: [{list_as_str}])
-        }}
-        """
-    )
 
     print(f"Sending data to: {url}")
 
-    result = gql_client.execute(query)
-    assert result
+    i = 0
+    while i < len(assignment_list):
+        list_part_as_str = ",".join(assignment_list[i, min(i + 100, len(assignment_list))])
+
+        query = gql(
+            f"""
+            mutation {{
+                assignTeams(data: [{list_part_as_str}])
+            }}
+            """
+        )
+
+        result = gql_client.execute(query)
+        assert result
+        i += 100
