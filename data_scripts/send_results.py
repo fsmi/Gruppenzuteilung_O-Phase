@@ -39,7 +39,7 @@ with open(args.result_file) as json_file:
 
     i = 0
     while i < len(assignment_list):
-        list_part_as_str = ",".join(assignment_list[i, min(i + 100, len(assignment_list))])
+        list_part_as_str = ",".join(assignment_list[i: min(i + 100, len(assignment_list))])
 
         query = gql(
             f"""
