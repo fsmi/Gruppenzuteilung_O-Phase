@@ -1,3 +1,15 @@
+# Docker Support
+Es gibt auch ein Docker Image, welches genutzt werden kann, um ohne viel Aufwand den Zuteilungsalgorithmus zu testen.
+```bash
+docker run --rm -it ghcr.io/fsmi/gruppenzuteilung_o-phase:master
+```
+
+Der Quellcode des Projekts befindet sich zusätzlich in `/source`, so dass eigene Testläufe durchgeführt werden können.
+Des weiteren hat [Chrisliebär](https://github.com/chrisliebaer) Beispieldaten bereitgestellt, mit denen die neue Mindestgröße von Gruppen getestet werden kann.
+Diese haben keinen offiziellen Charakter, sondern dienen nur als Einstiegspunkt für eigene Tests.
+
+-----------
+
 <h1>O-Phase - Algorithmus zur Gruppeneinteilung</h1>
 
 Implementiert einen Algorithmus zur Zuteilung von Erstis zu O-Phasen-Gruppen, wobei jeder Ersti die Gruppen bewerten kann.
