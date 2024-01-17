@@ -120,7 +120,7 @@ std::vector<GroupID> createRandomSubsetOfIDs(std::mt19937_64& gen, GroupID num_g
   return result;
 }
 
-std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::mt19937_64& gen, bool top_level) {
+std::pair<std::vector<int32_t>, bool> calculateAssignmentImpl(const State &s, std::mt19937_64& gen, bool top_level, bool restart) {
   // initialize vertices
   std::vector<GraphTraits::vertex_descriptor> first_group_vertex;
   std::vector<GroupID> vertex_to_group;
@@ -175,6 +175,10 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::m
         uint32_t current_rating = max_rating;
         double current_target = min_size;
 
+        if (Config::get().edge_sparsification && !restart
+            && s.rating(part).at(group) == Rating::minRating(s.numGroups())) {
+          continue;
+        }
         std::vector<GroupID> target_slots_within_group;
         if (Config::get().edge_sparsification) {
           GroupID num_edges = computeNumberOfGeneratedEdges(capacity);
@@ -278,6 +282,16 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::m
     ++part_idx;
   }
   return {std::move(assignment), success};
+}
+
+
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::mt19937_64& gen, bool top_level) {
+  auto [result, success] = calculateAssignmentImpl(s, gen, top_level, false);
+  if (!success && !interrupted.load() && Config::get().edge_sparsification) {
+    INFO("Restarting assignment with included low rated edges.", top_level);
+    return calculateAssignmentImpl(s, gen, top_level, true);
+  }
+  return {result, success};
 }
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,

@@ -12,6 +12,7 @@ group-disable-threshold = 4
 use-min-group-sizes = true
 min-group-size-effect = 3
 allow-min-group-size-default = false
+edge-sparsification = true
 
 # we don't want anyone below top 4 ratings
 type-specific-assignment-threshold = 3
