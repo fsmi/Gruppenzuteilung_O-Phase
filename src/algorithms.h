@@ -5,7 +5,7 @@
 
 void signalHandler(int);
 
-std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool top_level);
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::mt19937_64& gen, bool top_level);
 
 bool applyAssignment(State &s, const std::vector<int32_t> &assignment,
                      bool teams = true, bool students = true, bool top_level = true);

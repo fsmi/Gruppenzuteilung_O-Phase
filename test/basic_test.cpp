@@ -53,8 +53,9 @@ int main() {
       std::vector<Rating>{Rating(0), Rating(1), Rating(2)});
   input.teams.emplace_back("Lerngruppe A", std::vector<StudentID>{8});
 
-  State s(input);
-  auto assignment = calculateAssignment(s, true);
+  std::mt19937_64 random_gen;
+  State s(input, random_gen);
+  auto assignment = calculateAssignment(s, random_gen, true);
   applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
@@ -73,7 +74,7 @@ int main() {
   s.disableGroup(0);
   s.reset();
   s.assignParticipant(0, 2);
-  assignment = calculateAssignment(s, true);
+  assignment = calculateAssignment(s, random_gen, true);
   applyAssignment(s, assignment.first);
   printCurrentAssignment(s);
   // Erstis
@@ -102,7 +103,7 @@ int main() {
     group.capacity = 5;
   }
 
-  s = State(input);
+  s = State(input, random_gen);
   assignTeamsAndStudents(s, true);
   printCurrentAssignment(s);
   // Erstis
@@ -126,7 +127,7 @@ int main() {
   };
 
   // minimum number with filters
-  s = State(input);
+  s = State(input, random_gen);
   assignTeamsAndStudents(s, true);
   assertMinimumNumberPerGroupForSpecificType(s, {{Filter({{is_math, 0}}, "Mathe"), 2}});
   printCurrentAssignment(s);

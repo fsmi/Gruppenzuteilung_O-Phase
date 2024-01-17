@@ -99,13 +99,14 @@ bool ratingsEqual(const std::vector<Rating> &r1,
 Participant::Participant(uint32_t index, bool is_team)
     : index(index), is_team(is_team), assignment(-1) {}
 
-State::State(Input &data)
+State::State(Input &data, std::mt19937_64& random_gen)
     : _data(data),
       _group_states(data.groups.size()),
       _group_assignments(data.groups.size(),
                          std::vector<std::pair<StudentID, ParticipantID>>()),
       _participants(),
-      _type_specific_assignment(data.students.size()) {
+      _type_specific_assignment(data.students.size()),
+      _random_gen(random_gen) {
   ASSERT(data.students.size() == data.ratings.size());
   std::vector<bool> is_in_team(data.students.size(), false);
 
@@ -463,4 +464,8 @@ bool State::typeSpecificAssignment(StudentID student) const {
 StudentID State::partIDToStudentID(ParticipantID id) const {
   ASSERT(!isTeam(id));
   return _participants[id].index;
+}
+
+std::mt19937_64& State::getRandomness() {
+  return _random_gen;
 }

@@ -4,6 +4,7 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <random>
 
 // ####################################
 // ########   Logging Macros   ########
@@ -178,9 +179,10 @@ class State {
       _group_assignments;
   std::vector<Participant> _participants;
   std::vector<bool> _type_specific_assignment;
+  std::reference_wrapper<std::mt19937_64> _random_gen;
 
 public:
-  State(Input &data);
+  State(Input &data, std::mt19937_64& random_gen);
 
   const Input &data() const;
 
@@ -248,6 +250,8 @@ public:
   bool typeSpecificAssignment(StudentID student) const;
 
   StudentID partIDToStudentID(ParticipantID id) const;
+
+  std::mt19937_64& getRandomness();
 
  private:
   bool studentIsExludedFromGroup(StudentID participant, GroupID group) const;

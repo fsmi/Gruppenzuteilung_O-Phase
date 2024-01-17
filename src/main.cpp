@@ -3,6 +3,7 @@
 #include <chrono>
 #include <ios>
 #include <csignal>
+#include <random>
 
 #include "boost/property_tree/json_parser.hpp"
 #include "boost/program_options.hpp"
@@ -242,7 +243,8 @@ int main(int argc, const char *argv[]) {
   // register signal handler
   signal(SIGINT, signalHandler);
 
-  State state(input);
+  std::mt19937_64 random_gen(Config::get().random_seed);
+  State state(input, random_gen);
   if (Config::get().use_min_group_sizes) {
     printGroupSizes(state);
   }

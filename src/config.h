@@ -21,6 +21,7 @@ enum class RatingInputType {
 class Config {
  public:
   uint32_t verbosity_level = 3;
+  uint32_t random_seed = 7;
 
   // input and output
   RatingInputType rating_input_type = RatingInputType::Mapping;
@@ -37,6 +38,7 @@ class Config {
   bool allow_min_group_size_default = false;
   uint32_t min_group_size_effect = 3;
   double capacity_buffer = 1.05;
+  bool edge_sparsification = true;
 
   static const Config& get() {
     return get_mut();

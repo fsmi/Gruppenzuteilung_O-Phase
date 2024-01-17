@@ -83,7 +83,44 @@ void signalHandler(int) {
 // ########     Algorithms     ########
 // ####################################
 
-std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool top_level) {
+// max is inclusive
+uint32_t newRandomNumber(std::mt19937_64& gen, uint32_t min, uint32_t max) {
+  ASSERT(max >= min);
+  std::uniform_int_distribution<uint32_t> dist(min, max);
+  return dist(gen);
+}
+
+GroupID computeNumberOfGeneratedEdges(GroupID size_of_group) {
+  // probability of uncovered slot is roughly NUM_SLOTS * e^-SPARSIFIED_NUM_EDGES
+  const GroupID sparsified_num_edges_base = 10;
+  return sparsified_num_edges_base + std::ceil(std::log(size_of_group));
+}
+
+std::vector<GroupID> createRandomSubsetOfIDs(std::mt19937_64& gen, GroupID num_generated, GroupID max_index) {
+  ASSERT(max_index > num_generated + 1);
+  std::vector<GroupID> result;
+  for (GroupID count = 0; count < num_generated; ++count) {
+    GroupID next = newRandomNumber(gen, 0, max_index - 1 - result.size());
+    for (size_t i = 0; i <= result.size(); ++i) {
+      if (i == result.size()) {
+        result.push_back(next);
+        break;
+      } else if (next >= result[i]) {
+        ++next;
+      } else {
+        result.insert(result.cbegin() + i, next);
+        break;
+      }
+    }
+  }
+  ASSERT(result.size() == num_generated);
+  for (size_t i = 1; i < result.size(); ++i) {
+    ASSERT(result[i - 1] < result[i] && result[i] < max_index);
+  }
+  return result;
+}
+
+std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, std::mt19937_64& gen, bool top_level) {
   // initialize vertices
   std::vector<GraphTraits::vertex_descriptor> first_group_vertex;
   std::vector<GroupID> vertex_to_group;
@@ -137,9 +174,32 @@ std::pair<std::vector<int32_t>, bool> calculateAssignment(const State &s, bool t
                                       1.0 / Config::get().min_group_size_effect);
         uint32_t current_rating = max_rating;
         double current_target = min_size;
+
+        std::vector<GroupID> target_slots_within_group;
+        if (Config::get().edge_sparsification) {
+          GroupID num_edges = computeNumberOfGeneratedEdges(capacity);
+          if (num_edges + 2 < capacity) {
+            target_slots_within_group = createRandomSubsetOfIDs(gen, num_edges, capacity);
+          }
+        }
+
         for (GroupID j = 0; j < capacity; ++j) {
           auto vertex = first_group_vertex[group] + j;
-          add_edge(vertex, first_participant + i, EdgeProperty(current_rating), g);
+          bool should_add_edge = false;
+          if (target_slots_within_group.empty()) {
+            should_add_edge = true;
+          } else {
+            for (size_t slot = 0; slot < target_slots_within_group.size(); ++slot) {
+              if (target_slots_within_group[slot] == j) {
+                should_add_edge = true;
+                break;
+              }
+            }
+          }
+          if (should_add_edge) {
+            add_edge(vertex, first_participant + i, EdgeProperty(current_rating), g);
+          }
+
           // Gradually increase the rating so some of the places in the group are better than others.
           // This nudges the algorithm to distribute students more evenly among groups, thereby
           // fullfilling the minimum group sizes
@@ -320,7 +380,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
             << new_capacity << " (instead of " << s_temp.groupCapacity(group) << ")");
       s_temp.setCapacity(group, ceil(reduction_factor * s_temp.groupCapacity(group)));
     }
-    auto [assignment, success_first_step] = calculateAssignment(s_temp, top_level);
+    auto [assignment, success_first_step] = calculateAssignment(s_temp, s.getRandomness(), top_level);
     if (!success_first_step) {
       ERROR("Team assignment failed. Canceling.", top_level);
       return false;
@@ -335,7 +395,7 @@ bool assignTeamsAndStudents(State &s, bool top_level) {
   } while (!success);
 
   TRACE("Team assignment successful.", top_level);
-  auto [assignment, success_final] = calculateAssignment(s, top_level);
+  auto [assignment, success_final] = calculateAssignment(s, s.getRandomness(), top_level);
   success = success_final && applyAssignment(s, assignment);
   if (success) {
     PROGRESS("Current assignment completed.", top_level);

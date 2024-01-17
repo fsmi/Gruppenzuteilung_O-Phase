@@ -12,6 +12,9 @@ po::options_description Config::getConfigOptions() {
           ("verbosity,v",
             po::value<uint32_t>(&get_mut().verbosity_level)->value_name("<int>"),
             "Output verbosity ranging from 0 [no output] to 5 [debug output] (default: 3)")
+          ("random-seed,s",
+            po::value<uint32_t>(&get_mut().random_seed)->value_name("<int>"),
+            "Seed for pseudo-randomness used in the algorithm.")
           ("rating-input-type",
             po::value<std::string>()->notifier([&](const std::string& type) {
               if (type == "mapping") {
@@ -63,7 +66,10 @@ po::options_description Config::getConfigOptions() {
           ("capacity-buffer-factor",
             po::value<double>(&get_mut().capacity_buffer)->value_name("<double>"),
             "When disabling groups, ensures that the available capacity is at least by this factor "
-            "above the number of students (higher capacity generally allows for better solution quality).");
+            "above the number of students (higher capacity generally allows for better solution quality).")
+          ("edge-sparsification",
+            po::value<bool>(&get_mut().edge_sparsification)->value_name("<bool>"),
+            "If true, pseudo-randomly sparsifies the edges in the created graph to reduce memory usage.");
   // TODO: remaining options
   return options;
 }

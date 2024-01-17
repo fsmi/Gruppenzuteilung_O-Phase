@@ -88,7 +88,8 @@ int main(int argc, const char *argv[]) {
     input.teams.emplace_back(name, std::move(members));
   }
 
-  State s(input);
+  std::mt19937_64 random_gen;
+  State s(input, random_gen);
   assignWithMinimumNumberPerGroup(s, Config::get().group_disable_threshold);
   auto is_math_and_no_ma = [](const StudentData &data) noexcept {
     return data.course_type == CourseType::Mathe &&
